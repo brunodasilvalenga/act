@@ -14,7 +14,8 @@ builds:
       - -s -w -X main.version={{.Version}}
 
 archives:
-  - format: tar.gz
+  - formats:
+      - tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
 checksum:
@@ -28,7 +29,7 @@ changelog:
       - "^test:"
       - "^ci:"
 
-brews:
+homebrews:
   - repository:
       owner: brunodasilvalenga
       name: homebrew-tap
