@@ -33,6 +33,18 @@ go install github.com/brunodasilvalenga/act@latest
 
 Download the binary for your platform from the [Releases](https://github.com/brunodasilvalenga/act/releases) page.
 
+### Quick install (curl)
+
+```bash
+curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh
+```
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex
+```
+
 ### macOS (Homebrew)
 
 ```bash
@@ -77,7 +89,7 @@ act --profile production --region eu-west-1
 
 1. Runs `aws ec2 describe-instances` to fetch running instances
 2. Displays an interactive TUI for selection
-3. Execs `aws ssm start-session --target <instance-id>` (replaces the process)
+3. Runs `aws ssm start-session --target <instance-id>` (replaces the process on Unix, spawns subprocess on Windows)
 
 No custom SSH keys, no bastion hosts, no open inbound ports required.
 

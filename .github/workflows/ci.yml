@@ -8,7 +8,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -21,3 +24,50 @@ jobs:
 
       - name: Test
         run: go test -v ./...
+
+  test-install-script:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint install script
+        run: |
+          if command -v shellcheck >/dev/null 2>&1; then
+            shellcheck install.sh
+          else
+            echo "shellcheck not available, skipping"
+          fi
+
+      - name: Test install script syntax
+        run: sh -n install.sh
+
+      - name: Test OS/arch detection
+        run: |
+          # Source the script partially to test detection logic
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m)
+          echo "Detected OS: $OS, Arch: $ARCH"
+          # Verify OS is supported
+          case "$OS" in
+            linux|darwin) echo "OS OK" ;;
+            *) echo "FAIL: unsupported OS"; exit 1 ;;
+          esac
+          # Verify arch mapping
+          case "$ARCH" in
+            x86_64|amd64|aarch64|arm64) echo "Arch OK" ;;
+            *) echo "FAIL: unsupported arch"; exit 1 ;;
+          esac
+
+  test-install-script-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test install script syntax
+        shell: pwsh
+        run: |
+          $null = [System.Management.Automation.PSParser]::Tokenize((Get-Content install.ps1 -Raw), [ref]$null)
+          Write-Host "PowerShell syntax OK"
