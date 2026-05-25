@@ -29,7 +29,7 @@ changelog:
       - "^test:"
       - "^ci:"
 
-homebrews:
+brews:
   - repository:
       owner: brunodasilvalenga
       name: homebrew-tap
