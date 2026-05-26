@@ -3,8 +3,22 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
+
+// overrideHome sets HOME (Unix) and USERPROFILE (Windows) to dir for tests.
+func overrideHome(t *testing.T, dir string) {
+	t.Helper()
+	orig := os.Getenv("HOME")
+	os.Setenv("HOME", dir)
+	if runtime.GOOS == "windows" {
+		origUP := os.Getenv("USERPROFILE")
+		os.Setenv("USERPROFILE", dir)
+		t.Cleanup(func() { os.Setenv("USERPROFILE", origUP) })
+	}
+	t.Cleanup(func() { os.Setenv("HOME", orig) })
+}
 
 func TestResolveProfile(t *testing.T) {
 	// Flag takes priority
@@ -62,9 +76,7 @@ func TestResolveWithEnvironment(t *testing.T) {
 	os.WriteFile(tmpFile, []byte(content), 0644)
 
 	// Override HOME for test
-	origHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", origHome)
+	overrideHome(t, tmpDir)
 
 	// Clear env vars
 	os.Unsetenv("AWS_PROFILE")
@@ -91,9 +103,7 @@ func TestResolveWithEnvironment(t *testing.T) {
 
 func TestAddRemoveFavorite(t *testing.T) {
 	tmpDir := t.TempDir()
-	origHome := os.Getenv("HOME")
-	os.Setenv("HOME", tmpDir)
-	defer os.Setenv("HOME", origHome)
+	overrideHome(t, tmpDir)
 
 	// Init config
 	Init("test", "us-east-1")
