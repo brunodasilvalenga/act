@@ -6,53 +6,32 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 
 	"github.com/brunodasilvalenga/act/internal/aws"
 )
 
-var (
-	titleStyle    = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("39"))
-	headerStyle   = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("245"))
-	selectedStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("82"))
-	normalStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("252"))
-	dimStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-	searchStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("214"))
-	countStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("245"))
-	spinnerFrames = []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
-)
-
-type mode int
-
-const (
-	modeList mode = iota
-	modeLoading
-)
-
-type instancesLoadedMsg struct {
-	instances []aws.Instance
-	err       error
-}
-
-type spinnerTickMsg struct{}
-
-type model struct {
-	instances    []aws.Instance
-	filtered     []aws.Instance
+type ecsModel struct {
+	tasks        []aws.ECSTask
+	filtered     []aws.ECSTask
 	cursor       int
 	search       string
-	selected     *aws.Instance
+	selected     *aws.ECSTask
 	quitting     bool
 	width        int
 	height       int
 	mode         mode
 	spinnerFrame int
-	loadFunc     func() ([]aws.Instance, error)
+	loadFunc     func() ([]aws.ECSTask, error)
 	err          error
 }
 
-func initialModel(loadFunc func() ([]aws.Instance, error)) model {
-	return model{
+type ecsTasksLoadedMsg struct {
+	tasks []aws.ECSTask
+	err   error
+}
+
+func initialECSModel(loadFunc func() ([]aws.ECSTask, error)) ecsModel {
+	return ecsModel{
 		mode:     modeLoading,
 		loadFunc: loadFunc,
 		width:    100,
@@ -60,43 +39,43 @@ func initialModel(loadFunc func() ([]aws.Instance, error)) model {
 	}
 }
 
-func (m model) Init() tea.Cmd {
-	return tea.Batch(m.loadInstances(), m.tickSpinner())
+func (m ecsModel) Init() tea.Cmd {
+	return tea.Batch(m.loadTasks(), m.tickSpinner())
 }
 
-func (m model) loadInstances() tea.Cmd {
+func (m ecsModel) loadTasks() tea.Cmd {
 	return func() tea.Msg {
-		instances, err := m.loadFunc()
-		return instancesLoadedMsg{instances: instances, err: err}
+		tasks, err := m.loadFunc()
+		return ecsTasksLoadedMsg{tasks: tasks, err: err}
 	}
 }
 
-func (m model) tickSpinner() tea.Cmd {
+func (m ecsModel) tickSpinner() tea.Cmd {
 	return tea.Tick(80*time.Millisecond, func(_ time.Time) tea.Msg {
 		return spinnerTickMsg{}
 	})
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m ecsModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
 		return m, nil
 
-	case instancesLoadedMsg:
+	case ecsTasksLoadedMsg:
 		if msg.err != nil {
 			m.err = msg.err
 			m.quitting = true
 			return m, tea.Quit
 		}
-		if len(msg.instances) == 0 {
-			m.err = fmt.Errorf("no running instances found")
+		if len(msg.tasks) == 0 {
+			m.err = fmt.Errorf("no running ECS tasks found")
 			m.quitting = true
 			return m, tea.Quit
 		}
-		m.instances = msg.instances
-		m.filtered = msg.instances
+		m.tasks = msg.tasks
+		m.filtered = msg.tasks
 		m.mode = modeList
 		return m, nil
 
@@ -115,12 +94,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 		}
-		return m.handleListKeys(msg)
+		return m.handleKeys(msg)
 	}
 	return m, nil
 }
 
-func (m model) handleListKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m ecsModel) handleKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch msg.Type {
 	case tea.KeyCtrlC, tea.KeyEsc:
 		m.quitting = true
@@ -152,17 +131,17 @@ func (m model) handleListKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return m, nil
 }
 
-func (m *model) applyFilter() {
+func (m *ecsModel) applyFilter() {
 	if m.search == "" {
-		m.filtered = m.instances
+		m.filtered = m.tasks
 	} else {
-		var filtered []aws.Instance
+		var filtered []aws.ECSTask
 		lower := strings.ToLower(m.search)
-		for _, inst := range m.instances {
-			if strings.Contains(strings.ToLower(inst.Name), lower) ||
-				strings.Contains(strings.ToLower(inst.InstanceID), lower) ||
-				strings.Contains(inst.PrivateIP, lower) {
-				filtered = append(filtered, inst)
+		for _, task := range m.tasks {
+			if strings.Contains(strings.ToLower(task.ServiceName), lower) ||
+				strings.Contains(strings.ToLower(task.ContainerName), lower) ||
+				strings.Contains(strings.ToLower(task.TaskID), lower) {
+				filtered = append(filtered, task)
 			}
 		}
 		m.filtered = filtered
@@ -172,46 +151,36 @@ func (m *model) applyFilter() {
 	}
 }
 
-func (m model) View() string {
+func (m ecsModel) View() string {
 	if m.mode == modeLoading {
-		return m.viewLoading()
+		var b strings.Builder
+		b.WriteString(titleStyle.Render("AWS ECS Execute Command"))
+		b.WriteString("\n")
+		b.WriteString(dimStyle.Render("──────────────────────────────────────────────"))
+		b.WriteString("\n\n")
+		frame := spinnerFrames[m.spinnerFrame]
+		b.WriteString(fmt.Sprintf("  %s Fetching ECS tasks...\n", frame))
+		return b.String()
 	}
-	return m.viewList()
-}
 
-func (m model) viewLoading() string {
 	var b strings.Builder
-	b.WriteString(titleStyle.Render("AWS EC2 Instance Connect (Session Manager)"))
-	b.WriteString("\n")
-	b.WriteString(dimStyle.Render("──────────────────────────────────────────────"))
-	b.WriteString("\n\n")
-	frame := spinnerFrames[m.spinnerFrame]
-	b.WriteString(fmt.Sprintf("  %s Fetching instances...\n", frame))
-	return b.String()
-}
-
-func (m model) viewList() string {
-	var b strings.Builder
-
-	b.WriteString(titleStyle.Render("AWS EC2 Instance Connect (Session Manager)"))
+	b.WriteString(titleStyle.Render("AWS ECS Execute Command"))
 	b.WriteString("\n")
 	b.WriteString(dimStyle.Render("──────────────────────────────────────────────"))
 	b.WriteString("\n")
 	b.WriteString(fmt.Sprintf(" Search: %s▌\n", searchStyle.Render(m.search)))
 
-	// Count indicator
-	countText := fmt.Sprintf(" %d of %d instances", len(m.filtered), len(m.instances))
+	countText := fmt.Sprintf(" %d of %d tasks", len(m.filtered), len(m.tasks))
 	b.WriteString(countStyle.Render(countText))
 	b.WriteString("\n\n")
 
-	header := fmt.Sprintf("  %-40s %-20s %-15s %s", "NAME", "INSTANCE ID", "PRIVATE IP", "TYPE")
+	header := fmt.Sprintf("  %-30s %-30s %s", "SERVICE", "CONTAINER", "TASK ID")
 	b.WriteString(headerStyle.Render(header))
 	b.WriteString("\n")
-	b.WriteString(dimStyle.Render("  " + strings.Repeat("─", 90)))
+	b.WriteString(dimStyle.Render("  " + strings.Repeat("─", 80)))
 	b.WriteString("\n")
 
-	// Calculate visible area based on terminal height
-	maxVisible := m.height - 10 // header + footer space
+	maxVisible := m.height - 10
 	if maxVisible < 5 {
 		maxVisible = 5
 	}
@@ -249,15 +218,15 @@ func (m model) viewList() string {
 	return b.String()
 }
 
-func Run(loadFunc func() ([]aws.Instance, error)) (*aws.Instance, error) {
-	m := initialModel(loadFunc)
+func RunECS(loadFunc func() ([]aws.ECSTask, error)) (*aws.ECSTask, error) {
+	m := initialECSModel(loadFunc)
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	finalModel, err := p.Run()
 	if err != nil {
 		return nil, err
 	}
 
-	final := finalModel.(model)
+	final := finalModel.(ecsModel)
 	if final.err != nil {
 		return nil, final.err
 	}
