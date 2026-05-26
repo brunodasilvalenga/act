@@ -70,9 +70,12 @@ func ListECSClusters(profile, region string) ([]string, error) {
 	return clusters, nil
 }
 
-func ListECSTasks(cluster, profile, region string) ([]ECSTask, error) {
+func ListECSTasks(cluster, profile, region, serviceName string) ([]ECSTask, error) {
 	// List task ARNs
 	listArgs := []string{"ecs", "list-tasks", "--cluster", cluster, "--desired-status", "RUNNING", "--output", "json"}
+	if serviceName != "" {
+		listArgs = append(listArgs, "--service-name", serviceName)
+	}
 	if profile != "" {
 		listArgs = append(listArgs, "--profile", profile)
 	}

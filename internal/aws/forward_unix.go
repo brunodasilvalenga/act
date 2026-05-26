@@ -9,6 +9,35 @@ import (
 	"syscall"
 )
 
+func StartRemotePortForward(instanceID, profile, region string, localPort, remotePort int, remoteHost string) error {
+	document := "AWS-StartPortForwardingSessionToRemoteHost"
+	params := fmt.Sprintf(`{"host":["%s"],"portNumber":["%d"],"localPortNumber":["%d"]}`, remoteHost, remotePort, localPort)
+
+	args := []string{"ssm", "start-session",
+		"--document-name", document,
+		"--parameters", params,
+	}
+
+	if instanceID != "" {
+		args = append(args, "--target", instanceID)
+	}
+
+	if profile != "" {
+		args = append(args, "--profile", profile)
+	}
+	if region != "" {
+		args = append(args, "--region", region)
+	}
+
+	awsBin, err := exec.LookPath("aws")
+	if err != nil {
+		return fmt.Errorf("aws CLI not found in PATH: %w", err)
+	}
+
+	env := os.Environ()
+	return syscall.Exec(awsBin, append([]string{"aws"}, args...), env)
+}
+
 func StartPortForward(instanceID, profile, region string, localPort, remotePort int) error {
 	document := "AWS-StartPortForwardingSession"
 	params := fmt.Sprintf(`{"portNumber":["%d"],"localPortNumber":["%d"]}`, remotePort, localPort)

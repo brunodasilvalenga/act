@@ -110,8 +110,8 @@ func checkSessionManagerPlugin() result {
 }
 
 func checkCredentials(profile, region string) result {
-	resolvedProfile := config.ResolveProfile(profile)
-	resolvedRegion := config.ResolveRegion(region)
+	resolvedProfile := config.ResolveProfile(profile, "")
+	resolvedRegion := config.ResolveRegion(region, "")
 
 	args := []string{"sts", "get-caller-identity", "--output", "json"}
 	if resolvedProfile != "" {
@@ -150,7 +150,7 @@ func checkCredentials(profile, region string) result {
 }
 
 func checkRegion(flagRegion string) result {
-	resolved := config.ResolveRegion(flagRegion)
+	resolved := config.ResolveRegion(flagRegion, "")
 	if resolved == "" {
 		return result{
 			Name:   "Region",
@@ -166,7 +166,7 @@ func checkRegion(flagRegion string) result {
 }
 
 func checkProfile(flagProfile string) result {
-	resolved := config.ResolveProfile(flagProfile)
+	resolved := config.ResolveProfile(flagProfile, "")
 	if resolved == "" {
 		return result{
 			Name:   "Profile",
@@ -195,7 +195,7 @@ func checkConfigFile() result {
 		return result{
 			Name:   "Config",
 			Status: statusWarn,
-			Detail: fmt.Sprintf("%s (not found - optional)", path),
+			Detail: fmt.Sprintf("%s (not found - run `act init` to create)", path),
 		}
 	}
 	// Try to parse it

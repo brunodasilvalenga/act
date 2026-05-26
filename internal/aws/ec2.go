@@ -36,11 +36,19 @@ type describeOutput struct {
 	} `json:"Reservations"`
 }
 
-func ListRunningInstances(profile, region string) ([]Instance, error) {
+func ListRunningInstances(profile, region string, tags []string) ([]Instance, error) {
 	args := []string{"ec2", "describe-instances",
 		"--filters", "Name=instance-state-name,Values=running",
-		"--output", "json",
 	}
+
+	for _, tag := range tags {
+		parts := strings.SplitN(tag, "=", 2)
+		if len(parts) == 2 {
+			args = append(args, "--filters", fmt.Sprintf("Name=tag:%s,Values=%s", parts[0], parts[1]))
+		}
+	}
+
+	args = append(args, "--output", "json")
 
 	if profile != "" {
 		args = append(args, "--profile", profile)
