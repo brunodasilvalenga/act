@@ -12,6 +12,7 @@ type Instance struct {
 	Name         string
 	PrivateIP    string
 	InstanceType string
+	Platform     string
 }
 
 func (i Instance) DisplayName() string {
@@ -28,6 +29,7 @@ type describeOutput struct {
 			InstanceID       string `json:"InstanceId"`
 			PrivateIPAddress string `json:"PrivateIpAddress"`
 			InstanceType     string `json:"InstanceType"`
+			Platform         string `json:"Platform"`
 			Tags             []struct {
 				Key   string `json:"Key"`
 				Value string `json:"Value"`
@@ -86,9 +88,96 @@ func ListRunningInstances(profile, region string, tags []string) ([]Instance, er
 				Name:         name,
 				PrivateIP:    inst.PrivateIPAddress,
 				InstanceType: inst.InstanceType,
+				Platform:     inst.Platform,
 			})
 		}
 	}
 
 	return instances, nil
+}
+
+func ListWindowsInstances(profile, region string, tags []string) ([]Instance, error) {
+	args := []string{"ec2", "describe-instances",
+		"--filters", "Name=instance-state-name,Values=running",
+		"--filters", "Name=platform,Values=windows",
+	}
+
+	for _, tag := range tags {
+		parts := strings.SplitN(tag, "=", 2)
+		if len(parts) == 2 {
+			args = append(args, "--filters", fmt.Sprintf("Name=tag:%s,Values=%s", parts[0], parts[1]))
+		}
+	}
+
+	args = append(args, "--output", "json")
+
+	if profile != "" {
+		args = append(args, "--profile", profile)
+	}
+	if region != "" {
+		args = append(args, "--region", region)
+	}
+
+	cmd := exec.Command("aws", args...)
+	out, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("aws cli error: %s", strings.TrimSpace(string(exitErr.Stderr)))
+		}
+		return nil, err
+	}
+
+	var result describeOutput
+	if err := json.Unmarshal(out, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse aws output: %w", err)
+	}
+
+	var instances []Instance
+	for _, r := range result.Reservations {
+		for _, inst := range r.Instances {
+			name := ""
+			for _, tag := range inst.Tags {
+				if tag.Key == "Name" {
+					name = tag.Value
+					break
+				}
+			}
+			instances = append(instances, Instance{
+				InstanceID:   inst.InstanceID,
+				Name:         name,
+				PrivateIP:    inst.PrivateIPAddress,
+				InstanceType: inst.InstanceType,
+				Platform:     inst.Platform,
+			})
+		}
+	}
+
+	return instances, nil
+}
+
+func GetPasswordData(instanceID, profile, region, keyPath string) (string, error) {
+	args := []string{"ec2", "get-password-data",
+		"--instance-id", instanceID,
+		"--priv-launch-key", keyPath,
+		"--output", "text",
+		"--query", "PasswordData",
+	}
+
+	if profile != "" {
+		args = append(args, "--profile", profile)
+	}
+	if region != "" {
+		args = append(args, "--region", region)
+	}
+
+	cmd := exec.Command("aws", args...)
+	out, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return "", fmt.Errorf("aws cli error: %s", strings.TrimSpace(string(exitErr.Stderr)))
+		}
+		return "", err
+	}
+
+	return strings.TrimSpace(string(out)), nil
 }

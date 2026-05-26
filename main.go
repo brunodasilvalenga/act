@@ -59,6 +59,12 @@ func main() {
 				os.Exit(0)
 			}
 			runSSH(resolvedProfile, resolvedRegion, subArgs[1:])
+		} else if len(subArgs) > 0 && subArgs[0] == "rdp" {
+			if hasHelp(subArgs[1:]) {
+				printEC2RDPHelp()
+				os.Exit(0)
+			}
+			runRDP(resolvedProfile, resolvedRegion, subArgs[1:])
 		} else {
 			runConnect(resolvedProfile, resolvedRegion, subArgs)
 		}
@@ -187,6 +193,7 @@ Usage: act [global flags] <command> [command flags]
 Commands:
   ec2          Connect to EC2 instance via SSM session
   ec2 ssh      SSH to EC2 instance via SSM
+  ec2 rdp      RDP to Windows EC2 instance via SSM
   forward      Port forwarding via SSM
   ecs          Connect to ECS container via execute-command
   ecs logs     Tail ECS service logs
@@ -216,6 +223,7 @@ to the selected instance.
 
 Subcommands:
   ssh          SSH to EC2 instance via SSM (see 'act ec2 ssh help')
+  rdp          RDP to Windows EC2 instance via SSM (see 'act ec2 rdp help')
 
 Flags:
   --tag        Filter instances by tag (key=value, can be repeated)
@@ -805,6 +813,81 @@ func runSSH(profile, region string, subArgs []string) {
 	err := aws.StartSSHSession(instanceID, profile, region, sshUser)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting SSH session: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func printEC2RDPHelp() {
+	fmt.Fprintf(os.Stderr, `act ec2 rdp - RDP to Windows EC2 instance via SSM
+
+Usage: act [global flags] ec2 rdp [flags]
+
+Starts a port forwarding session to port 3389 on a Windows EC2 instance
+and optionally opens your RDP client.
+
+Only Windows instances are shown in the picker.
+
+Flags:
+  --target       Target instance ID (skip instance picker)
+  --local-port   Local port (default: 3389)
+  --key          Path to private key for password decryption
+  --no-open      Don't auto-open RDP client
+  --tag          Filter instances by tag (key=value, can be repeated)
+
+Global Flags:
+  --profile      AWS profile to use
+  --region       AWS region to use
+  --env          Environment name
+
+Examples:
+  act ec2 rdp
+  act ec2 rdp --key ~/.ssh/my-key.pem
+  act ec2 rdp --no-open --local-port 13389
+  act ec2 rdp --target i-0123456789abcdef0
+`)
+}
+
+func runRDP(profile, region string, subArgs []string) {
+	subArgs, tags := parseTags(subArgs)
+
+	fs := flag.NewFlagSet("rdp", flag.ExitOnError)
+	target := fs.String("target", "", "Target instance ID")
+	localPort := fs.Int("local-port", 3389, "Local port")
+	key := fs.String("key", "", "Path to private key for password decryption")
+	noOpen := fs.Bool("no-open", false, "Don't auto-open RDP client")
+	fs.Parse(subArgs)
+
+	instanceID := *target
+	if instanceID == "" {
+		loadFunc := func() ([]aws.Instance, error) {
+			return aws.ListWindowsInstances(profile, region, tags)
+		}
+		selected, err := tui.Run(loadFunc)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		if selected == nil {
+			os.Exit(0)
+		}
+		instanceID = selected.InstanceID
+	}
+
+	if *key != "" {
+		password, err := aws.GetPasswordData(instanceID, profile, region, *key)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: could not retrieve password: %v\n", err)
+		} else if password != "" {
+			fmt.Printf("Administrator password: %s\n", password)
+		} else {
+			fmt.Println("No password data available (instance may use domain auth or password not yet generated).")
+		}
+	}
+
+	fmt.Printf("Starting RDP port forward to %s (localhost:%d → 3389)\n", instanceID, *localPort)
+	err := aws.StartRDP(instanceID, profile, region, *localPort, !*noOpen)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 }

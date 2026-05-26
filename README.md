@@ -14,6 +14,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 - **Remote Host Forwarding** — Forward ports to remote hosts (e.g., RDS) through a bastion
 - **RDS Forwarding** — Interactive RDS picker with bastion-based port forwarding
 - **ECS Logs** — Auto-detect and tail CloudWatch logs from ECS services
+- **RDP over SSM** — RDP to Windows instances via SSM port forwarding with auto-client launch
 - **SSH over SSM** — SSH to instances without open inbound ports
 - **Favorites** — Save and quickly connect to frequently used instances
 - **Tag Filtering** — Filter EC2 instances by tags
@@ -28,9 +29,10 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
 - [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
 - [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) installed
-- IAM permissions for `ec2:DescribeInstances`, `ssm:StartSession`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
+- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
 - EC2 instances must have the SSM Agent running and proper IAM role attached
 - For `ec2 ssh`: OpenSSH client (`ssh`) and an SSH key configured on the target instance
+- For `ec2 rdp`: An RDP client (macOS: Microsoft Remote Desktop or built-in; Windows: mstsc)
 
 ## Installation
 
@@ -74,6 +76,7 @@ act [global flags] <command> [command flags]
 |---------|-------------|
 | `ec2` | Connect to EC2 instance via SSM session |
 | `ec2 ssh` | SSH to EC2 instance via SSM |
+| `ec2 rdp` | RDP to Windows EC2 instance via SSM |
 | `forward` | Port forwarding via SSM |
 | `ecs` | Connect to ECS container via execute-command |
 | `ecs logs` | Tail ECS service logs |
@@ -128,6 +131,12 @@ act rds --local-port 5433
 
 # RDS direct connection (VPC endpoint, no bastion)
 act rds --no-bastion
+
+# RDP to a Windows instance via SSM (auto-opens RDP client on macOS/Windows)
+act ec2 rdp
+act ec2 rdp --key ~/.ssh/my-key.pem
+act ec2 rdp --no-open --local-port 13389
+act ec2 rdp --target i-0123456789abcdef0
 
 # SSH to an instance via SSM (real SSH with ProxyCommand)
 act ec2 ssh
