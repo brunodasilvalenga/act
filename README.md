@@ -1,6 +1,6 @@
 # act - AWS Connect TUI
 
-A minimal terminal UI for connecting to EC2 instances via AWS Session Manager.
+A terminal UI for connecting to AWS resources via Session Manager — EC2 instances, ECS containers, and port forwarding.
 
 No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
@@ -8,30 +8,35 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
 ## Features
 
-- Lists all running EC2 instances (name, ID, private IP, type)
-- Real-time search/filter as you type
-- Keyboard navigation
-- Connects via `aws ssm start-session` on selection
-- Supports `--profile` and `--region` flags
+- **EC2 Connect** — List running instances, filter, and start SSM sessions
+- **ECS Exec** — Pick a cluster, service, and task to exec into a container
+- **Port Forwarding** — Forward local ports to remote instances via SSM
+- **Config File** — Set defaults in `~/.act.json` (profile, region, favorites)
+- **Environment Variables** — Falls back to `AWS_PROFILE`, `AWS_REGION`, `AWS_DEFAULT_REGION`
+- **Self-Upgrade** — Update to latest version with `act upgrade`
+- **Doctor** — Verify dependencies and configuration with `act doctor`
+- **Cross-Platform** — Works on macOS, Linux, and Windows
 
 ## Prerequisites
 
 - [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
 - [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) installed
-- IAM permissions for `ec2:DescribeInstances` and `ssm:StartSession`
+- IAM permissions for `ec2:DescribeInstances`, `ssm:StartSession`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`
 - EC2 instances must have the SSM Agent running and proper IAM role attached
 
 ## Installation
+
+### Homebrew (macOS)
+
+```bash
+brew install brunodasilvalenga/tap/act
+```
 
 ### From source
 
 ```bash
 go install github.com/brunodasilvalenga/act@latest
 ```
-
-### From releases
-
-Download the binary for your platform from the [Releases](https://github.com/brunodasilvalenga/act/releases) page.
 
 ### Quick install (curl)
 
@@ -45,34 +50,60 @@ curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.
 irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex
 ```
 
-### macOS (Homebrew)
+### From releases
 
-```bash
-brew install brunodasilvalenga/tap/act
-```
-
-### Manual build
-
-```bash
-git clone https://github.com/brunodasilvalenga/act.git
-cd act
-make install
-```
+Download the binary for your platform from the [Releases](https://github.com/brunodasilvalenga/act/releases) page.
 
 ## Usage
 
+```
+act [global flags] <command> [command flags]
+```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `ec2` | Connect to EC2 instance via SSM session |
+| `forward` | Port forwarding via SSM |
+| `ecs` | Connect to ECS container via execute-command |
+| `doctor` | Check system dependencies and configuration |
+| `upgrade` | Upgrade act to the latest version |
+
+### Global Flags
+
+| Flag | Description |
+|------|-------------|
+| `--profile` | AWS profile to use |
+| `--region` | AWS region to use |
+| `--version` | Show version information |
+
+### Examples
+
 ```bash
-# Default profile and region
-act
+# Connect to an EC2 instance (interactive picker)
+act ec2
 
-# Specific AWS profile
-act --profile production
+# Connect with a specific profile and region
+act --profile production --region us-west-2 ec2
 
-# Specific region
-act --region us-west-2
+# Port forward local port 5432 to a selected instance
+act forward --local-port 5432
 
-# Both
-act --profile production --region eu-west-1
+# Port forward with explicit target
+act forward --local-port 5432 --remote-port 5432 --target i-0123456789abcdef0
+
+# Exec into an ECS container (interactive cluster/task picker)
+act ecs
+
+# Exec into a specific cluster
+act ecs --cluster my-cluster
+
+# Check dependencies
+act doctor
+
+# Upgrade to latest version
+act upgrade
 ```
 
 ### Controls
@@ -85,11 +116,28 @@ act --profile production --region eu-west-1
 | Backspace | Clear search character |
 | Esc / Ctrl+C | Quit |
 
+## Configuration
+
+Create `~/.act.json` to set defaults:
+
+```json
+{
+  "default_profile": "production",
+  "default_region": "ap-southeast-2",
+  "favorites": ["i-0123456789abcdef0"]
+}
+```
+
+Resolution order for profile/region:
+1. CLI flag (`--profile`, `--region`)
+2. Environment variable (`AWS_PROFILE`, `AWS_REGION`, `AWS_DEFAULT_REGION`)
+3. Config file (`~/.act.json`)
+
 ## How it works
 
-1. Runs `aws ec2 describe-instances` to fetch running instances
-2. Displays an interactive TUI for selection
-3. Runs `aws ssm start-session --target <instance-id>` (replaces the process on Unix, spawns subprocess on Windows)
+1. Runs AWS API calls to fetch running instances/clusters/tasks
+2. Displays an interactive TUI for selection with real-time filtering
+3. Executes the appropriate AWS CLI command (`ssm start-session`, `ssm start-session` with port forwarding, or `ecs execute-command`)
 
 No custom SSH keys, no bastion hosts, no open inbound ports required.
 

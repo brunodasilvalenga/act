@@ -8,6 +8,7 @@ import (
 
 	"github.com/brunodasilvalenga/act/internal/aws"
 	"github.com/brunodasilvalenga/act/internal/config"
+	"github.com/brunodasilvalenga/act/internal/doctor"
 	"github.com/brunodasilvalenga/act/internal/tui"
 	"github.com/brunodasilvalenga/act/internal/updater"
 )
@@ -72,6 +73,15 @@ func main() {
 		resolvedRegion := config.ResolveRegion(region)
 		runECS(resolvedProfile, resolvedRegion, subArgs)
 
+	case "doctor":
+		subArgs := args[1:]
+		if hasHelp(subArgs) {
+			printDoctorHelp()
+			os.Exit(0)
+		}
+		doctor.Run(profile, region, version)
+		os.Exit(0)
+
 	case "upgrade":
 		if err := updater.Upgrade(version); err != nil {
 			fmt.Fprintf(os.Stderr, "Error upgrading: %v\n", err)
@@ -126,6 +136,7 @@ Commands:
   ec2          Connect to EC2 instance via SSM session
   forward      Port forwarding via SSM
   ecs          Connect to ECS container via execute-command
+  doctor       Check system dependencies and configuration
   upgrade      Upgrade act to the latest version
 
 Global Flags:
@@ -186,6 +197,20 @@ Global Flags:
 Examples:
   act ecs
   act ecs --cluster my-cluster
+`)
+}
+
+func printDoctorHelp() {
+	fmt.Fprintf(os.Stderr, `act doctor - Check system dependencies and configuration
+
+Usage: act [global flags] doctor
+
+Checks that all required tools are installed, credentials are valid,
+and configuration is correct.
+
+Global Flags:
+  --profile    AWS profile to use
+  --region     AWS region to use
 `)
 }
 
