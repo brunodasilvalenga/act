@@ -1,7 +1,7 @@
 BINARY=act
 
 build:
-	go build -o $(BINARY) .
+	go build -ldflags "-X main.version=dev" -o $(BINARY) .
 
 install: build
 	mv $(BINARY) /usr/local/bin/$(BINARY)
