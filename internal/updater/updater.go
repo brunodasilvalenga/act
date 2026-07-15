@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -210,19 +211,30 @@ func replaceBinary(src, dst string) error {
 	}
 	defer srcFile.Close()
 
-	// Remove old binary first (handles "text file busy" on some systems)
-	if err := os.Remove(dst); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("failed to remove old binary: %w", err)
-	}
-
-	dstFile, err := os.OpenFile(dst, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+	dstDir := filepath.Dir(dst)
+	tmpDst, err := os.CreateTemp(dstDir, ".act-new-*")
 	if err != nil {
-		return fmt.Errorf("failed to write new binary: %w", err)
+		return fmt.Errorf("failed to create temp file for new binary: %w", err)
 	}
-	defer dstFile.Close()
+	tmpDstPath := tmpDst.Name()
+	defer os.Remove(tmpDstPath) // no-op if rename below succeeds
 
-	if _, err := io.Copy(dstFile, srcFile); err != nil {
+	if _, err := io.Copy(tmpDst, srcFile); err != nil {
+		tmpDst.Close()
 		return fmt.Errorf("failed to copy new binary: %w", err)
+	}
+	if err := tmpDst.Close(); err != nil {
+		return fmt.Errorf("failed to finalize new binary: %w", err)
+	}
+
+	if err := os.Chmod(tmpDstPath, 0755); err != nil {
+		return fmt.Errorf("failed to set permissions on new binary: %w", err)
+	}
+
+	// os.Rename is atomic on the same filesystem: dst is never left
+	// missing or partially written, unlike remove-then-create.
+	if err := os.Rename(tmpDstPath, dst); err != nil {
+		return fmt.Errorf("failed to replace old binary: %w", err)
 	}
 
 	return nil
