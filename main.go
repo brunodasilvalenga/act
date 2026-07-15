@@ -478,6 +478,22 @@ func parseTags(args []string) ([]string, []string) {
 	return remaining, tags
 }
 
+// pickInstance runs the interactive picker for the given loadFunc and
+// returns the selected instance ID. It exits the process (0) if the user
+// quits the picker without selecting, and exits (1) on error — matching
+// the behavior every call site had before this helper was extracted.
+func pickInstance(loadFunc func() ([]aws.Instance, error)) string {
+	selected, err := tui.Run(loadFunc)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+	if selected == nil {
+		os.Exit(0)
+	}
+	return selected.InstanceID
+}
+
 func runConnect(profile, region string, subArgs []string) {
 	_, tags := parseTags(subArgs)
 
@@ -485,17 +501,9 @@ func runConnect(profile, region string, subArgs []string) {
 		return aws.ListRunningInstances(profile, region, tags)
 	}
 
-	selected, err := tui.Run(loadFunc)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
-	}
+	instanceID := pickInstance(loadFunc)
 
-	if selected == nil {
-		os.Exit(0)
-	}
-
-	err = aws.StartSession(selected.InstanceID, profile, region)
+	err := aws.StartSession(instanceID, profile, region)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting session: %v\n", err)
 		os.Exit(1)
@@ -525,16 +533,7 @@ func runForward(profile, region string, subArgs []string) {
 		loadFunc := func() ([]aws.Instance, error) {
 			return aws.ListRunningInstances(profile, region, tags)
 		}
-
-		selected, err := tui.Run(loadFunc)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		if selected == nil {
-			os.Exit(0)
-		}
-		instanceID = selected.InstanceID
+		instanceID = pickInstance(loadFunc)
 	}
 
 	if *remoteHost != "" {
@@ -669,15 +668,7 @@ func runRDS(profile, region string, subArgs []string) {
 		loadFunc := func() ([]aws.Instance, error) {
 			return aws.ListRunningInstances(profile, region, tags)
 		}
-		selected, err := tui.Run(loadFunc)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		if selected == nil {
-			os.Exit(0)
-		}
-		bastionID = selected.InstanceID
+		bastionID = pickInstance(loadFunc)
 	}
 
 	fmt.Printf("Forwarding localhost:%d → %s:%d (via %s)\n", *localPort, rdsInst.Endpoint, rdsPort, bastionID)
@@ -789,15 +780,7 @@ func runSSH(profile, region string, subArgs []string) {
 		loadFunc := func() ([]aws.Instance, error) {
 			return aws.ListRunningInstances(profile, region, tags)
 		}
-		selected, err := tui.Run(loadFunc)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		if selected == nil {
-			os.Exit(0)
-		}
-		instanceID = selected.InstanceID
+		instanceID = pickInstance(loadFunc)
 	}
 
 	sshUser := *user
@@ -862,15 +845,7 @@ func runRDP(profile, region string, subArgs []string) {
 		loadFunc := func() ([]aws.Instance, error) {
 			return aws.ListWindowsInstances(profile, region, tags)
 		}
-		selected, err := tui.Run(loadFunc)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
-		if selected == nil {
-			os.Exit(0)
-		}
-		instanceID = selected.InstanceID
+		instanceID = pickInstance(loadFunc)
 	}
 
 	if *key != "" {
