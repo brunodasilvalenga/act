@@ -16,21 +16,8 @@ func StartSSHSession(instanceID, profile, region, user string) error {
 	if err := validateSSHProxyToken(region, "region"); err != nil {
 		return err
 	}
-	proxyCmd := "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"
-	if profile != "" {
-		proxyCmd += " --profile " + profile
-	}
-	if region != "" {
-		proxyCmd += " --region " + region
-	}
 
-	args := []string{
-		"ssh",
-		"-o", "StrictHostKeyChecking=no",
-		"-o", "UserKnownHostsFile=/dev/null",
-		"-o", fmt.Sprintf("ProxyCommand=%s", proxyCmd),
-		fmt.Sprintf("%s@%s", user, instanceID),
-	}
+	args := append([]string{"ssh"}, sshProxyArgs(instanceID, profile, region, user)...)
 
 	sshBin, err := exec.LookPath("ssh")
 	if err != nil {

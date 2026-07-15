@@ -10,16 +10,7 @@ import (
 )
 
 func TailLogs(logGroup, profile, region, since string, follow bool) error {
-	args := []string{"logs", "tail", logGroup, "--since", since}
-	if follow {
-		args = append(args, "--follow")
-	}
-	if profile != "" {
-		args = append(args, "--profile", profile)
-	}
-	if region != "" {
-		args = append(args, "--region", region)
-	}
+	args := tailLogsArgs(logGroup, profile, region, since, follow)
 
 	awsBin, err := exec.LookPath("aws")
 	if err != nil {
