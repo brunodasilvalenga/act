@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/brunodasilvalenga/act/internal/aws"
 	"github.com/brunodasilvalenga/act/internal/config"
@@ -95,6 +96,25 @@ func main() {
 			runLogs(resolvedProfile, resolvedRegion, subArgs[1:])
 		} else {
 			runECS(resolvedProfile, resolvedRegion, subArgs)
+		}
+
+	case "ssm":
+		subArgs := args[1:]
+		if hasHelp(subArgs) {
+			printSSMHelp()
+			os.Exit(0)
+		}
+		resolvedProfile := config.ResolveProfile(profile, env)
+		resolvedRegion := config.ResolveRegion(region, env)
+		if len(subArgs) > 0 && subArgs[0] == "run" {
+			if hasHelp(subArgs[1:]) {
+				printSSMRunHelp()
+				os.Exit(0)
+			}
+			runSSMRun(resolvedProfile, resolvedRegion, subArgs[1:])
+		} else {
+			fmt.Fprintf(os.Stderr, "Unknown ssm subcommand. Run 'act ssm help' for usage.\n")
+			os.Exit(1)
 		}
 
 	case "rds":
@@ -198,6 +218,7 @@ Commands:
   ecs          Connect to ECS container via execute-command
   ecs logs     Tail ECS service logs
   rds          Port forward to RDS instance via SSM
+  ssm run      Run a command or script on an instance via SSM
   fav          Connect to a favorite instance
   init         Create ~/.act.json configuration file
   doctor       Check system dependencies and configuration
@@ -306,6 +327,53 @@ Examples:
   act rds --bastion i-0123456789abcdef0
   act rds --local-port 5433
   act rds --no-bastion
+`)
+}
+
+func printSSMHelp() {
+	fmt.Fprintf(os.Stderr, `act ssm - Execute commands via SSM Run Command
+
+Usage: act [global flags] ssm [subcommand|flags]
+
+Subcommands:
+  run          Run a command or script on an instance (see 'act ssm run help')
+
+Global Flags:
+  --profile    AWS profile to use
+  --region     AWS region to use
+  --env        Environment name
+`)
+}
+
+func printSSMRunHelp() {
+	fmt.Fprintf(os.Stderr, `act ssm run - Run a command or script on an EC2 instance via SSM
+
+Usage: act [global flags] ssm run [flags]
+
+Runs one or more shell commands (or a local script file) on a target
+instance via AWS Systems Manager Run Command, waits for completion, and
+prints stdout/stderr. Automatically uses AWS-RunPowerShellScript for
+Windows instances and AWS-RunShellScript for everything else.
+
+Flags:
+  --target       Target instance ID (skip instance picker; Linux assumed, use the picker to target Windows instances)
+  --command      Command to run (repeatable; each occurrence is one line)
+  --script       Path to a local script file to run (mutually exclusive with --command)
+  --timeout      Command timeout in seconds (default 300)
+  --comment      Optional comment shown in the Systems Manager console
+  --no-wait      Submit the command and exit without waiting for it to finish
+  --tag          Filter instances by tag (key=value, can be repeated)
+
+Global Flags:
+  --profile      AWS profile to use
+  --region       AWS region to use
+  --env          Environment name
+
+Examples:
+  act ssm run --command "systemctl status nginx"
+  act ssm run --target i-0123456789abcdef0 --command "df -h" --command "uptime"
+  act ssm run --script ./deploy.sh --timeout 600
+  act ssm run --no-wait --command "sudo reboot"
 `)
 }
 
@@ -476,6 +544,24 @@ func parseTags(args []string) ([]string, []string) {
 		}
 	}
 	return remaining, tags
+}
+
+// parseCommands extracts --command flags from args (can be repeated,
+// one shell line per occurrence), returns remaining args and commands.
+func parseCommands(args []string) ([]string, []string) {
+	var remaining []string
+	var commands []string
+	for i := 0; i < len(args); i++ {
+		if args[i] == "--command" || args[i] == "-command" {
+			if i+1 < len(args) {
+				i++
+				commands = append(commands, args[i])
+			}
+		} else {
+			remaining = append(remaining, args[i])
+		}
+	}
+	return remaining, commands
 }
 
 func runConnect(profile, region string, subArgs []string) {
@@ -684,6 +770,87 @@ func runRDS(profile, region string, subArgs []string) {
 	err = aws.StartRemotePortForward(bastionID, profile, region, *localPort, rdsPort, rdsInst.Endpoint)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting port forward: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func runSSMRun(profile, region string, subArgs []string) {
+	subArgs, tags := parseTags(subArgs)
+	subArgs, commands := parseCommands(subArgs)
+
+	fs := flag.NewFlagSet("ssm run", flag.ExitOnError)
+	target := fs.String("target", "", "Target instance ID")
+	script := fs.String("script", "", "Path to a local script file to run")
+	timeout := fs.Int("timeout", 300, "Command timeout in seconds")
+	comment := fs.String("comment", "", "Optional comment shown in the Systems Manager console")
+	noWait := fs.Bool("no-wait", false, "Submit the command and exit without waiting")
+	fs.Parse(subArgs)
+
+	if len(commands) == 0 && *script == "" {
+		fmt.Fprintf(os.Stderr, "Error: provide at least one --command or --script\n")
+		os.Exit(1)
+	}
+	if len(commands) > 0 && *script != "" {
+		fmt.Fprintf(os.Stderr, "Error: --command and --script are mutually exclusive\n")
+		os.Exit(1)
+	}
+
+	if *script != "" {
+		data, err := os.ReadFile(*script)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading script file: %v\n", err)
+			os.Exit(1)
+		}
+		lines := strings.Split(strings.TrimRight(string(data), "\n"), "\n")
+		commands = lines
+	}
+
+	instanceID := *target
+	var platform string
+	if instanceID == "" {
+		loadFunc := func() ([]aws.Instance, error) {
+			return aws.ListRunningInstances(profile, region, tags)
+		}
+		selected, err := tui.Run(loadFunc)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		if selected == nil {
+			os.Exit(0)
+		}
+		instanceID = selected.InstanceID
+		platform = selected.Platform
+	}
+
+	document := aws.DocumentForPlatform(platform)
+
+	commandID, err := aws.SendCommand(instanceID, profile, region, document, commands, *timeout, *comment)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error sending command: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Command %s submitted to %s\n", commandID, instanceID)
+
+	if *noWait {
+		return
+	}
+
+	result, err := aws.WaitForCommandInvocation(commandID, instanceID, profile, region, 2*time.Second)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error waiting for command: %v\n", err)
+		os.Exit(1)
+	}
+
+	if result.Stdout != "" {
+		fmt.Print(result.Stdout)
+	}
+	if result.Stderr != "" {
+		fmt.Fprint(os.Stderr, result.Stderr)
+	}
+
+	if result.Status != "Success" {
+		fmt.Fprintf(os.Stderr, "Command finished with status %s\n", result.Status)
 		os.Exit(1)
 	}
 }
