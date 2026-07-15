@@ -182,7 +182,7 @@ act fav rm i-0123456789abcdef0       # remove from favorites
 
 # Named environments
 act env list                                            # list environments
-act env add prod --profile production --region us-west-2
+act --profile production --region us-west-2 env add prod
 act env rm prod
 
 # Create config file interactively

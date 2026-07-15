@@ -144,7 +144,7 @@ func main() {
 			printEnvHelp()
 			os.Exit(0)
 		}
-		runEnv(subArgs)
+		runEnv(subArgs, profile, region)
 		os.Exit(0)
 
 	case "doctor":
@@ -1131,18 +1131,18 @@ func printEnvHelp() {
 Usage: act env [subcommand]
 
 Subcommands:
-  list                            List configured environments
-  add <name> --profile P --region R   Add or update an environment
-  rm <name>                       Remove an environment
+  list                                       List configured environments
+  add <name>                                 Add or update an environment (use global --profile/--region flags)
+  rm <name>                                  Remove an environment
 
 Examples:
   act env list
-  act env add prod --profile production --region us-west-2
+  act --profile production --region us-west-2 env add prod
   act env rm prod
 `)
 }
 
-func runEnv(subArgs []string) {
+func runEnv(subArgs []string, profile, region string) {
 	if len(subArgs) == 0 {
 		printEnvHelp()
 		os.Exit(1)
@@ -1167,24 +1167,19 @@ func runEnv(subArgs []string) {
 
 	case "add":
 		if len(subArgs) < 2 {
-			fmt.Fprintf(os.Stderr, "Usage: act env add <name> --profile <profile> --region <region>\n")
+			fmt.Fprintf(os.Stderr, "Usage: act --profile <profile> --region <region> env add <name>\n")
 			os.Exit(1)
 		}
 		name := subArgs[1]
-		fs := flag.NewFlagSet("env add", flag.ExitOnError)
-		envProfile := fs.String("profile", "", "AWS profile for this environment")
-		envRegion := fs.String("region", "", "AWS region for this environment")
-		fs.Parse(subArgs[2:])
-
-		if *envProfile == "" && *envRegion == "" {
-			fmt.Fprintf(os.Stderr, "Error: at least one of --profile or --region is required\n")
+		if profile == "" && region == "" {
+			fmt.Fprintf(os.Stderr, "Error: at least one of --profile or --region is required (pass them as global flags before the subcommand, e.g. act --profile prod --region us-west-2 env add prod)\n")
 			os.Exit(1)
 		}
-		if err := config.AddEnvironment(name, *envProfile, *envRegion); err != nil {
+		if err := config.AddEnvironment(name, profile, region); err != nil {
 			fmt.Fprintf(os.Stderr, "Error adding environment: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Added environment %q (profile=%s, region=%s).\n", name, *envProfile, *envRegion)
+		fmt.Printf("Added environment %q (profile=%s, region=%s).\n", name, profile, region)
 
 	case "rm":
 		if len(subArgs) < 2 {
