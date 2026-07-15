@@ -29,7 +29,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
 - [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
 - [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) installed
-- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
+- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `ecs:ListServices`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
 - EC2 instances must have the SSM Agent running and proper IAM role attached
 - For `ec2 ssh`: OpenSSH client (`ssh`) and an SSH key configured on the target instance
 - For `ec2 rdp`: An RDP client (macOS: Microsoft Remote Desktop or built-in; Windows: mstsc)
