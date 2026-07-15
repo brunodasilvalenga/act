@@ -84,6 +84,7 @@ act [global flags] <command> [command flags]
 | `rds` | Port forward to RDS instance via SSM |
 | `ssm run` | Run a command or script on an instance via SSM |
 | `fav` | Connect to a favorite instance |
+| `env` | Manage named environments |
 | `init` | Create `~/.act.json` configuration file interactively |
 | `doctor` | Check system dependencies and configuration |
 | `upgrade` | Upgrade act to the latest version |
@@ -175,8 +176,14 @@ act ecs --cluster my-cluster --service my-service
 
 # Favorites
 act fav                              # picker + connect
+act fav list                         # list favorites (non-interactive)
 act fav add i-0123456789abcdef0      # add to favorites
 act fav rm i-0123456789abcdef0       # remove from favorites
+
+# Named environments
+act env list                                            # list environments
+act --profile production --region us-west-2 env add prod
+act env rm prod
 
 # Create config file interactively
 act init
