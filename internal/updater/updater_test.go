@@ -83,6 +83,28 @@ func TestReplaceBinary(t *testing.T) {
 	}
 }
 
+func TestBuildAssetName(t *testing.T) {
+	tests := []struct {
+		name    string
+		version string
+		goos    string
+		goarch  string
+		want    string
+	}{
+		{"linux amd64", "1.2.3", "linux", "amd64", "act_1.2.3_linux_amd64.tar.gz"},
+		{"darwin arm64", "1.2.3", "darwin", "arm64", "act_1.2.3_darwin_arm64.tar.gz"},
+		{"windows amd64 uses zip", "1.2.3", "windows", "amd64", "act_1.2.3_windows_amd64.zip"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := buildAssetNameFor(tt.version, tt.goos, tt.goarch)
+			if got != tt.want {
+				t.Errorf("buildAssetNameFor(%q, %q, %q) = %q, want %q", tt.version, tt.goos, tt.goarch, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestReplaceBinaryMissingSource(t *testing.T) {
 	dir := t.TempDir()
 	dstPath := filepath.Join(dir, "act")
