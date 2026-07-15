@@ -831,6 +831,7 @@ Flags:
   --target       Target instance ID (skip instance picker)
   --local-port   Local port (default: 3389)
   --key          Path to private key for password decryption
+  --show-password  Print the decrypted password in plaintext (default: masked)
   --no-open      Don't auto-open RDP client
   --tag          Filter instances by tag (key=value, can be repeated)
 
@@ -855,6 +856,7 @@ func runRDP(profile, region string, subArgs []string) {
 	localPort := fs.Int("local-port", 3389, "Local port")
 	key := fs.String("key", "", "Path to private key for password decryption")
 	noOpen := fs.Bool("no-open", false, "Don't auto-open RDP client")
+	showPassword := fs.Bool("show-password", false, "Print the decrypted password to stdout (default: masked)")
 	fs.Parse(subArgs)
 
 	instanceID := *target
@@ -878,7 +880,11 @@ func runRDP(profile, region string, subArgs []string) {
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Warning: could not retrieve password: %v\n", err)
 		} else if password != "" {
-			fmt.Printf("Administrator password: %s\n", password)
+			if *showPassword {
+				fmt.Printf("Administrator password: %s\n", password)
+			} else {
+				fmt.Println("Administrator password retrieved (use --show-password to display it in plaintext).")
+			}
 		} else {
 			fmt.Println("No password data available (instance may use domain auth or password not yet generated).")
 		}
