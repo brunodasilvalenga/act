@@ -9,4 +9,13 @@ install: build
 clean:
 	rm -f $(BINARY)
 
-.PHONY: build install clean
+fmt:
+	@test -z "$$(gofmt -l .)" || (echo "The following files are not gofmt'd:"; gofmt -l .; exit 1)
+
+vet:
+	go vet ./...
+
+test: fmt vet
+	go test ./...
+
+.PHONY: build install clean fmt vet test

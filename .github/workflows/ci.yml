@@ -22,6 +22,19 @@ jobs:
       - name: Build
         run: go build -v ./...
 
+      - name: Format check
+        shell: bash
+        run: |
+          UNFORMATTED=$(gofmt -l .)
+          if [ -n "$UNFORMATTED" ]; then
+            echo "The following files are not gofmt'd:"
+            echo "$UNFORMATTED"
+            exit 1
+          fi
+
+      - name: Vet
+        run: go vet ./...
+
       - name: Test
         run: go test -v ./...
 
