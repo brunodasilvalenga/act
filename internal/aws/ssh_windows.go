@@ -9,6 +9,12 @@ import (
 )
 
 func StartSSHSession(instanceID, profile, region, user string) error {
+	if err := validateSSHProxyToken(profile, "profile"); err != nil {
+		return err
+	}
+	if err := validateSSHProxyToken(region, "region"); err != nil {
+		return err
+	}
 	proxyCmd := "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"
 	if profile != "" {
 		proxyCmd += " --profile " + profile
