@@ -46,7 +46,7 @@ func ListRunningInstances(profile, region string, tags []string) ([]Instance, er
 	for _, tag := range tags {
 		parts := strings.SplitN(tag, "=", 2)
 		if len(parts) == 2 {
-			args = append(args, "--filters", fmt.Sprintf("Name=tag:%s,Values=%s", parts[0], parts[1]))
+			args = append(args, "--filters", fmt.Sprintf("Name=tag:%s,Values=%s", parts[0], escapeTagFilterValue(parts[1])))
 		}
 	}
 
@@ -105,7 +105,7 @@ func ListWindowsInstances(profile, region string, tags []string) ([]Instance, er
 	for _, tag := range tags {
 		parts := strings.SplitN(tag, "=", 2)
 		if len(parts) == 2 {
-			args = append(args, "--filters", fmt.Sprintf("Name=tag:%s,Values=%s", parts[0], parts[1]))
+			args = append(args, "--filters", fmt.Sprintf("Name=tag:%s,Values=%s", parts[0], escapeTagFilterValue(parts[1])))
 		}
 	}
 
@@ -155,6 +155,24 @@ func ListWindowsInstances(profile, region string, tags []string) ([]Instance, er
 	return instances, nil
 }
 
+// escapeTagFilterValue escapes characters that are significant in AWS CLI
+// shorthand filter syntax (commas separate multiple filter values) so a
+// literal comma in a tag value is not misinterpreted as a value separator.
+func escapeTagFilterValue(value string) string {
+	return strings.ReplaceAll(value, ",", "\\,")
+}
+
+// normalizePasswordOutput converts AWS CLI's literal "None" text output
+// (produced when --query selects a null field under --output text) into an
+// empty string, so callers can use a simple non-empty check.
+func normalizePasswordOutput(raw string) string {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "None" {
+		return ""
+	}
+	return trimmed
+}
+
 func GetPasswordData(instanceID, profile, region, keyPath string) (string, error) {
 	args := []string{"ec2", "get-password-data",
 		"--instance-id", instanceID,
@@ -179,5 +197,5 @@ func GetPasswordData(instanceID, profile, region, keyPath string) (string, error
 		return "", err
 	}
 
-	return strings.TrimSpace(string(out)), nil
+	return normalizePasswordOutput(string(out)), nil
 }

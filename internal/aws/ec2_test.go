@@ -36,6 +36,47 @@ func TestDisplayName(t *testing.T) {
 	}
 }
 
+func TestNormalizePasswordOutput(t *testing.T) {
+	tests := []struct {
+		name string
+		raw  string
+		want string
+	}{
+		{"real password", "P@ssw0rd123!\n", "P@ssw0rd123!"},
+		{"literal None", "None\n", ""},
+		{"literal None no newline", "None", ""},
+		{"empty string", "", ""},
+		{"whitespace only", "   \n", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := normalizePasswordOutput(tt.raw); got != tt.want {
+				t.Errorf("normalizePasswordOutput(%q) = %q, want %q", tt.raw, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEscapeTagFilterValue(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"no comma", "production", "production"},
+		{"single comma", "prod,us-east", "prod\\,us-east"},
+		{"multiple commas", "a,b,c", "a\\,b\\,c"},
+		{"empty", "", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := escapeTagFilterValue(tt.in); got != tt.want {
+				t.Errorf("escapeTagFilterValue(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
+
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) && (s == substr || len(s) > 0 && containsSubstr(s, substr))
 }
