@@ -15,11 +15,13 @@ import (
 const repoAPI = "https://api.github.com/repos/brunodasilvalenga/act/releases/latest"
 
 type githubRelease struct {
-	TagName string `json:"tag_name"`
-	Assets  []struct {
-		Name               string `json:"name"`
-		BrowserDownloadURL string `json:"browser_download_url"`
-	} `json:"assets"`
+	TagName string         `json:"tag_name"`
+	Assets  []releaseAsset `json:"assets"`
+}
+
+type releaseAsset struct {
+	Name               string `json:"name"`
+	BrowserDownloadURL string `json:"browser_download_url"`
 }
 
 func CheckLatestVersion() (string, error) {
@@ -64,15 +66,7 @@ func Upgrade(currentVersion string) error {
 	}
 
 	assetName := buildAssetName(latestVersion)
-	var downloadURL, checksumsURL string
-	for _, asset := range release.Assets {
-		if asset.Name == assetName {
-			downloadURL = asset.BrowserDownloadURL
-		}
-		if asset.Name == "checksums.txt" {
-			checksumsURL = asset.BrowserDownloadURL
-		}
-	}
+	downloadURL, checksumsURL := selectReleaseAssets(release.Assets, assetName)
 
 	if downloadURL == "" {
 		return fmt.Errorf("no release asset found for %s/%s (expected %s)", runtime.GOOS, runtime.GOARCH, assetName)
@@ -86,10 +80,11 @@ func Upgrade(currentVersion string) error {
 	}
 	defer os.Remove(tmpFile)
 
-	if checksumsURL != "" {
-		if err := verifyChecksum(tmpFile, assetName, checksumsURL); err != nil {
-			return err
-		}
+	if checksumsURL == "" {
+		return fmt.Errorf("checksums.txt asset not found in release %s; refusing to install an unverified binary", release.TagName)
+	}
+	if err := verifyChecksum(tmpFile, assetName, checksumsURL); err != nil {
+		return err
 	}
 
 	binary, err := extractBinary(tmpFile, assetName)
@@ -121,6 +116,21 @@ func buildAssetName(version string) string {
 	}
 
 	return fmt.Sprintf("act_%s_%s_%s.%s", version, goos, goarch, ext)
+}
+
+// selectReleaseAssets finds the download URL for the current platform's
+// asset and the checksums.txt URL among a release's assets. It does not
+// perform any I/O.
+func selectReleaseAssets(assets []releaseAsset, assetName string) (downloadURL, checksumsURL string) {
+	for _, asset := range assets {
+		if asset.Name == assetName {
+			downloadURL = asset.BrowserDownloadURL
+		}
+		if asset.Name == "checksums.txt" {
+			checksumsURL = asset.BrowserDownloadURL
+		}
+	}
+	return downloadURL, checksumsURL
 }
 
 func downloadToTemp(url string) (string, error) {
