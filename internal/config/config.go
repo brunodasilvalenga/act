@@ -46,7 +46,7 @@ func Init(profile, region string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, append(data, '\n'), 0644)
+	return os.WriteFile(path, append(data, '\n'), 0600)
 }
 
 func Load() Config {
@@ -74,7 +74,7 @@ func Save(cfg Config) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, append(data, '\n'), 0644)
+	return os.WriteFile(path, append(data, '\n'), 0600)
 }
 
 func AddFavorite(instanceID string) error {

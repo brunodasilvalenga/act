@@ -136,3 +136,36 @@ func TestAddRemoveFavorite(t *testing.T) {
 		t.Errorf("expected 0 favorites, got %d", len(cfg.Favorites))
 	}
 }
+
+func TestConfigFilePermissions(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Unix file permission bits are not meaningful on Windows")
+	}
+
+	tmpDir := t.TempDir()
+	overrideHome(t, tmpDir)
+
+	if err := Init("test-profile", "us-east-1"); err != nil {
+		t.Fatalf("Init failed: %v", err)
+	}
+
+	info, err := os.Stat(ConfigPath())
+	if err != nil {
+		t.Fatalf("failed to stat config file: %v", err)
+	}
+	if perm := info.Mode().Perm(); perm != 0600 {
+		t.Errorf("expected Init to write config with mode 0600, got %v", perm)
+	}
+
+	// Save (exercised indirectly via AddFavorite) must also use 0600.
+	if err := AddFavorite("i-999"); err != nil {
+		t.Fatalf("AddFavorite failed: %v", err)
+	}
+	info, err = os.Stat(ConfigPath())
+	if err != nil {
+		t.Fatalf("failed to stat config file after Save: %v", err)
+	}
+	if perm := info.Mode().Perm(); perm != 0600 {
+		t.Errorf("expected Save to write config with mode 0600, got %v", perm)
+	}
+}
