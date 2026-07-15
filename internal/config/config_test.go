@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"testing"
 )
@@ -134,6 +135,66 @@ func TestAddRemoveFavorite(t *testing.T) {
 	cfg = Load()
 	if len(cfg.Favorites) != 0 {
 		t.Errorf("expected 0 favorites, got %d", len(cfg.Favorites))
+	}
+}
+
+func TestListFavorites(t *testing.T) {
+	tmpDir := t.TempDir()
+	overrideHome(t, tmpDir)
+
+	Init("test", "us-east-1")
+
+	if got := ListFavorites(); len(got) != 0 {
+		t.Errorf("expected no favorites initially, got %v", got)
+	}
+
+	AddFavorite("i-abc")
+	AddFavorite("i-def")
+
+	got := ListFavorites()
+	want := []string{"i-abc", "i-def"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("ListFavorites() = %v, want %v", got, want)
+	}
+}
+
+func TestEnvironmentCRUD(t *testing.T) {
+	tmpDir := t.TempDir()
+	overrideHome(t, tmpDir)
+
+	Init("test", "us-east-1")
+
+	if got := ListEnvironments(); len(got) != 0 {
+		t.Errorf("expected no environments initially, got %v", got)
+	}
+
+	if err := AddEnvironment("prod", "prod-profile", "us-west-2"); err != nil {
+		t.Fatalf("AddEnvironment failed: %v", err)
+	}
+
+	envs := ListEnvironments()
+	if len(envs) != 1 {
+		t.Fatalf("expected 1 environment, got %d", len(envs))
+	}
+	if envs["prod"].Profile != "prod-profile" || envs["prod"].Region != "us-west-2" {
+		t.Errorf("unexpected environment value: %+v", envs["prod"])
+	}
+
+	// Upsert: adding again with different values overwrites.
+	if err := AddEnvironment("prod", "prod-profile-v2", "eu-west-1"); err != nil {
+		t.Fatalf("AddEnvironment (update) failed: %v", err)
+	}
+	envs = ListEnvironments()
+	if envs["prod"].Profile != "prod-profile-v2" || envs["prod"].Region != "eu-west-1" {
+		t.Errorf("expected AddEnvironment to overwrite existing entry, got %+v", envs["prod"])
+	}
+
+	if err := RemoveEnvironment("prod"); err != nil {
+		t.Fatalf("RemoveEnvironment failed: %v", err)
+	}
+	envs = ListEnvironments()
+	if len(envs) != 0 {
+		t.Errorf("expected 0 environments after remove, got %d", len(envs))
 	}
 }
 

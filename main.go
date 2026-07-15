@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"time"
 
@@ -137,6 +138,15 @@ func main() {
 		resolvedRegion := config.ResolveRegion(region, env)
 		runFav(resolvedProfile, resolvedRegion, subArgs)
 
+	case "env":
+		subArgs := args[1:]
+		if hasHelp(subArgs) {
+			printEnvHelp()
+			os.Exit(0)
+		}
+		runEnv(subArgs)
+		os.Exit(0)
+
 	case "doctor":
 		subArgs := args[1:]
 		if hasHelp(subArgs) {
@@ -220,6 +230,7 @@ Commands:
   rds          Port forward to RDS instance via SSM
   ssm run      Run a command or script on an instance via SSM
   fav          Connect to a favorite instance
+  env          Manage named environments
   init         Create ~/.act.json configuration file
   doctor       Check system dependencies and configuration
   upgrade      Upgrade act to the latest version
@@ -438,6 +449,7 @@ Usage: act [global flags] fav [subcommand]
 
 Subcommands:
   (none)       Show favorites picker and connect
+  list         List favorites (non-interactive)
   add <id>     Add instance to favorites
   rm <id>      Remove instance from favorites
 
@@ -448,6 +460,7 @@ Global Flags:
 
 Examples:
   act fav
+  act fav list
   act fav add i-0123456789abcdef0
   act fav rm i-0123456789abcdef0
 `)
@@ -1067,6 +1080,16 @@ func runFav(profile, region string, subArgs []string) {
 	}
 
 	switch subArgs[0] {
+	case "list":
+		favorites := config.ListFavorites()
+		if len(favorites) == 0 {
+			fmt.Println("No favorites configured.")
+			return
+		}
+		for _, f := range favorites {
+			fmt.Println(f)
+		}
+
 	case "add":
 		if len(subArgs) < 2 {
 			fmt.Fprintf(os.Stderr, "Usage: act fav add <instance-id>\n")
@@ -1098,6 +1121,86 @@ func runFav(profile, region string, subArgs []string) {
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown fav subcommand: %s\n", subArgs[0])
 		printFavHelp()
+		os.Exit(1)
+	}
+}
+
+func printEnvHelp() {
+	fmt.Fprintf(os.Stderr, `act env - Manage named environments (profile + region presets)
+
+Usage: act env [subcommand]
+
+Subcommands:
+  list                            List configured environments
+  add <name> --profile P --region R   Add or update an environment
+  rm <name>                       Remove an environment
+
+Examples:
+  act env list
+  act env add prod --profile production --region us-west-2
+  act env rm prod
+`)
+}
+
+func runEnv(subArgs []string) {
+	if len(subArgs) == 0 {
+		printEnvHelp()
+		os.Exit(1)
+	}
+
+	switch subArgs[0] {
+	case "list":
+		envs := config.ListEnvironments()
+		if len(envs) == 0 {
+			fmt.Println("No environments configured.")
+			return
+		}
+		names := make([]string, 0, len(envs))
+		for name := range envs {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			e := envs[name]
+			fmt.Printf("%s: profile=%s region=%s\n", name, e.Profile, e.Region)
+		}
+
+	case "add":
+		if len(subArgs) < 2 {
+			fmt.Fprintf(os.Stderr, "Usage: act env add <name> --profile <profile> --region <region>\n")
+			os.Exit(1)
+		}
+		name := subArgs[1]
+		fs := flag.NewFlagSet("env add", flag.ExitOnError)
+		envProfile := fs.String("profile", "", "AWS profile for this environment")
+		envRegion := fs.String("region", "", "AWS region for this environment")
+		fs.Parse(subArgs[2:])
+
+		if *envProfile == "" && *envRegion == "" {
+			fmt.Fprintf(os.Stderr, "Error: at least one of --profile or --region is required\n")
+			os.Exit(1)
+		}
+		if err := config.AddEnvironment(name, *envProfile, *envRegion); err != nil {
+			fmt.Fprintf(os.Stderr, "Error adding environment: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Added environment %q (profile=%s, region=%s).\n", name, *envProfile, *envRegion)
+
+	case "rm":
+		if len(subArgs) < 2 {
+			fmt.Fprintf(os.Stderr, "Usage: act env rm <name>\n")
+			os.Exit(1)
+		}
+		name := subArgs[1]
+		if err := config.RemoveEnvironment(name); err != nil {
+			fmt.Fprintf(os.Stderr, "Error removing environment: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Removed environment %q.\n", name)
+
+	default:
+		fmt.Fprintf(os.Stderr, "Unknown env subcommand: %s\n", subArgs[0])
+		printEnvHelp()
 		os.Exit(1)
 	}
 }

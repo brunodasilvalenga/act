@@ -100,6 +100,31 @@ func RemoveFavorite(instanceID string) error {
 	return Save(cfg)
 }
 
+func ListFavorites() []string {
+	cfg := Load()
+	return cfg.Favorites
+}
+
+func ListEnvironments() map[string]Environment {
+	cfg := Load()
+	return cfg.Environments
+}
+
+func AddEnvironment(name, profile, region string) error {
+	cfg := Load()
+	if cfg.Environments == nil {
+		cfg.Environments = make(map[string]Environment)
+	}
+	cfg.Environments[name] = Environment{Profile: profile, Region: region}
+	return Save(cfg)
+}
+
+func RemoveEnvironment(name string) error {
+	cfg := Load()
+	delete(cfg.Environments, name)
+	return Save(cfg)
+}
+
 func ResolveProfile(flagValue, envName string) string {
 	if flagValue != "" {
 		return flagValue
