@@ -134,7 +134,8 @@ act rds --no-bastion
 
 # RDP to a Windows instance via SSM (auto-opens RDP client on macOS/Windows)
 act ec2 rdp
-act ec2 rdp --key ~/.ssh/my-key.pem
+act ec2 rdp --key ~/.ssh/my-key.pem                  # retrieves password (masked by default)
+act ec2 rdp --key ~/.ssh/my-key.pem --show-password  # prints password in plaintext
 act ec2 rdp --no-open --local-port 13389
 act ec2 rdp --target i-0123456789abcdef0
 
