@@ -26,9 +26,9 @@ type result struct {
 }
 
 var (
-	passStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))  // green
-	warnStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("3"))  // yellow
-	failStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))  // red
+	passStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("2")) // green
+	warnStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("3")) // yellow
+	failStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("1")) // red
 )
 
 func Run(profile, region, version string) error {
