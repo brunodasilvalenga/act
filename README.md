@@ -16,6 +16,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 - **ECS Logs** — Auto-detect and tail CloudWatch logs from ECS services
 - **RDP over SSM** — RDP to Windows instances via SSM port forwarding with auto-client launch
 - **SSH over SSM** — SSH to instances without open inbound ports
+- **Run Command** — Execute a command or script on an instance via SSM Run Command (no session needed)
 - **Favorites** — Save and quickly connect to frequently used instances
 - **Tag Filtering** — Filter EC2 instances by tags
 - **Multi-Environment Config** — Switch between environments (prod, staging, etc.)
@@ -29,7 +30,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
 - [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
 - [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) installed
-- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `ecs:ListServices`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
+- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ssm:SendCommand`, `ssm:GetCommandInvocation`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `ecs:ListServices`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
 - EC2 instances must have the SSM Agent running and proper IAM role attached
 - For `ec2 ssh`: OpenSSH client (`ssh`) and an SSH key configured on the target instance
 - For `ec2 rdp`: An RDP client (macOS: Microsoft Remote Desktop or built-in; Windows: mstsc)
@@ -81,6 +82,7 @@ act [global flags] <command> [command flags]
 | `ecs` | Connect to ECS container via execute-command |
 | `ecs logs` | Tail ECS service logs |
 | `rds` | Port forward to RDS instance via SSM |
+| `ssm run` | Run a command or script on an instance via SSM |
 | `fav` | Connect to a favorite instance |
 | `init` | Create `~/.act.json` configuration file interactively |
 | `doctor` | Check system dependencies and configuration |
@@ -152,6 +154,18 @@ act ecs logs --cluster my-cluster --service my-service
 
 # Tail with custom time range
 act ecs logs --log-group /ecs/my-service --since 1h
+
+# Run a command on an instance (interactive picker)
+act ssm run --command "systemctl status nginx"
+
+# Run multiple commands on a specific instance
+act ssm run --target i-0123456789abcdef0 --command "df -h" --command "uptime"
+
+# Run a local script
+act ssm run --script ./deploy.sh --timeout 600
+
+# Fire-and-forget (don't wait for completion)
+act ssm run --no-wait --command "sudo reboot"
 
 # Exec into an ECS container (interactive cluster/task picker)
 act ecs
