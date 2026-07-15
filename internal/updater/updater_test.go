@@ -3,6 +3,7 @@ package updater
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -60,12 +61,14 @@ func TestReplaceBinary(t *testing.T) {
 		t.Errorf("expected dst to contain new binary content, got %q", string(got))
 	}
 
-	info, err := os.Stat(dstPath)
-	if err != nil {
-		t.Fatalf("failed to stat replaced binary: %v", err)
-	}
-	if info.Mode().Perm() != 0755 {
-		t.Errorf("expected mode 0755, got %v", info.Mode().Perm())
+	if runtime.GOOS != "windows" {
+		info, err := os.Stat(dstPath)
+		if err != nil {
+			t.Fatalf("failed to stat replaced binary: %v", err)
+		}
+		if info.Mode().Perm() != 0755 {
+			t.Errorf("expected mode 0755, got %v", info.Mode().Perm())
+		}
 	}
 
 	// No leftover temp file in the directory.
