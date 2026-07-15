@@ -9,14 +9,7 @@ import (
 )
 
 func StartSession(instanceID, profile, region string) error {
-	args := []string{"ssm", "start-session", "--target", instanceID}
-
-	if profile != "" {
-		args = append(args, "--profile", profile)
-	}
-	if region != "" {
-		args = append(args, "--region", region)
-	}
+	args := sessionArgs(instanceID, profile, region)
 
 	awsBin, err := exec.LookPath("aws")
 	if err != nil {
