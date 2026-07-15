@@ -108,9 +108,10 @@ func Upgrade(currentVersion string) error {
 }
 
 func buildAssetName(version string) string {
-	goos := runtime.GOOS
-	goarch := runtime.GOARCH
+	return buildAssetNameFor(version, runtime.GOOS, runtime.GOARCH)
+}
 
+func buildAssetNameFor(version, goos, goarch string) string {
 	ext := "tar.gz"
 	if goos == "windows" {
 		ext = "zip"
