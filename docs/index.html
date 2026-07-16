@@ -20,15 +20,144 @@
         box-sizing: border-box;
       }
 
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         margin: 0;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      svg {
+        max-width: 100%;
+      }
+
+      .copy-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .copy-btn svg {
+        pointer-events: none;
+      }
+
+      .copy-btn:hover svg path,
+      .copy-btn.is-copied svg path {
+        fill: #39E75F;
+      }
+
+      @media (max-width: 1024px) {
+        .section-pad-lg {
+          padding: 72px 48px !important;
+        }
+        .section-pad-xl {
+          padding: 80px 48px !important;
+        }
+        .section-pad-install {
+          padding: 100px 48px 80px 48px !important;
+        }
+        .section-pad-footer {
+          padding: 32px 48px 24px 48px !important;
+        }
+        .nav-row {
+          padding: 20px 32px !important;
+        }
+        .hero-content {
+          padding: 56px 32px 0 32px !important;
+        }
+        .terminal-wrap {
+          padding: 40px 32px 64px 32px !important;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .responsive-row {
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+        .responsive-row > * {
+          width: 100% !important;
+        }
+        .steps-row {
+          flex-direction: column !important;
+          gap: 28px !important;
+          width: 100% !important;
+        }
+        .hero-headline {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .hero-headline-1,
+        .hero-headline-2 {
+          white-space: normal !important;
+          width: 100% !important;
+          font-size: 38px !important;
+        }
+        .features-heading {
+          font-size: 28px !important;
+        }
+        .demo-heading {
+          font-size: 30px !important;
+        }
+        .install-heading {
+          font-size: 36px !important;
+        }
+        .prerequisite-text {
+          white-space: normal !important;
+          text-align: center !important;
+        }
+        .footer-tagline {
+          white-space: normal !important;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .nav-row {
+          flex-wrap: wrap !important;
+          justify-content: center !important;
+          gap: 16px !important;
+          row-gap: 12px !important;
+        }
+        .nav-links {
+          order: 3 !important;
+          width: 100% !important;
+          justify-content: center !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .cta-row {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          width: 100% !important;
+        }
+        .cta-row > * {
+          width: 100% !important;
+          justify-content: center !important;
+        }
+        .hero-headline-1,
+        .hero-headline-2 {
+          font-size: 30px !important;
+        }
       }
     </style>
   </head>
   <body>
     <div
       data-pencil-name="act Landing Page"
-      style="align-items: flex-start; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 1440px"
+      style="align-items: flex-start; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; gap: 0px; height: fit-content; justify-content: flex-start; max-width: 1440px; margin: 0 auto; width: 100%"
     >
       <div
         data-pencil-name="Hero"
@@ -36,9 +165,11 @@
       >
         <div
           data-pencil-name="Nav"
+          class="nav-row"
           style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: space-between; padding: 24px 64px; width: 100%"
         >
-          <div
+          <a
+            href="#top"
             data-pencil-name="Logo"
             style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: fit-content"
           >
@@ -54,35 +185,42 @@
             >
               act
             </div>
-          </div>
+          </a>
           <div
             data-pencil-name="Nav Links"
+            class="nav-links"
             style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 40px; height: fit-content; justify-content: flex-start; width: fit-content"
           >
-            <div
+            <a
+              href="#features"
               data-pencil-name="Features"
               style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
             >
               Features
-            </div>
-            <div
+            </a>
+            <a
+              href="#how-it-works"
               data-pencil-name="How it works"
               style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
             >
               How it works
-            </div>
-            <div
+            </a>
+            <a
+              href="#install"
               data-pencil-name="Install"
               style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
             >
               Install
-            </div>
+            </a>
           </div>
           <div
             data-pencil-name="Nav Right"
             style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 12px; height: fit-content; justify-content: flex-start; width: fit-content"
           >
-            <div
+            <a
+              href="https://github.com/brunodasilvalenga/act"
+              target="_blank"
+              rel="noopener"
               data-pencil-name="GitHub Icon Button"
               style="align-items: center; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 36px; justify-content: center; width: 36px"
             >
@@ -100,8 +238,9 @@
                   fill="#F5F7F5"
                 ></path>
               </svg>
-            </div>
-            <div
+            </a>
+            <a
+              href="#install"
               data-pencil-name="Get Started Nav Button"
               style="align-items: flex-start; background-color: #39E75F; border-radius: 9999px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 10px 20px; width: fit-content"
             >
@@ -111,11 +250,13 @@
               >
                 Get Started
               </div>
-            </div>
+            </a>
           </div>
         </div>
         <div
+          id="top"
           data-pencil-name="Hero Content"
+          class="hero-content"
           style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; padding: 72px 64px 0px 64px; width: 100%"
         >
           <div
@@ -137,16 +278,19 @@
           </div>
           <div
             data-pencil-name="Headline"
-            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 2px; height: fit-content; justify-content: flex-start; width: fit-content"
+            class="hero-headline"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 2px; height: fit-content; justify-content: flex-start; width: fit-content; max-width: 100%"
           >
             <div
               data-pencil-name="Headline Line 1"
+              class="hero-headline-1"
               style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 56px; font-style: normal; font-weight: 700; letter-spacing: -1px; line-height: normal; text-align: center; white-space: nowrap'
             >
               SSH into AWS instances
             </div>
             <div
               data-pencil-name="Headline Line 2"
+              class="hero-headline-2"
               style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 56px; font-style: normal; font-weight: 700; letter-spacing: -1px; line-height: normal; text-align: center; white-space: nowrap'
             >
               without the bastion headache
@@ -154,7 +298,7 @@
           </div>
           <div
             data-pencil-name="Subheadline"
-            style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 27px; text-align: center; width: 640px"
+            style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 27px; text-align: center; width: 640px; max-width: 100%"
           >
             act is an open-source terminal UI for connecting to EC2, ECS, and RDS through AWS
             Session Manager — no open inbound ports, no SSH key distribution, no extra dependencies
@@ -162,9 +306,11 @@
           </div>
           <div
             data-pencil-name="CTA Row"
+            class="cta-row"
             style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 14px; height: fit-content; justify-content: flex-start; width: fit-content"
           >
-            <div
+            <a
+              href="#install"
               data-pencil-name="Primary CTA"
               style="align-items: center; background-color: #39E75F; border-radius: 9999px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 14px 28px; width: fit-content"
             >
@@ -188,8 +334,11 @@
                   fill="#0B0F0D"
                 ></path>
               </svg>
-            </div>
-            <div
+            </a>
+            <a
+              href="https://github.com/brunodasilvalenga/act"
+              target="_blank"
+              rel="noopener"
               data-pencil-name="Secondary CTA"
               style="align-items: center; border-radius: 9999px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 14px 28px; width: fit-content"
             >
@@ -213,15 +362,15 @@
               >
                 View on GitHub
               </div>
-            </div>
+            </a>
           </div>
           <div
             data-pencil-name="Install Snippet"
-            style="align-items: center; background-color: #1B231E; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 14px 20px; width: fit-content"
+            style="align-items: center; background-color: #1B231E; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 14px 20px; width: fit-content; max-width: 100%"
           >
             <div
               data-pencil-name="Snippet Text"
-              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 10px; height: fit-content; justify-content: flex-start; width: fit-content"
+              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 10px; height: fit-content; justify-content: flex-start; width: fit-content; min-width: 0; overflow-x: auto"
             >
               <div
                 data-pencil-name="Prompt"
@@ -231,35 +380,43 @@
               </div>
               <div
                 data-pencil-name="Command"
+                data-copy-text="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
                 style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
               >
                 curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh |
                 sh
               </div>
             </div>
-            <svg
+            <button
+              type="button"
+              class="copy-btn"
               data-pencil-name="Copy Icon"
-              data-icon-name="copy"
-              data-icon-set="lucide"
-              viewBox="0 0 13.99993896484375 14"
-              preserveAspectRatio="xMidYMid meet"
-              xmlns="http://www.w3.org/2000/svg"
-              style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+              aria-label="Copy install command"
             >
-              <path
-                d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                fill="#9AA79E"
-              ></path>
-            </svg>
+              <svg
+                data-icon-name="copy"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+              >
+                <path
+                  d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                  fill="#9AA79E"
+                ></path>
+              </svg>
+            </button>
           </div>
         </div>
         <div
           data-pencil-name="Terminal Mockup Wrap"
+          class="terminal-wrap"
           style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 56px 64px 96px 64px; width: 100%"
         >
           <div
             data-pencil-name="Terminal Window"
-            style="align-items: flex-start; background-color: #141B17; border-radius: 8px; border: 1px solid #223028; box-shadow: 0px 12px 32px 0px #00000080; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 900px"
+            style="align-items: flex-start; background-color: #141B17; border-radius: 8px; border: 1px solid #223028; box-shadow: 0px 12px 32px 0px #00000080; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 900px; max-width: 100%"
           >
             <div
               data-pencil-name="Title Bar"
@@ -434,7 +591,9 @@
         </div>
       </div>
       <div
+        id="features"
         data-pencil-name="Features"
+        class="section-pad-lg"
         style="align-items: center; background-color: #F7F9F7; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 56px; height: fit-content; justify-content: flex-start; padding: 96px 120px; width: 100%"
       >
         <div
@@ -449,13 +608,14 @@
           </div>
           <div
             data-pencil-name="Heading"
-            style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: normal; text-align: center; width: 640px'
+            class="features-heading"
+            style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: normal; text-align: center; width: 640px; max-width: 100%'
           >
             Everything you need, nothing you don't
           </div>
           <div
             data-pencil-name="Subheading"
-            style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: center; width: 600px"
+            style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: center; width: 600px; max-width: 100%"
           >
             act wraps AWS Session Manager in a single terminal UI, so you can reach EC2, ECS, and
             RDS without bastions, open ports, or SSH keys.
@@ -467,6 +627,7 @@
         >
           <div
             data-pencil-name="Feature Row 1"
+            class="responsive-row"
             style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
           >
             <div
@@ -596,6 +757,7 @@
           </div>
           <div
             data-pencil-name="Feature Row 2"
+            class="responsive-row"
             style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
           >
             <div
@@ -725,6 +887,7 @@
           </div>
           <div
             data-pencil-name="Feature Row 3"
+            class="responsive-row"
             style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
           >
             <div
@@ -855,12 +1018,14 @@
         </div>
       </div>
       <div
+        id="how-it-works"
         data-pencil-name="Demo"
+        class="section-pad-xl"
         style="align-items: center; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 64px; height: fit-content; justify-content: flex-start; padding: 120px; width: 100%"
       >
         <div
           data-pencil-name="Section Header"
-          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; width: 640px"
+          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; width: 640px; max-width: 100%"
         >
           <div
             data-pencil-name="Eyebrow Badge"
@@ -875,13 +1040,14 @@
           </div>
           <div
             data-pencil-name="Heading"
-            style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 40px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: 46px; text-align: center; width: 640px'
+            class="demo-heading"
+            style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 40px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: 46px; text-align: center; width: 640px; max-width: 100%'
           >
             From API call to shell — in seconds
           </div>
           <div
             data-pencil-name="Subheading"
-            style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 24px; text-align: center; width: 600px"
+            style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 24px; text-align: center; width: 600px; max-width: 100%"
           >
             No bastion hosts. No open inbound ports. No SSH keys to distribute. Just the AWS APIs
             you already trust.
@@ -889,7 +1055,8 @@
         </div>
         <div
           data-pencil-name="Steps Row"
-          style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 40px; height: fit-content; justify-content: flex-start; width: 960px"
+          class="steps-row"
+          style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 40px; height: fit-content; justify-content: flex-start; width: 960px; max-width: 100%"
         >
           <div
             data-pencil-name="Step 01"
@@ -981,7 +1148,7 @@
         </div>
         <div
           data-pencil-name="Terminal Mockup"
-          style="align-items: flex-start; background-color: #141B17; border-radius: 8px; border: 1px solid #223028; box-shadow: 0px 4px 8px 0px #00000080; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 1100px"
+          style="align-items: flex-start; background-color: #141B17; border-radius: 8px; border: 1px solid #223028; box-shadow: 0px 4px 8px 0px #00000080; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 1100px; max-width: 100%"
         >
           <div
             data-pencil-name="Title Bar"
@@ -1016,7 +1183,7 @@
           </div>
           <div
             data-pencil-name="Terminal Body"
-            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 22px; height: fit-content; justify-content: flex-start; padding: 24px; width: 100%"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 22px; height: fit-content; justify-content: flex-start; padding: 24px; width: 100%; overflow-x: auto"
           >
             <div
               data-pencil-name="Command: act ec2"
@@ -1224,7 +1391,9 @@
         style="align-items: flex-start; background-color: #F7F9F7; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; width: 100%"
       >
         <div
+          id="install"
           data-pencil-name="Install"
+          class="section-pad-install"
           style="align-items: center; background-color: #F7F9F7; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 56px; height: fit-content; justify-content: flex-start; padding: 140px 120px 120px 120px; width: 100%"
         >
           <div
@@ -1239,19 +1408,23 @@
           >
             <div
               data-pencil-name="Headline"
-              style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 52px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: 57px; text-align: center; width: 700px'
+              class="install-heading"
+              style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 52px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: 57px; text-align: center; width: 700px; max-width: 100%'
             >
               Get started in under a minute
             </div>
             <div
               data-pencil-name="Subtext"
-              style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 26px; text-align: center; width: 560px"
+              style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 26px; text-align: center; width: 560px; max-width: 100%"
             >
               Install act with your favorite package manager. No AWS console tabs, no VPN client —
               just your terminal.
             </div>
           </div>
-          <div
+          <a
+            href="https://github.com/brunodasilvalenga/act"
+            target="_blank"
+            rel="noopener"
             data-pencil-name="CTA Button"
             style="align-items: center; background-color: #39E75F; border-radius: 9999px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 14px 28px; width: fit-content"
           >
@@ -1275,9 +1448,10 @@
             >
               View on GitHub
             </div>
-          </div>
+          </a>
           <div
             data-pencil-name="Install Methods"
+            class="responsive-row"
             style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 20px; height: fit-content; justify-content: flex-start; width: 100%"
           >
             <div
@@ -1315,25 +1489,32 @@
               >
                 <div
                   data-pencil-name="Command"
-                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left'
+                  data-copy-text="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left; min-width: 0; overflow-x: auto; white-space: nowrap'
                 >
                   curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh
                   | sh
                 </div>
-                <svg
+                <button
+                  type="button"
+                  class="copy-btn"
                   data-pencil-name="Copy Icon"
-                  data-icon-name="copy"
-                  data-icon-set="lucide"
-                  viewBox="0 0 13.99993896484375 14"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                  aria-label="Copy install command"
                 >
-                  <path
-                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                    fill="#9AA79E"
-                  ></path>
-                </svg>
+                  <svg
+                    data-icon-name="copy"
+                    data-icon-set="lucide"
+                    viewBox="0 0 13.99993896484375 14"
+                    preserveAspectRatio="xMidYMid meet"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                  >
+                    <path
+                      d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                      fill="#9AA79E"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </div>
             <div
@@ -1371,24 +1552,31 @@
               >
                 <div
                   data-pencil-name="Command"
-                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left'
+                  data-copy-text="go install github.com/brunodasilvalenga/act@latest"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left; min-width: 0; overflow-x: auto; white-space: nowrap'
                 >
                   go install github.com/brunodasilvalenga/act@latest
                 </div>
-                <svg
+                <button
+                  type="button"
+                  class="copy-btn"
                   data-pencil-name="Copy Icon"
-                  data-icon-name="copy"
-                  data-icon-set="lucide"
-                  viewBox="0 0 13.99993896484375 14"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                  aria-label="Copy install command"
                 >
-                  <path
-                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                    fill="#9AA79E"
-                  ></path>
-                </svg>
+                  <svg
+                    data-icon-name="copy"
+                    data-icon-set="lucide"
+                    viewBox="0 0 13.99993896484375 14"
+                    preserveAspectRatio="xMidYMid meet"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                  >
+                    <path
+                      d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                      fill="#9AA79E"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </div>
             <div
@@ -1426,30 +1614,37 @@
               >
                 <div
                   data-pencil-name="Command"
-                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left'
+                  data-copy-text="irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left; min-width: 0; overflow-x: auto; white-space: nowrap'
                 >
                   irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex
                 </div>
-                <svg
+                <button
+                  type="button"
+                  class="copy-btn"
                   data-pencil-name="Copy Icon"
-                  data-icon-name="copy"
-                  data-icon-set="lucide"
-                  viewBox="0 0 13.99993896484375 14"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                  aria-label="Copy install command"
                 >
-                  <path
-                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                    fill="#9AA79E"
-                  ></path>
-                </svg>
+                  <svg
+                    data-icon-name="copy"
+                    data-icon-set="lucide"
+                    viewBox="0 0 13.99993896484375 14"
+                    preserveAspectRatio="xMidYMid meet"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                  >
+                    <path
+                      d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                      fill="#9AA79E"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
           <div
             data-pencil-name="Prerequisite Note"
-            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: fit-content"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: fit-content; max-width: 100%"
           >
             <svg
               data-pencil-name="Info Icon"
@@ -1467,6 +1662,7 @@
             </svg>
             <div
               data-pencil-name="Prerequisite Text"
+              class="prerequisite-text"
               style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
             >
               Requires AWS CLI v2 and the Session Manager plugin installed.
@@ -1475,11 +1671,13 @@
         </div>
         <div
           data-pencil-name="Footer"
+          class="section-pad-footer"
           style="align-items: flex-start; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; padding: 40px 120px 32px 120px; width: 100%"
         >
           <div
             data-pencil-name="Footer Top Row"
-            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: space-between; width: 100%"
+            class="responsive-row"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: space-between; width: 100%; row-gap: 20px; flex-wrap: wrap"
           >
             <div
               data-pencil-name="Brand Group"
@@ -1493,6 +1691,7 @@
               </div>
               <div
                 data-pencil-name="Tagline"
+                class="footer-tagline"
                 style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
               >
                 A terminal UI for navigating AWS Session Manager connections.
@@ -1500,32 +1699,44 @@
             </div>
             <div
               data-pencil-name="Links Row"
-              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 28px; height: fit-content; justify-content: flex-start; width: fit-content"
+              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; flex-wrap: wrap; gap: 28px; height: fit-content; justify-content: flex-start; width: fit-content"
             >
-              <div
+              <a
+                href="https://github.com/brunodasilvalenga/act"
+                target="_blank"
+                rel="noopener"
                 data-pencil-name="GitHub Link"
                 style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
               >
                 GitHub
-              </div>
-              <div
+              </a>
+              <a
+                href="https://github.com/brunodasilvalenga/act/issues"
+                target="_blank"
+                rel="noopener"
                 data-pencil-name="Issues Link"
                 style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
               >
                 Issues
-              </div>
-              <div
+              </a>
+              <a
+                href="https://github.com/brunodasilvalenga/act#contributing"
+                target="_blank"
+                rel="noopener"
                 data-pencil-name="Contributing Link"
                 style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
               >
                 Contributing
-              </div>
-              <div
+              </a>
+              <a
+                href="https://github.com/brunodasilvalenga/act/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener"
                 data-pencil-name="License · MIT Link"
                 style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
               >
                 License · MIT
-              </div>
+              </a>
             </div>
           </div>
           <div
@@ -1546,5 +1757,20 @@
         </div>
       </div>
     </div>
+    <script>
+      document.querySelectorAll(".copy-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+          var commandEl = button.parentElement.querySelector("[data-copy-text]");
+          var text = commandEl ? commandEl.getAttribute("data-copy-text") : "";
+          if (!text) return;
+          navigator.clipboard.writeText(text).then(function () {
+            button.classList.add("is-copied");
+            setTimeout(function () {
+              button.classList.remove("is-copied");
+            }, 1500);
+          });
+        });
+      });
+    </script>
   </body>
 </html>
