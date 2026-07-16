@@ -1,0 +1,1550 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>act — SSH into AWS instances without the bastion headache</title>
+    <meta
+      name="description"
+      content="act is an open-source terminal UI for connecting to EC2, ECS, and RDS through AWS Session Manager — no open inbound ports, no SSH key distribution, no extra dependencies beyond the AWS CLI."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono%3Awght%40100..900&family=Inter%3Awght%40100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *, ::before, ::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      data-pencil-name="act Landing Page"
+      style="align-items: flex-start; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 1440px"
+    >
+      <div
+        data-pencil-name="Hero"
+        style="align-items: flex-start; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; width: 100%"
+      >
+        <div
+          data-pencil-name="Nav"
+          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: space-between; padding: 24px 64px; width: 100%"
+        >
+          <div
+            data-pencil-name="Logo"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: fit-content"
+          >
+            <div
+              data-pencil-name="Logo Prompt"
+              style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 20px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+            >
+              &gt;
+            </div>
+            <div
+              data-pencil-name="Logo Wordmark"
+              style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 20px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+            >
+              act
+            </div>
+          </div>
+          <div
+            data-pencil-name="Nav Links"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 40px; height: fit-content; justify-content: flex-start; width: fit-content"
+          >
+            <div
+              data-pencil-name="Features"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              Features
+            </div>
+            <div
+              data-pencil-name="How it works"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              How it works
+            </div>
+            <div
+              data-pencil-name="Install"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              Install
+            </div>
+          </div>
+          <div
+            data-pencil-name="Nav Right"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 12px; height: fit-content; justify-content: flex-start; width: fit-content"
+          >
+            <div
+              data-pencil-name="GitHub Icon Button"
+              style="align-items: center; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 36px; justify-content: center; width: 36px"
+            >
+              <svg
+                data-pencil-name="GitHub Icon"
+                data-icon-name="github"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
+              >
+                <path
+                  d="M2.82666 0.60156q-0.12305 0.01367-0.24268 0.09912-0.11963 0.08203-0.17431 0.19483-0.08545 0.15381-0.15723 0.6289-0.05469 0.29395-0.04785 0.71436 0.00684 0.42041 0.06494 0.72803l0.02735 0.12646-0.07178 0.12647q-0.30762 0.54688-0.43408 1.23388-0.02734 0.13672-0.03418 0.54346-0.00684 0.40674 0.00683 0.61865 0.12646 1.34326 1.07666 2.26612 0.59131 0.54688 1.33301 0.84082 0.15381 0.05469 0.38281 0.12646 0.23242 0.06836 0.27344 0.06836 0.04102 0 0.04102 0.03076 0 0.02734-0.04102 0.12305-0.05469 0.19824-0.11279 0.48535-0.05469 0.28369-0.05469 0.45459l0 0.0957-0.14014 0.04444q-0.33496 0.0957-0.65967 0.08203-0.18115-0.01367-0.29394-0.04102-0.10938-0.02734-0.24951-0.0957-0.14014-0.07178-0.2666-0.17773-0.12646-0.10596-0.3794-0.3418-0.51611-0.47852-0.72803-0.60156-0.37598-0.21191-0.74169-0.21192-0.11279 0-0.16065 0.00684-0.04785 0.00684-0.11963 0.03418-0.28027 0.12646-0.32812 0.42041-0.04785 0.29395 0.16064 0.51953 0.12646 0.12646 0.3794 0.16748 0.15381 0.02734 0.24267 0.08545 0.09229 0.05469 0.44092 0.37598 0.31104 0.29394 0.43408 0.3999 0.12646 0.10596 0.28027 0.20166 0.42041 0.28027 0.89893 0.37939 0.19482 0.04102 0.49561 0.04102 0.30078 0 0.52636-0.02735l0.2085-0.04101q0.01367 0 0.01367 0.81006 0 0.57422 0 0.70752 0 0.1333 0.03418 0.21875 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.11963-0.16748 0.0376-0.08545 0.0376-0.28028l0-2.68994q0.01367-0.64258 0.42041-1.20312 0.08203-0.12646 0.10937-0.18799 0.03076-0.06494 0.05127-0.14697 0.02051-0.08545 0-0.18799-0.02051-0.10596-0.0581-0.17432-0.03418-0.07178-0.1128-0.14697-0.0752-0.07861-0.16748-0.11963-0.08887-0.04443-0.32812-0.05811-0.40332-0.01367-0.72803-0.09912-0.72803-0.18115-1.24414-0.64258-0.30762-0.25293-0.51953-0.60839-0.2085-0.35889-0.28027-0.74854-0.02734-0.12646-0.04102-0.44775-0.01367-0.32471 0-0.49219 0.04102-0.62891 0.42041-1.20313 0.12646-0.19482 0.14697-0.31445 0.02051-0.11963-0.03418-0.33154-0.08545-0.37598-0.08544-0.78272 0-0.2666 0.01367-0.2666l0.18115 0.09912q0.23926 0.12646 0.72803 0.46143 0.19824 0.12646 0.36572 0.14014 0.06836-0.01367 0.32129-0.05469 0.96729-0.16748 2.0166-0.16748 1.04932 0 2.0166 0.16748 0.25293 0.05469 0.32129 0.05469 0.16748-0.01367 0.34863-0.14014 0.49219-0.32129 0.70069-0.44092 0.21191-0.11963 0.22558-0.11279 0.01367 0.00684 0.01367 0.22558 0 0.21533-0.0205 0.39307-0.02051 0.17432-0.06494 0.39307-0.04102 0.21533-0.04102 0.27002 0 0.15381 0.15381 0.40673 0.30762 0.4751 0.40674 0.99463 0.01367 0.14014 0.0205 0.46827 0.00684 0.32813-0.0205 0.4956-0.14014 1.12109-1.1211 1.77734-0.42041 0.2666-0.95019 0.40674-0.32471 0.08545-0.72803 0.09912-0.15381 0.01367-0.21875 0.02735-0.06152 0.01367-0.11963 0.04101-0.26318 0.12646-0.33496 0.43409-0.04102 0.21191 0.12647 0.44775 0.37598 0.54688 0.44775 1.03906 0.01367 0.12305 0.01367 1.60987l0 1.30224q0 0.2085 0.03418 0.29395 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.1128-0.16748 0.03076-0.08545 0.04443-0.31104l0.01367-1.32959q0-1.52441-0.01367-1.67822-0.05469-0.33496-0.15381-0.646-0.04102-0.10938-0.04102-0.13672 0-0.03076 0.04102-0.03076 0.04102 0 0.27002-0.07519 0.23242-0.07861 0.38623-0.1333 0.57422-0.22559 1.05615-0.6084 0.48535-0.38623 0.79297-0.875 0.16748-0.25293 0.30078-0.57422 0.1333-0.32471 0.18799-0.63233 0.09912-0.43408 0.09229-0.96386-0.00684-0.5332-0.10596-0.90918-0.14014-0.50586-0.36231-0.92627l-0.08544-0.14014 0.02734-0.16748q0.11279-0.67334 0.01709-1.34326-0.05811-0.51953-0.15039-0.68701-0.08887-0.16748-0.28369-0.2666-0.3794-0.16748-1.26123 0.28027-0.30762 0.14014-0.65967 0.37939l-0.2085 0.14014-0.18115-0.02734q-0.92627-0.15381-1.98926-0.15381-1.06299 0-2.07129 0.15381l-0.14013 0.02734-0.14014-0.09912q-0.51953-0.3623-1.03223-0.56396-0.50928-0.20508-0.80322-0.16407z"
+                  fill="#F5F7F5"
+                ></path>
+              </svg>
+            </div>
+            <div
+              data-pencil-name="Get Started Nav Button"
+              style="align-items: flex-start; background-color: #39E75F; border-radius: 9999px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 10px 20px; width: fit-content"
+            >
+              <div
+                data-pencil-name="Label"
+                style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                Get Started
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          data-pencil-name="Hero Content"
+          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; padding: 72px 64px 0px 64px; width: 100%"
+        >
+          <div
+            data-pencil-name="Badge"
+            style="align-items: center; border-radius: 9999px; border: 1px solid #1FA648; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 7px 16px; width: fit-content"
+          >
+            <div
+              data-pencil-name="Dot"
+              style="box-sizing: border-box; color: #39E75F; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              ●
+            </div>
+            <div
+              data-pencil-name="Badge Label"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 500; letter-spacing: 0.3px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              Open Source · MIT Licensed
+            </div>
+          </div>
+          <div
+            data-pencil-name="Headline"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 2px; height: fit-content; justify-content: flex-start; width: fit-content"
+          >
+            <div
+              data-pencil-name="Headline Line 1"
+              style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 56px; font-style: normal; font-weight: 700; letter-spacing: -1px; line-height: normal; text-align: center; white-space: nowrap'
+            >
+              SSH into AWS instances
+            </div>
+            <div
+              data-pencil-name="Headline Line 2"
+              style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 56px; font-style: normal; font-weight: 700; letter-spacing: -1px; line-height: normal; text-align: center; white-space: nowrap'
+            >
+              without the bastion headache
+            </div>
+          </div>
+          <div
+            data-pencil-name="Subheadline"
+            style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 18px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 27px; text-align: center; width: 640px"
+          >
+            act is an open-source terminal UI for connecting to EC2, ECS, and RDS through AWS
+            Session Manager — no open inbound ports, no SSH key distribution, no extra dependencies
+            beyond the AWS CLI.
+          </div>
+          <div
+            data-pencil-name="CTA Row"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 14px; height: fit-content; justify-content: flex-start; width: fit-content"
+          >
+            <div
+              data-pencil-name="Primary CTA"
+              style="align-items: center; background-color: #39E75F; border-radius: 9999px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 14px 28px; width: fit-content"
+            >
+              <div
+                data-pencil-name="Label"
+                style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 15px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                Get Started
+              </div>
+              <svg
+                data-pencil-name="Arrow"
+                data-icon-name="arrow-right"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+              >
+                <path
+                  d="M6.90088 2.35156q-0.18115 0.02734-0.32129 0.16748-0.11279 0.11279-0.14697 0.28028-0.03418 0.16748 0.02051 0.32129 0.02734 0.08545 0.25976 0.3247 0.23242 0.23584 1.36377 1.37061 1.58252 1.58252 1.58252 1.59619 0 0.01367-3.45557 0.01367l-3.44531 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.53321 0.03418l3.01123 0q3.42822 0 3.42822 0.01367 0 0.01367-1.58252 1.59619-1.13135 1.13477-1.36377 1.37402-0.23242 0.23584-0.25976 0.3213-0.05469 0.15381-0.02051 0.32128 0.03418 0.16748 0.14697 0.28028 0.18115 0.18115 0.42041 0.18115l0.04102 0q0.11279 0 0.19824-0.05469 0.14014-0.09912 0.51611-0.46484l1.68164-1.67822q2.1123-2.10205 2.15332-2.18409 0.07178-0.12646 0.07178-0.28027 0-0.15381-0.07178-0.28027-0.04102-0.08203-2.1499-2.18067-2.10547-2.10205-2.17725-2.13623-0.06836-0.0376-0.23584-0.06494-0.04102 0-0.12646 0.01367z"
+                  fill="#0B0F0D"
+                ></path>
+              </svg>
+            </div>
+            <div
+              data-pencil-name="Secondary CTA"
+              style="align-items: center; border-radius: 9999px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 14px 28px; width: fit-content"
+            >
+              <svg
+                data-pencil-name="GitHub Icon"
+                data-icon-name="github"
+                data-icon-set="lucide"
+                viewBox="0 0 13.99993896484375 14"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+              >
+                <path
+                  d="M2.82666 0.60156q-0.12305 0.01367-0.24268 0.09912-0.11963 0.08203-0.17431 0.19483-0.08545 0.15381-0.15723 0.6289-0.05469 0.29395-0.04785 0.71436 0.00684 0.42041 0.06494 0.72803l0.02735 0.12646-0.07178 0.12647q-0.30762 0.54688-0.43408 1.23388-0.02734 0.13672-0.03418 0.54346-0.00684 0.40674 0.00683 0.61865 0.12646 1.34326 1.07666 2.26612 0.59131 0.54688 1.33301 0.84082 0.15381 0.05469 0.38281 0.12646 0.23242 0.06836 0.27344 0.06836 0.04102 0 0.04102 0.03076 0 0.02734-0.04102 0.12305-0.05469 0.19824-0.11279 0.48535-0.05469 0.28369-0.05469 0.45459l0 0.0957-0.14014 0.04444q-0.33496 0.0957-0.65967 0.08203-0.18115-0.01367-0.29394-0.04102-0.10938-0.02734-0.24951-0.0957-0.14014-0.07178-0.2666-0.17773-0.12646-0.10596-0.3794-0.3418-0.51611-0.47852-0.72803-0.60156-0.37598-0.21191-0.74169-0.21192-0.11279 0-0.16065 0.00684-0.04785 0.00684-0.11963 0.03418-0.28027 0.12646-0.32812 0.42041-0.04785 0.29395 0.16064 0.51953 0.12646 0.12646 0.3794 0.16748 0.15381 0.02734 0.24267 0.08545 0.09229 0.05469 0.44092 0.37598 0.31104 0.29394 0.43408 0.3999 0.12646 0.10596 0.28027 0.20166 0.42041 0.28027 0.89893 0.37939 0.19482 0.04102 0.49561 0.04102 0.30078 0 0.52636-0.02735l0.2085-0.04101q0.01367 0 0.01367 0.81006 0 0.57422 0 0.70752 0 0.1333 0.03418 0.21875 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.11963-0.16748 0.0376-0.08545 0.0376-0.28028l0-2.68994q0.01367-0.64258 0.42041-1.20312 0.08203-0.12646 0.10937-0.18799 0.03076-0.06494 0.05127-0.14697 0.02051-0.08545 0-0.18799-0.02051-0.10596-0.0581-0.17432-0.03418-0.07178-0.1128-0.14697-0.0752-0.07861-0.16748-0.11963-0.08887-0.04443-0.32812-0.05811-0.40332-0.01367-0.72803-0.09912-0.72803-0.18115-1.24414-0.64258-0.30762-0.25293-0.51953-0.60839-0.2085-0.35889-0.28027-0.74854-0.02734-0.12646-0.04102-0.44775-0.01367-0.32471 0-0.49219 0.04102-0.62891 0.42041-1.20313 0.12646-0.19482 0.14697-0.31445 0.02051-0.11963-0.03418-0.33154-0.08545-0.37598-0.08544-0.78272 0-0.2666 0.01367-0.2666l0.18115 0.09912q0.23926 0.12646 0.72803 0.46143 0.19824 0.12646 0.36572 0.14014 0.06836-0.01367 0.32129-0.05469 0.96729-0.16748 2.0166-0.16748 1.04932 0 2.0166 0.16748 0.25293 0.05469 0.32129 0.05469 0.16748-0.01367 0.34863-0.14014 0.49219-0.32129 0.70069-0.44092 0.21191-0.11963 0.22558-0.11279 0.01367 0.00684 0.01367 0.22558 0 0.21533-0.0205 0.39307-0.02051 0.17432-0.06494 0.39307-0.04102 0.21533-0.04102 0.27002 0 0.15381 0.15381 0.40673 0.30762 0.4751 0.40674 0.99463 0.01367 0.14014 0.0205 0.46827 0.00684 0.32813-0.0205 0.4956-0.14014 1.12109-1.1211 1.77734-0.42041 0.2666-0.95019 0.40674-0.32471 0.08545-0.72803 0.09912-0.15381 0.01367-0.21875 0.02735-0.06152 0.01367-0.11963 0.04101-0.26318 0.12646-0.33496 0.43409-0.04102 0.21191 0.12647 0.44775 0.37598 0.54688 0.44775 1.03906 0.01367 0.12305 0.01367 1.60987l0 1.30224q0 0.2085 0.03418 0.29395 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.1128-0.16748 0.03076-0.08545 0.04443-0.31104l0.01367-1.32959q0-1.52441-0.01367-1.67822-0.05469-0.33496-0.15381-0.646-0.04102-0.10938-0.04102-0.13672 0-0.03076 0.04102-0.03076 0.04102 0 0.27002-0.07519 0.23242-0.07861 0.38623-0.1333 0.57422-0.22559 1.05615-0.6084 0.48535-0.38623 0.79297-0.875 0.16748-0.25293 0.30078-0.57422 0.1333-0.32471 0.18799-0.63233 0.09912-0.43408 0.09229-0.96386-0.00684-0.5332-0.10596-0.90918-0.14014-0.50586-0.36231-0.92627l-0.08544-0.14014 0.02734-0.16748q0.11279-0.67334 0.01709-1.34326-0.05811-0.51953-0.15039-0.68701-0.08887-0.16748-0.28369-0.2666-0.3794-0.16748-1.26123 0.28027-0.30762 0.14014-0.65967 0.37939l-0.2085 0.14014-0.18115-0.02734q-0.92627-0.15381-1.98926-0.15381-1.06299 0-2.07129 0.15381l-0.14013 0.02734-0.14014-0.09912q-0.51953-0.3623-1.03223-0.56396-0.50928-0.20508-0.80322-0.16407z"
+                  fill="#F5F7F5"
+                ></path>
+              </svg>
+              <div
+                data-pencil-name="Label"
+                style="box-sizing: border-box; color: #F5F7F5; font-family: Inter, system-ui, sans-serif; font-size: 15px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                View on GitHub
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Install Snippet"
+            style="align-items: center; background-color: #1B231E; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 14px 20px; width: fit-content"
+          >
+            <div
+              data-pencil-name="Snippet Text"
+              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 10px; height: fit-content; justify-content: flex-start; width: fit-content"
+            >
+              <div
+                data-pencil-name="Prompt"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                $
+              </div>
+              <div
+                data-pencil-name="Command"
+                style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh |
+                sh
+              </div>
+            </div>
+            <svg
+              data-pencil-name="Copy Icon"
+              data-icon-name="copy"
+              data-icon-set="lucide"
+              viewBox="0 0 13.99993896484375 14"
+              preserveAspectRatio="xMidYMid meet"
+              xmlns="http://www.w3.org/2000/svg"
+              style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+            >
+              <path
+                d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                fill="#9AA79E"
+              ></path>
+            </svg>
+          </div>
+        </div>
+        <div
+          data-pencil-name="Terminal Mockup Wrap"
+          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 56px 64px 96px 64px; width: 100%"
+        >
+          <div
+            data-pencil-name="Terminal Window"
+            style="align-items: flex-start; background-color: #141B17; border-radius: 8px; border: 1px solid #223028; box-shadow: 0px 12px 32px 0px #00000080; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 900px"
+          >
+            <div
+              data-pencil-name="Title Bar"
+              style="align-items: center; border-color: #223028; border-style: solid; border-width: 0px 0px 1px 0px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: space-between; padding: 12px 16px; width: 100%"
+            >
+              <div
+                data-pencil-name="Traffic Lights"
+                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: fit-content"
+              >
+                <div
+                  data-pencil-name="Dot"
+                  style="background-color: #FF5F56; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 10px; width: 10px"
+                ></div>
+                <div
+                  data-pencil-name="Dot"
+                  style="background-color: #FFBD2E; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 10px; width: 10px"
+                ></div>
+                <div
+                  data-pencil-name="Dot"
+                  style="background-color: #27C93F; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 10px; width: 10px"
+                ></div>
+              </div>
+              <div
+                data-pencil-name="Title"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                act ec2 — production
+              </div>
+              <div
+                data-pencil-name="Spacer"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 1px; justify-content: flex-start; width: 52px"
+              ></div>
+            </div>
+            <div
+              data-pencil-name="Body"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 14px; height: fit-content; justify-content: flex-start; padding: 20px; width: 100%"
+            >
+              <div
+                data-pencil-name="Prompt Line"
+                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: fit-content"
+              >
+                <div
+                  data-pencil-name="Prompt Symbol"
+                  style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                >
+                  $
+                </div>
+                <div
+                  data-pencil-name="Prompt Command"
+                  style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                >
+                  act ec2
+                </div>
+              </div>
+              <div
+                data-pencil-name="Filter Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                Filter: prod_
+              </div>
+              <div
+                data-pencil-name="Instance List"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 2px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Row prod-api-01"
+                  style="align-items: center; background-color: #1B231E; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 8px 10px; width: 100%"
+                >
+                  <div
+                    data-pencil-name="Status Dot"
+                    style="background-color: #39E75F; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 8px; width: 8px"
+                  ></div>
+                  <div
+                    data-pencil-name="Name"
+                    style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                  >
+                    prod-api-01
+                  </div>
+                  <div
+                    data-pencil-name="Id"
+                    style='box-sizing: border-box; color: #9AA79E; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left'
+                  >
+                    i-0a1b2c3d4e5f67890
+                  </div>
+                  <div
+                    data-pencil-name="Type"
+                    style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                  >
+                    t3.medium
+                  </div>
+                </div>
+                <div
+                  data-pencil-name="Row prod-worker-02"
+                  style="align-items: center; background-color: #00000000; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 8px 10px; width: 100%"
+                >
+                  <div
+                    data-pencil-name="Status Dot"
+                    style="background-color: #39E75F; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 8px; width: 8px"
+                  ></div>
+                  <div
+                    data-pencil-name="Name"
+                    style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                  >
+                    prod-worker-02
+                  </div>
+                  <div
+                    data-pencil-name="Id"
+                    style='box-sizing: border-box; color: #9AA79E; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left'
+                  >
+                    i-0f9e8d7c6b5a43210
+                  </div>
+                  <div
+                    data-pencil-name="Type"
+                    style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                  >
+                    t3.large
+                  </div>
+                </div>
+                <div
+                  data-pencil-name="Row prod-cache-01"
+                  style="align-items: center; background-color: #00000000; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 8px 10px; width: 100%"
+                >
+                  <div
+                    data-pencil-name="Status Dot"
+                    style="background-color: #9AA79E; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 8px; width: 8px"
+                  ></div>
+                  <div
+                    data-pencil-name="Name"
+                    style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                  >
+                    prod-cache-01
+                  </div>
+                  <div
+                    data-pencil-name="Id"
+                    style='box-sizing: border-box; color: #9AA79E; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left'
+                  >
+                    i-0123456789abcdef0
+                  </div>
+                  <div
+                    data-pencil-name="Type"
+                    style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                  >
+                    r6g.large
+                  </div>
+                </div>
+              </div>
+              <div
+                data-pencil-name="Footer Hint"
+                style="align-items: flex-start; border-color: #223028; border-style: solid; border-width: 1px 0px 0px 0px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 20px; height: fit-content; justify-content: flex-start; padding: 10px 2px 0px 2px; width: 100%"
+              >
+                <div
+                  data-pencil-name="↑/↓ navigate"
+                  style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+                >
+                  ↑/↓ navigate
+                </div>
+                <div
+                  data-pencil-name="enter connect"
+                  style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+                >
+                  enter connect
+                </div>
+                <div
+                  data-pencil-name="esc quit"
+                  style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+                >
+                  esc quit
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        data-pencil-name="Features"
+        style="align-items: center; background-color: #F7F9F7; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 56px; height: fit-content; justify-content: flex-start; padding: 96px 120px; width: 100%"
+      >
+        <div
+          data-pencil-name="Section Header"
+          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; width: 100%"
+        >
+          <div
+            data-pencil-name="Eyebrow"
+            style="box-sizing: border-box; color: #1FA648; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 1px; line-height: normal; text-align: center; white-space: nowrap"
+          >
+            FEATURES
+          </div>
+          <div
+            data-pencil-name="Heading"
+            style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: normal; text-align: center; width: 640px'
+          >
+            Everything you need, nothing you don't
+          </div>
+          <div
+            data-pencil-name="Subheading"
+            style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: center; width: 600px"
+          >
+            act wraps AWS Session Manager in a single terminal UI, so you can reach EC2, ECS, and
+            RDS without bastions, open ports, or SSH keys.
+          </div>
+        </div>
+        <div
+          data-pencil-name="Feature Grid"
+          style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
+        >
+          <div
+            data-pencil-name="Feature Row 1"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
+          >
+            <div
+              data-pencil-name="EC2 Connect"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="server"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.33496-0.43408 0.81005-0.02734 0.12646-0.04102 0.32471l0 2.64551 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 9.83008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-2.83008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.76904-0.44775-0.48877-1.13476-0.56055-0.16748-0.01367-4.81592-0.01367-4.64844 0-4.82959 0.02734z m9.74463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 2.6045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-4.82959 0.02734-4.74756 0-4.82959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-2.6045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 4.85694-0.02734l4.76123 0.01367 0.09912 0.04102z m-8.55518 1.13476q-0.25293 0.08545-0.37939 0.30762-0.04102 0.08545-0.04102 0.23926 0 0.15381 0.03418 0.23926 0.0376 0.08203 0.1333 0.18115 0.15381 0.15381 0.3999 0.16748 0.24609 0.01367 0.42041-0.16065 0.17432-0.17432 0.17432-0.41357 0-0.23926-0.16748-0.3999-0.16748-0.16064-0.39307-0.17432-0.14014 0-0.18115 0.01367z m-1.18945 4.66211q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638-0.02734 0.12646-0.04102 0.32471l0 2.64551 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 9.83008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-2.83008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-4.81592-0.01367-4.64844 0-4.82959 0.02734z m9.74463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 2.6045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-4.82959 0.02734-4.74756 0-4.82959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-2.6045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 4.85694-0.02734l4.76123 0.01367 0.09912 0.04102z m-8.55518 1.13476q-0.25293 0.08545-0.37939 0.30762-0.04102 0.08545-0.04102 0.23926 0 0.15381 0.03418 0.23926 0.0376 0.08203 0.1333 0.18115 0.15381 0.15381 0.3999 0.16748 0.24609 0.01367 0.42041-0.16065 0.17432-0.17432 0.17432-0.41357 0-0.23926-0.16748-0.3999-0.16748-0.16064-0.39307-0.17432-0.14014 0-0.18115 0.01367z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  EC2 Connect
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  List and filter running EC2 instances, then start an SSM session in one step.
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="ECS Exec"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="boxes"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M6.71973 0.79639q-0.22217 0.04443-0.40674 0.12646-0.0957 0.04443-1.02881 0.59815-0.92969 0.55029-1.05615 0.63574-0.19482 0.14014-0.37256 0.37256-0.17432 0.229-0.25635 0.46826-0.07178 0.19482-0.07861 0.38281-0.00684 0.18799-0.02051 1.12793l-0.01367 1.28857-1.07666 0.65625q-1.08008 0.65967-1.16211 0.71436-0.50586 0.40674-0.63233 1.06299-0.02734 0.12646-0.02734 1.25439 0 1.12793 0.02734 1.2544 0.07178 0.32129 0.23926 0.60156 0.16748 0.28027 0.40674 0.46143 0.0957 0.06836 1.01856 0.6289 0.92627 0.56055 1.05273 0.61524 0.33496 0.1709 0.73486 0.1709 0.3999 0 0.73487-0.15381 0.12646-0.05811 1.15527-0.67334 1.02881-0.61523 1.04248-0.61524 0.01367 0 1.04248 0.61524 1.02881 0.61523 1.15527 0.67334 0.33496 0.15381 0.71436 0.15381 0.37939 0 0.71435-0.15381 0.09912-0.04443 0.9878-0.56739 0.88867-0.52637 1.04248-0.63916 0.11279-0.06836 0.24267-0.20166 0.1333-0.1333 0.20508-0.23242 0.2085-0.30762 0.28028-0.68359 0.02734-0.12646 0.02734-1.2544 0-1.12793-0.02734-1.25439-0.07178-0.33496-0.2461-0.62207-0.17432-0.28711-0.42724-0.46826-0.08203-0.07178-1.14844-0.70069l-1.04932-0.64258-0.01367-1.28857q-0.01367-0.93994-0.02051-1.12793-0.00684-0.18799-0.07861-0.38281-0.08203-0.23926-0.25977-0.46826-0.17432-0.23242-0.36914-0.37256-0.11279-0.07178-1.0083-0.6084-0.89551-0.54004-1.01513-0.59473-0.11963-0.05811-0.27344-0.11279-0.0957-0.02734-0.17432-0.03418-0.0752-0.01025-0.25976-0.01025-0.28027-0.01367-0.32129 0z m0.50586 1.19287q0.06836 0.04102 0.80322 0.48193 0.73486 0.44092 0.70752 0.46826-0.02734 0.02734-0.875 0.53321-0.84766 0.50244-0.86133 0.50244-0.01367 0-0.86133-0.50244-0.84766-0.50586-0.875-0.53321-0.02734-0.02734 0.70069-0.46142l0.78271-0.4751q0.09912-0.04443 0.23242-0.05127 0.1333-0.00684 0.2461 0.0376z m-1.66797 2.4917q0.85449 0.51611 0.86133 0.52978 0.00684 0.01367-0.00684 0.92627l0 0.89551-1.73633-1.03565 0-0.92626q0-0.92285 0.01367-0.90918l0.86817 0.51953z m3.75293 1.31591q-0.01367 0.01367-0.86817 0.52979l-0.85449 0.50586 0-0.90918q-0.01367-0.9126 0.00684-0.93311 0.02051-0.02051 0.875-0.52294l0.85449-0.51954 0 0.92286q0 0.9126-0.01367 0.92627z m-4.34082 1.53809q0.88184 0.5332 0.88183 0.54004 0 0.00684-0.88183 0.54004l-0.88184 0.52978-0.89551-0.52978q-0.88184-0.5332-0.88183-0.54004 0-0.00684 0.875-0.52979 0.875-0.52637 0.88183-0.5332 0.00684-0.00684 0.90235 0.52295z m5.83789 0q0.88184 0.5332 0.88183 0.54004 0 0.00684-0.88183 0.54004l-0.89551 0.52978-0.88184-0.52978q-0.88184-0.5332-0.875-0.54004 0.00684-0.00684 0.88184-0.53662 0.875-0.5332 0.88867-0.51953l0.88184 0.51611z m-8.10401 2.14307l0.78272 0.4751 0.01367 0.92627q0 0.90918-0.00684 0.90917-0.00684 0-0.75537-0.44775-0.74854-0.44775-0.82031-0.51611-0.06836-0.07178-0.11279-0.1709l-0.04102-0.09912-0.01367-1.65088 0.93652 0.57422 0.01709 0z m3.7085 1.26123q0 0.01367-0.79981 0.4956-0.79639 0.48193-0.92285 0.55371-0.01367 0.01367-0.01367-0.90917l0-0.92627 1.73633-1.04932 0 0.90918q0.01367 0.9126 0 0.92627z m2.12939-1.26123l0.78272 0.4751 0 1.84912-1.73633-1.04932-0.01367-1.84912 0.96728 0.57422z m3.7085 0.44775l-0.01367 0.62891-0.04102 0.09912q-0.04443 0.09912-0.11621 0.1709-0.06836 0.06836-0.81689 0.51611-0.74854 0.44775-0.75537 0.44775-0.00684 0-0.00684-0.90917l0.01367-0.92627 1.72266-1.04932 0.01367 0.19482q0 0.18457 0 0.82715z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  ECS Exec
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Pick a cluster, service, and task, then exec straight into the running container.
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Port Forwarding"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="arrow-right-left"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M9.12939 1.20313q-0.09912 0.04443-0.1914 0.12988-0.08887 0.08203-0.1333 0.17431-0.04102 0.08887-0.04102 0.22901l0 0.02734q0 0.12646 0.02735 0.19824 0.02734 0.06836 0.18457 0.23584 0.0957 0.11279 0.50244 0.50586l0.78271 0.79639-3.98877 0q-3.9751 0-4.06738 0.02051-0.09229 0.02051-0.18457 0.07861-0.08887 0.05469-0.15723 0.14014-0.12646 0.16748-0.11279 0.38623 0.01367 0.21533 0.18115 0.36914 0.12646 0.12646 0.29395 0.15381 0.11279 0.02734 4.06054 0.02734l3.96143 0-0.70068 0.68701q-0.44775 0.46143-0.58106 0.60157-0.12988 0.14014-0.16064 0.20849-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.03076 0.29053-0.23926 0.22559-0.2085 1.05273-1.04931 1.23047-1.23389 1.27149-1.32276 0.04443-0.09229 0.04443-0.24609l0-0.04102q0.01367-0.11279-0.02735-0.19824-0.07178-0.0957-0.30761-0.34863-0.1709-0.16748-0.79981-0.81348l-0.19482-0.18115q-1.23389-1.24414-1.32617-1.28516-0.08887-0.04443-0.22901-0.04443-0.14014 0-0.22217 0.02734z m-4.60742 5.81054q-0.08545 0.02734-0.16748 0.08545-0.11279 0.08203-0.37939 0.36231l-0.89551 0.88183q-1.23047 1.23389-1.2749 1.32617-0.04102 0.08887-0.04102 0.24268l0 0.04102q-0.01367 0.11279 0.02735 0.19824 0.07178 0.0957 0.30761 0.34863 0.1709 0.18115 0.81348 0.81348l0.19482 0.19482q0.88184 0.88184 1.07666 1.07324 0.19824 0.18799 0.27002 0.21534 0.2085 0.06836 0.42383-0.01368 0.21875-0.08545 0.31787-0.28027 0.04102-0.09912 0.04102-0.23926l0-0.02734q0-0.12646-0.02735-0.19483-0.02734-0.07178-0.18457-0.23925-0.0957-0.11279-0.50244-0.50586l-0.78271-0.79639 7.14013 0q0.69726-0.01367 0.89551-0.02734 0.14014-0.01367 0.19483-0.05811l0.02734-0.02734q0.21191-0.14014 0.24609-0.36914 0.03418-0.23242-0.09912-0.43409-0.1333-0.20508-0.38281-0.23242-0.11279-0.02734-4.06055-0.02734l-3.94775 0 0.70068-0.68701q0.44775-0.46143 0.57764-0.60157 0.1333-0.14014 0.16406-0.20849 0.0957-0.22559 0.01026-0.44776-0.08203-0.22559-0.3042-0.3247-0.07178-0.04102-0.19141-0.04785-0.11963-0.00684-0.18799 0.00683z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  Port Forwarding
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Forward local ports through SSM, including to remote hosts like RDS behind a
+                  bastion.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Feature Row 2"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
+          >
+            <div
+              data-pencil-name="ECS Logs"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="scroll-text"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M1.97559 1.20313q-0.39307 0.08545-0.71778 0.33837-0.32129 0.24951-0.50244 0.61524-0.12646 0.2666-0.15381 0.51269-0.02734 0.24268-0.01367 0.94336l0 0.6836 0.04102 0.14013q0.08545 0.22559 0.24609 0.40674 0.16064 0.18115 0.35547 0.28028 0.1709 0.08545 0.33154 0.10595 0.16064 0.02051 0.70752 0.02051l0.65625 0 0 6.14551 0.04102 0.12646q0.15381 0.4751 0.47509 0.79981 0.32471 0.32129 0.81348 0.46142 0.08545 0.02734 0.63233 0.02735l7.0957 0.01367 0.15381-0.05469q0.36572-0.11279 0.65283-0.34863 0.28711-0.23926 0.44092-0.56397 0.12646-0.24951 0.16064-0.48877 0.03418-0.23926 0.02051-0.68701 0-0.30762-0.02051-0.42383-0.02051-0.11963-0.09228-0.27685-0.11279-0.22217-0.32129-0.38965-0.2085-0.16748-0.43408-0.22559-0.11279-0.02734-0.48877-0.02734l-0.3794-0.01367 0-3.21973q0-3.21973-0.02734-3.37353-0.07178-0.57422-0.45117-0.99463-0.37598-0.42041-0.93653-0.5332-0.10938-0.02734-0.69726-0.02735l-3.44532 0-3.43164 0q-0.60156 0.01367-0.71093 0.02735z m0.6289 1.20654q0.16748 0.08203 0.2666 0.27685l0.04102 0.09912 0.01367 1.28858-1.17578 0 0.01367-1.30225 0.04102-0.09912q0.05811-0.12646 0.17431-0.21533 0.11963-0.09229 0.25977-0.10596 0.19824-0.02734 0.36572 0.05811z m7.40674-0.05811q0.30762 0.04102 0.43408 0.32129l0.04102 0.09912 0.01367 6.55225-2.03027 0q-2.03027 0-2.17041 0.01367-0.34863 0.04102-0.62207 0.2666-0.27344 0.22217-0.38623 0.56055-0.02734 0.0957-0.04102 0.57422 0 0.3623-0.01367 0.44092-0.01367 0.0752-0.05127 0.1538-0.03418 0.0752-0.10596 0.15381-0.06836 0.0752-0.14014 0.1128-0.06836 0.03418-0.16406 0.04785-0.21191 0.04101-0.37939-0.04785-0.16748-0.09229-0.2666-0.28711l-0.04102-0.09913-0.01367-8.60986-0.08545-0.2666q0-0.01367 2.9668-0.00684 2.97021 0.00684 3.05566 0.02051z m-4.28613 1.75q-0.18115 0.02734-0.32129 0.18115-0.14014 0.15381-0.15381 0.35206 0 0.14014 0.06152 0.28027 0.06494 0.14014 0.19141 0.22217l0.01367 0.01367q0.08203 0.05811 0.15381 0.07178 0.11279 0.01367 0.43408 0.02734l2.79932-0.01367 0.09912-0.04102q0.2666-0.12646 0.32129-0.42041 0.05469-0.29395-0.15381-0.50586-0.14014-0.14014-0.33496-0.16748-0.09912-0.02734-1.55518-0.02734-1.45605 0-1.55517 0.02734z m-0.09571 2.35156q-0.09912 0.04443-0.1914 0.12989-0.08887 0.08203-0.12647 0.16064-0.03418 0.0752-0.04101 0.11621-0.00684 0.04102-0.00684 0.14014 0 0.15381 0.04102 0.25293 0.11279 0.2085 0.3247 0.29394l0.09571 0.02735 3.19238 0 0.08545-0.04102q0.06836-0.04443 0.15039-0.12646 0.08545-0.08545 0.12647-0.16065 0.04443-0.07861 0.04443-0.24609 0-0.16748-0.04102-0.25293-0.09912-0.16748-0.28027-0.2666l-0.08545-0.05469-3.00781 0q-0.22559 0.01367-0.28028 0.02734z m6.62061 4.40918q-0.01367 0.2666-0.02051 0.33155-0.00684 0.06152-0.04443 0.14013-0.03418 0.0752-0.10596 0.15381-0.06836 0.0752-0.14014 0.1128-0.06836 0.03418-0.17431 0.05468-0.10254 0.02051-2.77539 0.02051l-2.24219-0.01367q-0.43408 0-0.42041-0.01367 0.09912-0.2666 0.09912-0.84082l0-0.30762 5.82422 0 0 0.3623z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  ECS Logs
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Auto-detects the right log group and tails CloudWatch logs without extra setup.
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="RDP over SSM"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="monitor"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M1.97559 1.20313q-0.47852 0.09912-0.83741 0.44433-0.35547 0.3418-0.4956 0.80322-0.02734 0.14014-0.04102 0.32129-0.01367 0.23926-0.02734 0.92285l0.01367 4.63477q0 0.54688 0.02734 0.72803 0.01367 0.12646 0.05811 0.25293l0.01367 0.04101q0.14014 0.37939 0.42725 0.65284 0.28711 0.27002 0.66308 0.39648l0.01368 0.01367q0.14014 0.04443 0.2666 0.05811 0.15381 0.01367 0.6289 0.02734l3.73926 0 0 1.17578-1.91748 0-0.08545 0.04102q-0.22217 0.11279-0.30078 0.33838-0.0752 0.22217 0.00684 0.43408 0.05811 0.0957 0.14013 0.18115 0.08545 0.08203 0.16748 0.11963 0.08545 0.03418 0.40674 0.03418l2.15674 0 2.15674 0q0.32129 0 0.40332-0.03418 0.08545-0.0376 0.16748-0.11963 0.08545-0.08545 0.1333-0.18799 0.05127-0.10596 0.05127-0.23242 0-0.12646-0.04102-0.23926-0.09912-0.19482-0.29394-0.29394l-0.08545-0.04102-1.91748 0 0-1.17578 3.73926 0q0.4751-0.01367 0.6289-0.02734 0.12646-0.01367 0.2666-0.05811l0.01368-0.01367q0.37598-0.12646 0.66308-0.39648 0.28711-0.27344 0.42725-0.65284l0.01367-0.04101q0.04443-0.12646 0.05811-0.25293 0.02734-0.18115 0.02734-0.71436l0.01367-4.64844q-0.01367-0.68359-0.02734-0.92285-0.01367-0.18115-0.04102-0.32129-0.14014-0.4751-0.50586-0.81005-0.3623-0.33838-0.84082-0.4375-0.10938-0.02734-0.81006-0.02735l-4.21435 0-4.17334 0q-0.72803 0.01367-0.8374 0.02735z m9.78564 1.14843q0.30762 0.04102 0.43408 0.32129l0.04102 0.09912 0 6.13184-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912 0-6.13184 0.04102-0.09912q0.05811-0.12646 0.16748-0.21533 0.11279-0.09229 0.23242-0.11279 0.11963-0.02051 4.78174-0.02051 4.66211 0 4.7749 0.02734z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  RDP over SSM
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  RDP into Windows instances through SSM and auto-launch your RDP client.
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="SSH over SSM"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="terminal"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M2.2251 2.35156q-0.19482 0.02734-0.32129 0.17432-0.12646 0.14697-0.14697 0.35205-0.02051 0.20166 0.09228 0.36914 0.05469 0.07178 1.60986 1.60986l1.55176 1.55518-1.5791 1.58252q-1.06641 1.06299-1.32617 1.33642-0.25635 0.27344-0.30078 0.3418-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.04443 0.37598-0.33838 0.30762-0.29395 1.5415-1.52441 1.81836-1.82178 1.86279-1.89014 0.05469-0.11279 0.05469-0.25976 0-0.14697-0.05469-0.27344-0.03076-0.05469-1.86279-1.89014-1.22021-1.23047-1.5415-1.53808-0.32129-0.30762-0.37598-0.33838-0.16748-0.06836-0.35205-0.04102z m4.63476 8.16211q-0.12646 0.02734-0.23925 0.1333-0.10938 0.10596-0.16749 0.23243-0.06836 0.2085 0.01368 0.42724 0.08545 0.21533 0.29394 0.31445l0.1128 0.04102 4.14599 0.01367q0.52978-0.01367 0.71094-0.02734 0.12647 0 0.20166-0.04102 0.07861-0.04443 0.14697-0.11963 0.07178-0.07861 0.11621-0.16064 0.0957-0.22559 0.01026-0.44775-0.08203-0.22559-0.32129-0.33838l-0.08203-0.02735-2.43702-0.01367q-2.41992 0-2.50537 0.01367z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  SSH over SSM
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Real SSH via ProxyCommand, no open inbound ports, with SCP, rsync, and agent
+                  forwarding.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Feature Row 3"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; width: 100%"
+          >
+            <div
+              data-pencil-name="Run Command"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="square-terminal"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M2.60449 1.20313q-0.50586 0.08545-0.87842 0.43749-0.36914 0.34863-0.50927 0.86475-0.02734 0.08545-0.02735 0.71436l-0.01367 3.78027 0.01367 3.78027q0 0.62891 0.02735 0.71436 0.14014 0.48877 0.46826 0.82031 0.33154 0.32813 0.82031 0.46826 0.08545 0.02734 0.71436 0.02735l3.78027 0.01367 3.78027-0.01367q0.62891 0 0.71436-0.02735 0.48877-0.14014 0.81689-0.46826 0.33154-0.33154 0.47168-0.82031 0.02734-0.08545 0.02735-0.71436l0.01367-3.78027-0.01367-3.78027q0-0.62891-0.02735-0.71436-0.12646-0.48877-0.458-0.81689-0.32813-0.33154-0.80323-0.47168l-0.14013-0.04102-4.32715 0q-4.3374 0-4.4502 0.02734z m8.70899 1.17578q0.2085 0.09912 0.30761 0.30761l0.04102 0.09912 0 8.42871-0.04102 0.09913q-0.14014 0.27685-0.43408 0.33496-0.09912 0.02734-4.18701 0.02734-4.08789 0-4.18701-0.02734-0.29395-0.05811-0.43408-0.33496l-0.04102-0.09913 0-8.42871 0.04102-0.09912q0.07178-0.14014 0.18798-0.229 0.11963-0.09229 0.25977-0.11963 0.08545 0 4.22803 0l4.15967 0 0.09912 0.04102z m-7.36573 1.13476q-0.19482 0.05469-0.32812 0.23242-0.1333 0.17432-0.11963 0.36914 0.01367 0.15381 0.08887 0.27344 0.07861 0.11963 0.41357 0.45459l0.40674 0.40674-0.38965 0.40674q-0.2666 0.25293-0.35205 0.35205-0.08203 0.0957-0.11279 0.16406-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.03076 0.20166-0.15381 0.1333-0.12646 0.55371-0.54687l0.04102-0.04102q0.39307-0.39307 0.48876-0.50586 0.14014-0.15381 0.17432-0.22216 0.0376-0.07178 0.0376-0.21192l0-0.02734q0-0.14014-0.0376-0.2085-0.03418-0.07178-0.17432-0.22558-0.0957-0.11279-0.48876-0.50586l-0.04102-0.04102q-0.40674-0.42041-0.54688-0.54346-0.14014-0.12646-0.21191-0.1538-0.06836-0.03076-0.18115-0.04444-0.10938-0.01367-0.19483 0z m2.32422 3.5q-0.14014 0.04102-0.2666 0.16748-0.16748 0.15381-0.17432 0.37256-0.00684 0.21533 0.12647 0.39307 0.1333 0.17432 0.36914 0.21533 0.09912 0.01367 1.31592 0l1.23388 0 0.1128-0.04102q0.2085-0.11279 0.29053-0.32129 0.08545-0.21191 0.00683-0.42041-0.0752-0.21191-0.28369-0.3247l-0.09912-0.04102-1.28858-0.01367q-1.2749 0-1.34326 0.01367z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  Run Command
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Execute scripts or commands via SSM Run Command without opening a session.
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Favorites &amp; Environments"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="star"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M6.87354 0.60156q-0.28027 0.02734-0.50245 0.25293-0.08545 0.08203-0.13672 0.16748-0.04785 0.08545-0.21533 0.43408-0.86816 1.75-1.05615 2.11573-0.18799 0.3623-0.27344 0.44092-0.08203 0.0752-0.17431 0.11279-0.09229 0.03418-1.62012 0.25976-1.52441 0.22217-1.63379 0.24952-0.22559 0.05469-0.40674 0.23584-0.11279 0.11279-0.1709 0.21191-0.05469 0.09912-0.08886 0.25293-0.03418 0.15381 0.00683 0.32812 0.04102 0.17432 0.14014 0.32813 0.04102 0.08545 1.20312 1.20312l0.1128 0.09913q0.62891 0.62891 0.81347 0.79638 0.23584 0.25293 0.29395 0.35205 0.04102 0.08203 0.05469 0.2085l0 0.01367q0 0.09912-0.04102 0.39307-0.04102 0.29395-0.22559 1.28857-0.24951 1.55518-0.24951 1.63721 0 0.35205 0.26319 0.6289 0.19824 0.18457 0.44775 0.23926 0.18457 0.04102 0.36572 0 0.09912-0.02734 0.28028-0.11279l1.66455-0.86817q0.81348-0.43408 0.96728-0.50244 0.15381-0.07178 0.23926-0.07177l0.04102-0.01368q0.14014 0 0.24951 0.04444 0.11279 0.04102 1.37402 0.71435l1.34326 0.69727q0.18115 0.08545 0.28028 0.11279 0.18115 0.04102 0.36572 0 0.26318-0.05469 0.44775-0.23926 0.26318-0.27686 0.26319-0.6289 0-0.0957-0.24952-1.62354-0.18457-0.99463-0.22558-1.28857-0.04102-0.29395-0.04102-0.38965l0-0.03076q0.01367-0.12646 0.05469-0.19483 0.0581-0.11279 0.29395-0.34863 0.16748-0.1709 0.7998-0.78613l0.12647-0.12647q1.14844-1.11768 1.21679-1.21679 0.14014-0.22559 0.14014-0.48194 0-0.25977-0.14014-0.48535-0.08545-0.14014-0.23926-0.24267-0.15381-0.10596-0.32128-0.14698-0.08203-0.01367-1.60987-0.23584-1.52441-0.22559-1.6167-0.25976-0.09229-0.0376-0.17773-0.11279-0.08203-0.07861-0.26318-0.42725-0.18115-0.35205-1.04932-2.11572-0.18115-0.34863-0.23242-0.44092-0.04785-0.09229-0.1333-0.17432-0.22217-0.22559-0.4751-0.25293l-0.12647-0.01367q-0.04102 0-0.1538 0.01367z m0.70068 2.65918q0.57422 1.14844 0.64258 1.26123 0.07178 0.11279 0.25293 0.28711 0.18115 0.17432 0.29394 0.25977 0.25293 0.14014 0.5332 0.20849 0.14014 0.04102 1.35694 0.21875 1.2168 0.17432 1.24756 0.18799 0.01367 0-0.03077 0.04102l-0.29394 0.30761-0.8374 0.81348q-0.70068 0.68701-0.77246 0.78272-0.2085 0.29395-0.32129 0.68701-0.02734 0.11279-0.02735 0.40674l0 0.28027 0.2085 1.23047q0.22559 1.23389 0.21875 1.24072-0.00684 0.00684-0.79297-0.41357l-0.05469-0.02735q-0.96729-0.50586-1.23046-0.64599-0.37939-0.18115-0.56055-0.22217-0.14014-0.04443-0.39307-0.04444l-0.02734 0q-0.25293 0-0.39307 0.04444-0.18115 0.04102-0.56055 0.22217-0.26318 0.14014-1.23046 0.64599l-0.05469 0.02735q-0.78613 0.42041-0.79297 0.41357-0.00684-0.00684 0.21875-1.24072l0.2085-1.23047 0-0.29395q0-0.28027-0.02735-0.39306-0.11279-0.39307-0.32129-0.68701-0.07178-0.0957-0.75879-0.76905l-1.02197-0.99463q-0.16748-0.16748-0.15381-0.18115 0.01367-0.01367 1.24414-0.18799 1.23389-0.17773 1.36035-0.21875 0.36572-0.08203 0.65967-0.3042 0.29395-0.22559 0.48877-0.55029 0.05811-0.10938 0.59473-1.20654 0.54004-1.10059 0.55371-1.10059 0.01367 0 0.57422 1.14502z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  Favorites &amp; Environments
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Save frequent targets and switch instantly between prod, staging, and other
+                  environments.
+                </div>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Doctor &amp; Self-Upgrade"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 24px"
+            >
+              <div
+                data-pencil-name="Icon Wrap"
+                style="align-items: center; background-color: #1FA64822; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 40px; justify-content: center; width: 40px"
+              >
+                <svg
+                  data-pencil-name="Icon"
+                  data-icon-name="stethoscope"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 20px; width: 20px"
+                >
+                  <path
+                    d="M2.82666 0.60156q-0.15381 0.01367-0.28711 0.12647-0.12988 0.11279-0.17432 0.25293l-0.04101 0.19482-0.08545 0q-0.16748 0-0.3999 0.07178-0.229 0.06836-0.41016 0.16748-0.28027 0.16748-0.48535 0.44775-0.20166 0.28027-0.30078 0.58789-0.04102 0.18115-0.05469 0.46827-0.01367 0.28711-0.00684 1.36035 0.00684 1.06982 0.02051 1.30908 0.01367 0.23584 0.08545 0.54346 0.2085 0.98096 0.87158 1.75683 0.6665 0.77588 1.60645 1.15528 0.32129 0.12646 0.71435 0.20849 0.16748 0.04443 0.2085 0.05127 0.04102 0.00684 0.04102 0.04785 0.01367 0.19482 0.10595 0.49219 0.09229 0.29395 0.18799 0.52979 0.28027 0.65967 0.78272 1.19287 0.50586 0.52978 1.15185 0.8374 0.40332 0.2085 0.79639 0.29394 0.29395 0.08545 0.46826 0.10596 0.17432 0.02051 0.54004 0.02051 0.30762 0 0.42041-0.00684 0.11279-0.00684 0.2666-0.03418 0.85449-0.15381 1.55176-0.6084 0.70068-0.45801 1.17578-1.17236 0.2666-0.40332 0.43408-0.89209 0.1709-0.49219 0.22559-0.96728 0.01367-0.18457 0.01367-0.92627l0-0.7417 0.08545-0.02735q0.18115-0.05469 0.38281-0.21533 0.20508-0.16406 0.34522-0.34521 0.24951-0.33496 0.31787-0.73487 0.07178-0.3999-0.04102-0.80322-0.15381-0.51953-0.56738-0.86133-0.41016-0.34521-0.92969-0.38623-0.51611-0.04102-0.95019 0.16748-0.32471 0.16748-0.56397 0.44776-0.23584 0.28027-0.34863 0.64599-0.02734 0.11279-0.04102 0.18457-0.01367 0.06836-0.01367 0.27686 0 0.25293 0.02051 0.37256 0.02051 0.11621 0.10596 0.31445 0.12646 0.29395 0.37597 0.55371 0.25293 0.25635 0.53321 0.36914l0.11279 0.04102 0 0.82715q-0.01367 0.65625-0.02735 0.83398-0.01367 0.17432-0.08544 0.42725-0.18115 0.65625-0.65967 1.16894-0.4751 0.50928-1.11768 0.74854-0.48877 0.18115-1.02881 0.18115-0.54004 0-1.02881-0.19482-0.29395-0.09912-0.52636-0.25294-0.229-0.15381-0.46826-0.37939-0.4751-0.4751-0.70069-1.09033-0.04102-0.09912-0.08545-0.25977-0.04102-0.16064-0.04101-0.18115 0-0.02051 0.12646-0.05127 0.33838-0.05469 0.72803-0.20849 1.06641-0.40674 1.76367-1.34327 0.70068-0.93994 0.81348-2.08496 0.01367-0.22559 0.01367-1.59619l-0.01367-1.38769-0.04102-0.15381q-0.14014-0.48877-0.47851-0.81348-0.46143-0.44775-1.06299-0.48877l-0.15381-0.01367 0-0.05469q0-0.04443-0.04443-0.14697-0.04102-0.10596-0.08203-0.14697-0.11279-0.14014-0.26661-0.19825-0.06836-0.02734-0.19482-0.02734-0.2085 0-0.37256 0.1333-0.16064 0.1333-0.18799 0.3418-0.02734 0.09912-0.02734 0.68701 0 0.58789 0.01367 0.68701 0.05469 0.23584 0.24951 0.36914 0.19824 0.1333 0.42383 0.09229 0.10938-0.01367 0.18115-0.04102 0.11279-0.05811 0.20166-0.1914 0.09229-0.1333 0.10596-0.25635l0-0.07178 0.09912 0.01367q0.14014 0.01367 0.24951 0.09912 0.11279 0.08203 0.18457 0.22217l0.04102 0.08545 0 1.4834q0 1.09375-0.01367 1.31934-0.01367 0.22217-0.09912 0.48535l0 0.01709q-0.18115 0.65625-0.65967 1.16894-0.4751 0.50928-1.11768 0.74854-0.4751 0.18115-1.02197 0.18115-0.54688 0-1.03565-0.19482-0.29395-0.09912-0.52636-0.25293-0.229-0.15381-0.46826-0.3794-0.70068-0.68359-0.8545-1.66455-0.01367-0.14014-0.01367-1.52783l0-1.37061 0.04102-0.09912q0.05811-0.12646 0.16748-0.21533 0.11279-0.09229 0.25293-0.10596l0.09912-0.01367 0.01367 0.05469q0.02734 0.21191 0.15381 0.34521 0.12646 0.1333 0.32129 0.16065 0.08545 0.02734 0.18799 0.00683 0.10596-0.02051 0.18115-0.05468 0.07861-0.0376 0.14697-0.1128 0.07178-0.07861 0.11621-0.16064l0.04102-0.09912 0.01367-1.41504-0.04102-0.0957q-0.08545-0.19824-0.25293-0.30079-0.16748-0.10596-0.37939-0.06494z m9.08838 4.70313q0.18115 0.09912 0.28027 0.29394 0.05469 0.09912 0.05469 0.23242 0 0.1333-0.05127 0.23243-0.04785 0.0957-0.11963 0.17431-0.06836 0.0752-0.15039 0.11963-0.09912 0.05469-0.25976 0.05469-0.16064 0-0.25977-0.05469-0.2666-0.14014-0.31445-0.43408-0.04785-0.29395 0.17431-0.50586 0.12646-0.12646 0.30078-0.15381 0.17774-0.02734 0.34522 0.04102z"
+                    fill="#1FA648"
+                  ></path>
+                </svg>
+              </div>
+              <div
+                data-pencil-name="Text Stack"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Title"
+                  style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+                >
+                  Doctor &amp; Self-Upgrade
+                </div>
+                <div
+                  data-pencil-name="Description"
+                  style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%"
+                >
+                  Verify local dependencies and upgrade the binary with a single command.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        data-pencil-name="Demo"
+        style="align-items: center; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 64px; height: fit-content; justify-content: flex-start; padding: 120px; width: 100%"
+      >
+        <div
+          data-pencil-name="Section Header"
+          style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; width: 640px"
+        >
+          <div
+            data-pencil-name="Eyebrow Badge"
+            style="align-items: center; background-color: #1B231E; border-radius: 9999px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 6px 14px; width: fit-content"
+          >
+            <div
+              data-pencil-name="Eyebrow Label"
+              style="box-sizing: border-box; color: #39E75F; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 600; letter-spacing: 1px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              HOW IT WORKS
+            </div>
+          </div>
+          <div
+            data-pencil-name="Heading"
+            style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 40px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: 46px; text-align: center; width: 640px'
+          >
+            From API call to shell — in seconds
+          </div>
+          <div
+            data-pencil-name="Subheading"
+            style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 24px; text-align: center; width: 600px"
+          >
+            No bastion hosts. No open inbound ports. No SSH keys to distribute. Just the AWS APIs
+            you already trust.
+          </div>
+        </div>
+        <div
+          data-pencil-name="Steps Row"
+          style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 40px; height: fit-content; justify-content: flex-start; width: 960px"
+        >
+          <div
+            data-pencil-name="Step 01"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 10px; height: fit-content; justify-content: flex-start"
+          >
+            <div
+              data-pencil-name="Step Number"
+              style="align-items: center; border-radius: 9999px; border: 1px solid #39E75F; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 36px; justify-content: center; width: 36px"
+            >
+              <div
+                data-pencil-name="Number Label"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                01
+              </div>
+            </div>
+            <div
+              data-pencil-name="Step Title"
+              style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 20px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+            >
+              Discover
+            </div>
+            <div
+              data-pencil-name="Step Description"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 21px; text-align: left; width: 100%"
+            >
+              Runs live AWS API calls to list EC2 instances, ECS clusters &amp; tasks, and RDS
+              databases in your account.
+            </div>
+          </div>
+          <div
+            data-pencil-name="Step 02"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 10px; height: fit-content; justify-content: flex-start"
+          >
+            <div
+              data-pencil-name="Step Number"
+              style="align-items: center; border-radius: 9999px; border: 1px solid #39E75F; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 36px; justify-content: center; width: 36px"
+            >
+              <div
+                data-pencil-name="Number Label"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                02
+              </div>
+            </div>
+            <div
+              data-pencil-name="Step Title"
+              style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 20px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+            >
+              Pick
+            </div>
+            <div
+              data-pencil-name="Step Description"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 21px; text-align: left; width: 100%"
+            >
+              An interactive TUI shows every target with real-time fuzzy filtering — no copy-pasting
+              instance IDs ever again.
+            </div>
+          </div>
+          <div
+            data-pencil-name="Step 03"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 10px; height: fit-content; justify-content: flex-start"
+          >
+            <div
+              data-pencil-name="Step Number"
+              style="align-items: center; border-radius: 9999px; border: 1px solid #39E75F; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 36px; justify-content: center; width: 36px"
+            >
+              <div
+                data-pencil-name="Number Label"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                03
+              </div>
+            </div>
+            <div
+              data-pencil-name="Step Title"
+              style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 20px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+            >
+              Connect
+            </div>
+            <div
+              data-pencil-name="Step Description"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 21px; text-align: left; width: 100%"
+            >
+              Executes the right action for you — an SSM session, a port-forward tunnel, ecs
+              execute-command, or a live log tail.
+            </div>
+          </div>
+        </div>
+        <div
+          data-pencil-name="Terminal Mockup"
+          style="align-items: flex-start; background-color: #141B17; border-radius: 8px; border: 1px solid #223028; box-shadow: 0px 4px 8px 0px #00000080; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; overflow: hidden; width: 1100px"
+        >
+          <div
+            data-pencil-name="Title Bar"
+            style="align-items: center; background-color: #1B231E; border-color: #223028; border-style: solid; border-width: 0px 0px 1px 0px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 12px 16px; width: 100%"
+          >
+            <div
+              data-pencil-name="Dot Red"
+              style="background-color: #FF5F56; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 12px; width: 12px"
+            ></div>
+            <div
+              data-pencil-name="Dot Yellow"
+              style="background-color: #FFBD2E; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 12px; width: 12px"
+            ></div>
+            <div
+              data-pencil-name="Dot Green"
+              style="background-color: #27C93F; border-radius: 50%; box-sizing: border-box; flex-shrink: 0; height: 12px; width: 12px"
+            ></div>
+            <div
+              data-pencil-name="Spacer"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex: 1 1 0; gap: 0px; height: 1px; justify-content: flex-start"
+            ></div>
+            <div
+              data-pencil-name="Window Title"
+              style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+            >
+              zsh — act
+            </div>
+            <div
+              data-pencil-name="Spacer Right"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex: 1 1 0; gap: 0px; height: 1px; justify-content: flex-start"
+            ></div>
+          </div>
+          <div
+            data-pencil-name="Terminal Body"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 22px; height: fit-content; justify-content: flex-start; padding: 24px; width: 100%"
+          >
+            <div
+              data-pencil-name="Command: act ec2"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+            >
+              <div
+                data-pencil-name="Command Line"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Prompt Symbol"
+                  style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                >
+                  ❯
+                </div>
+                <div
+                  data-pencil-name="Command Text"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left'
+                >
+                  act ec2
+                </div>
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                Fetching EC2 instances via DescribeInstances…
+              </div>
+              <div
+                data-pencil-name="Picker List"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 2px; height: fit-content; justify-content: flex-start; padding: 4px 0px; width: 100%"
+              >
+                <div
+                  data-pencil-name="Picker Row Selected"
+                  style="align-items: flex-start; background-color: #1FA648; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 4px 8px; width: 100%"
+                >
+                  <div
+                    data-pencil-name="Row Text"
+                    style='box-sizing: border-box; color: #0B0F0D; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left'
+                  >
+                    ❯ web-prod-01 i-0a1b2c3d4e5f67890 running
+                  </div>
+                </div>
+                <div
+                  data-pencil-name="Picker Row"
+                  style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 4px 8px; width: 100%"
+                >
+                  <div
+                    data-pencil-name="Row Text"
+                    style='box-sizing: border-box; color: #9AA79E; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left'
+                  >
+                    web-prod-02 i-0d4e5f67890a1b2c3 running
+                  </div>
+                </div>
+                <div
+                  data-pencil-name="Picker Row"
+                  style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; padding: 4px 8px; width: 100%"
+                >
+                  <div
+                    data-pencil-name="Row Text"
+                    style='box-sizing: border-box; color: #9AA79E; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left'
+                  >
+                    api-worker-03 i-0c3d4e5f67890a1b2 stopped
+                  </div>
+                </div>
+              </div>
+              <div
+                data-pencil-name="Footer Hint"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12px; font-style: italic; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                Type to filter…
+              </div>
+            </div>
+            <div
+              data-pencil-name="Command: act ec2 ssh --user ec2-user"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+            >
+              <div
+                data-pencil-name="Command Line"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Prompt Symbol"
+                  style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                >
+                  ❯
+                </div>
+                <div
+                  data-pencil-name="Command Text"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left'
+                >
+                  act ec2 ssh --user ec2-user
+                </div>
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                Starting session via AWS SSM — no bastion, no open ports…
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                ✓ Connected to i-0a1b2c3d4e5f67890 as ec2-user
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                [ec2-user@web-prod-01 ~]$
+              </div>
+            </div>
+            <div
+              data-pencil-name="Command: act forward --local-port 5432 --remote-port 5432 --target i-0123456789abcdef0"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+            >
+              <div
+                data-pencil-name="Command Line"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Prompt Symbol"
+                  style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                >
+                  ❯
+                </div>
+                <div
+                  data-pencil-name="Command Text"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left'
+                >
+                  act forward --local-port 5432 --remote-port 5432 --target i-0123456789abcdef0
+                </div>
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                Opening SSM port-forwarding session…
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                ✓ Forwarding localhost:5432 → i-0123456789abcdef0:5432
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                Press Ctrl+C to stop
+              </div>
+            </div>
+            <div
+              data-pencil-name="Command: act ecs logs --cluster my-cluster --service my-service"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: 100%"
+            >
+              <div
+                data-pencil-name="Command Line"
+                style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <div
+                  data-pencil-name="Prompt Symbol"
+                  style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+                >
+                  ❯
+                </div>
+                <div
+                  data-pencil-name="Command Text"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left'
+                >
+                  act ecs logs --cluster my-cluster --service my-service
+                </div>
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                Tailing CloudWatch Logs for service my-service…
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                2026-07-16T10:32:01Z INFO Health check passed
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                2026-07-16T10:32:04Z INFO Request served in 42ms
+              </div>
+              <div
+                data-pencil-name="Output Line"
+                style='box-sizing: border-box; color: #9AA79E; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; width: 100%'
+              >
+                2026-07-16T10:32:06Z WARN Retrying connection to db
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        data-pencil-name="Install and Footer"
+        style="align-items: flex-start; background-color: #F7F9F7; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: flex-start; width: 100%"
+      >
+        <div
+          data-pencil-name="Install"
+          style="align-items: center; background-color: #F7F9F7; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 56px; height: fit-content; justify-content: flex-start; padding: 140px 120px 120px 120px; width: 100%"
+        >
+          <div
+            data-pencil-name="Eyebrow"
+            style="box-sizing: border-box; color: #1FA648; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 1.5px; line-height: normal; text-align: center; white-space: nowrap"
+          >
+            OPEN SOURCE · MIT LICENSED
+          </div>
+          <div
+            data-pencil-name="Header Group"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 20px; height: fit-content; justify-content: flex-start; width: 100%"
+          >
+            <div
+              data-pencil-name="Headline"
+              style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 52px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: 57px; text-align: center; width: 700px'
+            >
+              Get started in under a minute
+            </div>
+            <div
+              data-pencil-name="Subtext"
+              style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 26px; text-align: center; width: 560px"
+            >
+              Install act with your favorite package manager. No AWS console tabs, no VPN client —
+              just your terminal.
+            </div>
+          </div>
+          <div
+            data-pencil-name="CTA Button"
+            style="align-items: center; background-color: #39E75F; border-radius: 9999px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; padding: 14px 28px; width: fit-content"
+          >
+            <svg
+              data-pencil-name="Github Icon"
+              data-icon-name="github"
+              data-icon-set="lucide"
+              viewBox="0 0 13.99993896484375 14"
+              preserveAspectRatio="xMidYMid meet"
+              xmlns="http://www.w3.org/2000/svg"
+              style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
+            >
+              <path
+                d="M2.82666 0.60156q-0.12305 0.01367-0.24268 0.09912-0.11963 0.08203-0.17431 0.19483-0.08545 0.15381-0.15723 0.6289-0.05469 0.29395-0.04785 0.71436 0.00684 0.42041 0.06494 0.72803l0.02735 0.12646-0.07178 0.12647q-0.30762 0.54688-0.43408 1.23388-0.02734 0.13672-0.03418 0.54346-0.00684 0.40674 0.00683 0.61865 0.12646 1.34326 1.07666 2.26612 0.59131 0.54688 1.33301 0.84082 0.15381 0.05469 0.38281 0.12646 0.23242 0.06836 0.27344 0.06836 0.04102 0 0.04102 0.03076 0 0.02734-0.04102 0.12305-0.05469 0.19824-0.11279 0.48535-0.05469 0.28369-0.05469 0.45459l0 0.0957-0.14014 0.04444q-0.33496 0.0957-0.65967 0.08203-0.18115-0.01367-0.29394-0.04102-0.10938-0.02734-0.24951-0.0957-0.14014-0.07178-0.2666-0.17773-0.12646-0.10596-0.3794-0.3418-0.51611-0.47852-0.72803-0.60156-0.37598-0.21191-0.74169-0.21192-0.11279 0-0.16065 0.00684-0.04785 0.00684-0.11963 0.03418-0.28027 0.12646-0.32812 0.42041-0.04785 0.29395 0.16064 0.51953 0.12646 0.12646 0.3794 0.16748 0.15381 0.02734 0.24267 0.08545 0.09229 0.05469 0.44092 0.37598 0.31104 0.29394 0.43408 0.3999 0.12646 0.10596 0.28027 0.20166 0.42041 0.28027 0.89893 0.37939 0.19482 0.04102 0.49561 0.04102 0.30078 0 0.52636-0.02735l0.2085-0.04101q0.01367 0 0.01367 0.81006 0 0.57422 0 0.70752 0 0.1333 0.03418 0.21875 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.11963-0.16748 0.0376-0.08545 0.0376-0.28028l0-2.68994q0.01367-0.64258 0.42041-1.20312 0.08203-0.12646 0.10937-0.18799 0.03076-0.06494 0.05127-0.14697 0.02051-0.08545 0-0.18799-0.02051-0.10596-0.0581-0.17432-0.03418-0.07178-0.1128-0.14697-0.0752-0.07861-0.16748-0.11963-0.08887-0.04443-0.32812-0.05811-0.40332-0.01367-0.72803-0.09912-0.72803-0.18115-1.24414-0.64258-0.30762-0.25293-0.51953-0.60839-0.2085-0.35889-0.28027-0.74854-0.02734-0.12646-0.04102-0.44775-0.01367-0.32471 0-0.49219 0.04102-0.62891 0.42041-1.20313 0.12646-0.19482 0.14697-0.31445 0.02051-0.11963-0.03418-0.33154-0.08545-0.37598-0.08544-0.78272 0-0.2666 0.01367-0.2666l0.18115 0.09912q0.23926 0.12646 0.72803 0.46143 0.19824 0.12646 0.36572 0.14014 0.06836-0.01367 0.32129-0.05469 0.96729-0.16748 2.0166-0.16748 1.04932 0 2.0166 0.16748 0.25293 0.05469 0.32129 0.05469 0.16748-0.01367 0.34863-0.14014 0.49219-0.32129 0.70069-0.44092 0.21191-0.11963 0.22558-0.11279 0.01367 0.00684 0.01367 0.22558 0 0.21533-0.0205 0.39307-0.02051 0.17432-0.06494 0.39307-0.04102 0.21533-0.04102 0.27002 0 0.15381 0.15381 0.40673 0.30762 0.4751 0.40674 0.99463 0.01367 0.14014 0.0205 0.46827 0.00684 0.32813-0.0205 0.4956-0.14014 1.12109-1.1211 1.77734-0.42041 0.2666-0.95019 0.40674-0.32471 0.08545-0.72803 0.09912-0.15381 0.01367-0.21875 0.02735-0.06152 0.01367-0.11963 0.04101-0.26318 0.12646-0.33496 0.43409-0.04102 0.21191 0.12647 0.44775 0.37598 0.54688 0.44775 1.03906 0.01367 0.12305 0.01367 1.60987l0 1.30224q0 0.2085 0.03418 0.29395 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.1128-0.16748 0.03076-0.08545 0.04443-0.31104l0.01367-1.32959q0-1.52441-0.01367-1.67822-0.05469-0.33496-0.15381-0.646-0.04102-0.10938-0.04102-0.13672 0-0.03076 0.04102-0.03076 0.04102 0 0.27002-0.07519 0.23242-0.07861 0.38623-0.1333 0.57422-0.22559 1.05615-0.6084 0.48535-0.38623 0.79297-0.875 0.16748-0.25293 0.30078-0.57422 0.1333-0.32471 0.18799-0.63233 0.09912-0.43408 0.09229-0.96386-0.00684-0.5332-0.10596-0.90918-0.14014-0.50586-0.36231-0.92627l-0.08544-0.14014 0.02734-0.16748q0.11279-0.67334 0.01709-1.34326-0.05811-0.51953-0.15039-0.68701-0.08887-0.16748-0.28369-0.2666-0.3794-0.16748-1.26123 0.28027-0.30762 0.14014-0.65967 0.37939l-0.2085 0.14014-0.18115-0.02734q-0.92627-0.15381-1.98926-0.15381-1.06299 0-2.07129 0.15381l-0.14013 0.02734-0.14014-0.09912q-0.51953-0.3623-1.03223-0.56396-0.50928-0.20508-0.80322-0.16407z"
+                fill="#0B0F0D"
+              ></path>
+            </svg>
+            <div
+              data-pencil-name="CTA Label"
+              style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 15px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              View on GitHub
+            </div>
+          </div>
+          <div
+            data-pencil-name="Install Methods"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 20px; height: fit-content; justify-content: flex-start; width: 100%"
+          >
+            <div
+              data-pencil-name="curl Card"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 16px"
+            >
+              <div
+                data-pencil-name="Card Header"
+                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <svg
+                  data-pencil-name="Method Icon"
+                  data-icon-name="terminal"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
+                >
+                  <path
+                    d="M2.2251 2.35156q-0.19482 0.02734-0.32129 0.17432-0.12646 0.14697-0.14697 0.35205-0.02051 0.20166 0.09228 0.36914 0.05469 0.07178 1.60986 1.60986l1.55176 1.55518-1.5791 1.58252q-1.06641 1.06299-1.32617 1.33642-0.25635 0.27344-0.30078 0.3418-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.04443 0.37598-0.33838 0.30762-0.29395 1.5415-1.52441 1.81836-1.82178 1.86279-1.89014 0.05469-0.11279 0.05469-0.25976 0-0.14697-0.05469-0.27344-0.03076-0.05469-1.86279-1.89014-1.22021-1.23047-1.5415-1.53808-0.32129-0.30762-0.37598-0.33838-0.16748-0.06836-0.35205-0.04102z m4.63476 8.16211q-0.12646 0.02734-0.23925 0.1333-0.10938 0.10596-0.16749 0.23243-0.06836 0.2085 0.01368 0.42724 0.08545 0.21533 0.29394 0.31445l0.1128 0.04102 4.14599 0.01367q0.52978-0.01367 0.71094-0.02734 0.12647 0 0.20166-0.04102 0.07861-0.04443 0.14697-0.11963 0.07178-0.07861 0.11621-0.16064 0.0957-0.22559 0.01026-0.44775-0.08203-0.22559-0.32129-0.33838l-0.08203-0.02735-2.43702-0.01367q-2.41992 0-2.50537 0.01367z"
+                    fill="#0B0F0D"
+                  ></path>
+                </svg>
+                <div
+                  data-pencil-name="Method Label"
+                  style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+                >
+                  Linux/MacOS
+                </div>
+              </div>
+              <div
+                data-pencil-name="Code Block"
+                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 12px; width: 100%"
+              >
+                <div
+                  data-pencil-name="Command"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left'
+                >
+                  curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh
+                  | sh
+                </div>
+                <svg
+                  data-pencil-name="Copy Icon"
+                  data-icon-name="copy"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                >
+                  <path
+                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                    fill="#9AA79E"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Go install Card"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 16px"
+            >
+              <div
+                data-pencil-name="Card Header"
+                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <svg
+                  data-pencil-name="Method Icon"
+                  data-icon-name="code"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
+                >
+                  <path
+                    d="M4.48096 2.95313q-0.07178 0.01367-0.15039 0.07177-0.0752 0.05469-1.86621 1.84571l-1.42872 1.44238q-0.32129 0.33838-0.39306 0.44775-0.05469 0.08545-0.05469 0.19824l0 0.08204q0 0.11279 0.05469 0.19824 0.08545 0.12305 0.40674 0.46142l1.46972 1.46973q1.31592 1.31592 1.58936 1.58252 0.27344 0.2666 0.34521 0.29395 0.2085 0.06836 0.42383-0.01368 0.21875-0.08545 0.31787-0.28027 0.04102-0.09912 0.04102-0.23926l0-0.05469q0.01367-0.11279-0.04102-0.18457-0.07178-0.10938-0.35205-0.40332l-2.854-2.87109 2.854-2.87109q0.28027-0.29395 0.35205-0.40332 0.05469-0.07178 0.04102-0.18457l0-0.05469q0-0.14014-0.04444-0.22901-0.04102-0.09229-0.1333-0.17431-0.08887-0.08545-0.18115-0.11963-0.08887-0.0376-0.20849-0.0376-0.11963 0-0.18799 0.02735z m4.64843 0q-0.09912 0.04443-0.1914 0.12988-0.08887 0.08203-0.1333 0.17431-0.04102 0.08887-0.04102 0.22901l0 0.05469q-0.01367 0.11279 0.04102 0.18457 0.07178 0.10938 0.35205 0.40332l2.854 2.87109-2.854 2.87109q-0.28027 0.29395-0.35205 0.40332-0.05469 0.07178-0.04102 0.18457l0 0.05469q0 0.14014 0.04102 0.23926 0.09912 0.19482 0.31445 0.28027 0.21875 0.08203 0.42725 0.01367 0.07178-0.02734 0.34521-0.29394 0.27344-0.2666 1.58936-1.58252l1.46972-1.46973q0.32129-0.33838 0.40674-0.46142 0.05469-0.08545 0.05469-0.19824l0-0.08204q0-0.11279-0.05469-0.19824-0.08545-0.12305-0.40674-0.46142l-1.45605-1.45606q-1.10742-1.11768-1.48682-1.47998-0.37598-0.36572-0.43066-0.39648-0.08545-0.04102-0.22559-0.04102-0.14014 0-0.22217 0.02734z"
+                    fill="#0B0F0D"
+                  ></path>
+                </svg>
+                <div
+                  data-pencil-name="Method Label"
+                  style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+                >
+                  Go install
+                </div>
+              </div>
+              <div
+                data-pencil-name="Code Block"
+                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 12px; width: 100%"
+              >
+                <div
+                  data-pencil-name="Command"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left'
+                >
+                  go install github.com/brunodasilvalenga/act@latest
+                </div>
+                <svg
+                  data-pencil-name="Copy Icon"
+                  data-icon-name="copy"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                >
+                  <path
+                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                    fill="#9AA79E"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Windows PowerShell Card"
+              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 16px"
+            >
+              <div
+                data-pencil-name="Card Header"
+                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+              >
+                <svg
+                  data-pencil-name="Method Icon"
+                  data-icon-name="app-window"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
+                >
+                  <path
+                    d="M2.05762 1.77734q-0.28027 0.04102-0.53321 0.16748-0.34863 0.19824-0.58789 0.50586-0.23584 0.30762-0.32129 0.70069-0.01367 0.10938-0.02734 0.66992l0 3.17871 0 3.17871q0.01367 0.56055 0.02734 0.66992 0.11279 0.5332 0.50245 0.90577 0.39307 0.36914 0.92627 0.46826 0.16748 0.02734 4.95605 0.02734 4.78857 0 4.95605-0.02734 0.5332-0.09912 0.92286-0.46826 0.39307-0.37256 0.50586-0.90577 0.01367-0.10938 0.02734-0.66992l0-3.17871 0-3.17871q-0.01367-0.56055-0.02734-0.66992-0.12647-0.54688-0.53321-0.92285-0.40674-0.37939-0.95019-0.46485-0.1709-0.01367-4.93897-0.01367-4.76465 0-4.90478 0.02734z m0.86816 1.72266l0 0.57422-1.17578 0 0-0.36572q0.01367-0.26318 0.02051-0.31787 0.00684-0.05811 0.04101-0.14014 0.0376-0.08545 0.12647-0.16748 0.09229-0.08545 0.1914-0.12989 0.05469-0.01367 0.12989-0.0205 0.07861-0.00684 0.3042-0.00684l0.3623 0 0 0.57422z m2.32422 0l0 0.57422-1.17578 0 0-1.14844 1.17578 0 0 0.57422z m6.6206-0.54688q0.21192 0.08545 0.32471 0.29395 0.02734 0.08545 0.03418 0.14356 0.00684 0.05469 0.02051 0.31787l0 0.36572-5.82422 0 0-1.14844 5.02783 0q0.34863 0 0.417 0.02734z m0.3794 5.00049l-0.01367 2.7002-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912-0.01367-5.40381 10.5 0 0 2.70361z"
+                    fill="#0B0F0D"
+                  ></path>
+                </svg>
+                <div
+                  data-pencil-name="Method Label"
+                  style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+                >
+                  Windows PowerShell
+                </div>
+              </div>
+              <div
+                data-pencil-name="Code Block"
+                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 12px; width: 100%"
+              >
+                <div
+                  data-pencil-name="Command"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left'
+                >
+                  irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex
+                </div>
+                <svg
+                  data-pencil-name="Copy Icon"
+                  data-icon-name="copy"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+                >
+                  <path
+                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                    fill="#9AA79E"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Prerequisite Note"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 6px; height: fit-content; justify-content: flex-start; width: fit-content"
+          >
+            <svg
+              data-pencil-name="Info Icon"
+              data-icon-name="info"
+              data-icon-set="lucide"
+              viewBox="0 0 13.99993896484375 14"
+              preserveAspectRatio="xMidYMid meet"
+              xmlns="http://www.w3.org/2000/svg"
+              style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
+            >
+              <path
+                d="M6.69238 0.60156q-1.16211 0.04102-2.22851 0.50586-1.06299 0.46143-1.90381 1.26807-0.8374 0.80322-1.34326 1.85254-0.48877 1.0083-0.60157 2.15674-0.02734 0.19482-0.02734 0.61523 0 0.42041 0.02734 0.61523 0.11279 1.14844 0.60157 2.15674 0.65967 1.40137 1.89697 2.33789 1.24072 0.93652 2.75146 1.20313 0.5332 0.09912 1.13477 0.09912 0.75537 0 1.43213-0.15381 0.68018-0.15381 1.35351-0.4751 1.26123-0.61865 2.16358-1.70215 0.90234-1.0835 1.25439-2.44384 0.29395-1.11768 0.18116-2.25244-0.11279-1.13477-0.60157-2.17041-0.58789-1.20313-1.62011-2.08497-1.02881-0.88184-2.31397-1.2749-1.0083-0.30762-2.15674-0.25293z m0.96729 1.18946q1.07666 0.14014 1.99267 0.68017 0.91602 0.54004 1.56201 1.4082 0.82715 1.104 1.00831 2.54639 0.01367 0.16748 0.01367 0.57422 0 0.40674-0.01367 0.57422-0.14014 1.16211-0.7212 2.12939-0.58105 0.96387-1.53466 1.62354-0.4751 0.33496-1.04932 0.56055-0.57422 0.22217-1.18945 0.30761-0.25293 0.04102-0.72803 0.04102-0.4751 0-0.72803-0.04102-1.07666-0.15381-1.95849-0.68701-0.88184-0.5332-1.52784-1.3877-0.82715-1.104-1.0083-2.54638-0.01367-0.16748-0.01367-0.57422 0-0.40674 0.01367-0.57422 0.14014-1.12109 0.66993-2.05078 0.5332-0.92969 1.43212-1.58936 0.54346-0.40674 1.20655-0.66992 0.6665-0.2666 1.32617-0.3247l0.25293-0.02735q0.0957-0.01367 0.4751 0 0.37939 0.01367 0.51953 0.02735z m-0.75879 2.31054q-0.18115 0.02734-0.32129 0.16748-0.2085 0.21191-0.15381 0.50586 0.05469 0.29395 0.32129 0.42041 0.09912 0.04102 0.25293 0.04102 0.25293 0 0.42041-0.16748 0.12646-0.12646 0.15381-0.30762 0.05469-0.29395-0.15723-0.50244-0.2085-0.21191-0.51611-0.15723z m-0.05469 2.33789q-0.25293 0.08545-0.37939 0.30762l-0.04102 0.08545 0 2.46436q0 0.18115 0.03418 0.2666 0.0376 0.08203 0.11963 0.16748 0.08545 0.08203 0.18799 0.1333 0.10596 0.04785 0.23242 0.04785 0.12646 0 0.229-0.04785 0.10596-0.05127 0.18799-0.1333 0.08545-0.08545 0.11963-0.16748 0.0376-0.08545 0.0376-0.2666l0-2.46436-0.04102-0.08545q-0.09912-0.18115-0.28027-0.2666-0.08545-0.04102-0.22559-0.04785-0.14014-0.00684-0.18115 0.00683z"
+                fill="#4B564F"
+              ></path>
+            </svg>
+            <div
+              data-pencil-name="Prerequisite Text"
+              style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              Requires AWS CLI v2 and the Session Manager plugin installed.
+            </div>
+          </div>
+        </div>
+        <div
+          data-pencil-name="Footer"
+          style="align-items: flex-start; background-color: #0B0F0D; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 24px; height: fit-content; justify-content: flex-start; padding: 40px 120px 32px 120px; width: 100%"
+        >
+          <div
+            data-pencil-name="Footer Top Row"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: space-between; width: 100%"
+          >
+            <div
+              data-pencil-name="Brand Group"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 4px; height: fit-content; justify-content: flex-start; width: fit-content"
+            >
+              <div
+                data-pencil-name="Wordmark"
+                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 18px; font-style: normal; font-weight: 700; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
+              >
+                &gt;_ act
+              </div>
+              <div
+                data-pencil-name="Tagline"
+                style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                A terminal UI for navigating AWS Session Manager connections.
+              </div>
+            </div>
+            <div
+              data-pencil-name="Links Row"
+              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 28px; height: fit-content; justify-content: flex-start; width: fit-content"
+            >
+              <div
+                data-pencil-name="GitHub Link"
+                style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                GitHub
+              </div>
+              <div
+                data-pencil-name="Issues Link"
+                style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                Issues
+              </div>
+              <div
+                data-pencil-name="Contributing Link"
+                style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                Contributing
+              </div>
+              <div
+                data-pencil-name="License · MIT Link"
+                style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+              >
+                License · MIT
+              </div>
+            </div>
+          </div>
+          <div
+            data-pencil-name="Divider"
+            style="background-color: #223028; box-sizing: border-box; flex-shrink: 0; height: 1px; width: 100%"
+          ></div>
+          <div
+            data-pencil-name="Copyright Row"
+            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: fit-content; justify-content: center; width: 100%"
+          >
+            <div
+              data-pencil-name="Copyright Text"
+              style="box-sizing: border-box; color: #9AA79E; font-family: Inter, system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
+            >
+              © 2026 act. Released under the MIT License.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

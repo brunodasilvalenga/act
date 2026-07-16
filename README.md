@@ -6,6 +6,8 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
 ![demo](https://github.com/brunodasilvalenga/act/raw/main/demo.gif)
 
+**[View the landing page →](https://brunodasilvalenga.github.io/act/)**
+
 ## Features
 
 - **EC2 Connect** — List running instances, filter, and start SSM sessions
