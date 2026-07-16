@@ -47,15 +47,107 @@
         display: inline-flex;
         align-items: center;
         flex-shrink: 0;
+        position: relative;
       }
 
       .copy-btn svg {
         pointer-events: none;
       }
 
-      .copy-btn:hover svg path,
-      .copy-btn.is-copied svg path {
+      .copy-btn:hover .icon-copy path {
         fill: #39E75F;
+      }
+
+      .copy-btn .icon-check {
+        display: none;
+      }
+
+      .copy-btn.is-copied .icon-copy {
+        display: none;
+      }
+
+      .copy-btn.is-copied .icon-check {
+        display: inline-flex;
+      }
+
+      .copy-tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #1B231E;
+        color: #F5F7F5;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+        padding: 4px 9px;
+        border-radius: 4px;
+        border: 1px solid #223028;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease;
+        z-index: 5;
+      }
+
+      .copy-btn.is-copied .copy-tooltip {
+        opacity: 1;
+      }
+
+      .platform-tabs {
+        align-items: center;
+        display: flex;
+        flex-shrink: 0;
+        gap: 6px;
+        justify-content: center;
+      }
+
+      .platform-tab {
+        align-items: center;
+        background: none;
+        border-radius: 6px;
+        border: 1px solid #223028;
+        box-sizing: border-box;
+        cursor: pointer;
+        display: inline-flex;
+        gap: 6px;
+        justify-content: center;
+        padding: 6px 11px;
+      }
+
+      .platform-tab svg path {
+        fill: #9AA79E;
+      }
+
+      .platform-tab-label {
+        color: #9AA79E;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .platform-tab:hover {
+        border-color: #39E75F;
+      }
+
+      .platform-tab.is-active {
+        background-color: #1FA64822;
+        border-color: #39E75F;
+      }
+
+      .platform-tab.is-active svg path {
+        fill: #39E75F;
+      }
+
+      .platform-tab.is-active .platform-tab-label {
+        color: #39E75F;
+      }
+
+      .command-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       @media (max-width: 1024px) {
@@ -365,48 +457,98 @@
             </a>
           </div>
           <div
-            data-pencil-name="Install Snippet"
-            style="align-items: center; background-color: #1B231E; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 14px 20px; width: fit-content; max-width: 100%"
+            data-pencil-name="Install Snippet Wrap"
+            style="align-items: center; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 12px; height: fit-content; justify-content: flex-start; width: fit-content; max-width: 100%"
           >
-            <div
-              data-pencil-name="Snippet Text"
-              style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 10px; height: fit-content; justify-content: flex-start; width: fit-content; min-width: 0; overflow-x: auto"
-            >
-              <div
-                data-pencil-name="Prompt"
-                style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
-              >
-                $
-              </div>
-              <div
-                data-pencil-name="Command"
-                data-copy-text="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
-                style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'
-              >
-                curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh |
-                sh
-              </div>
+            <div class="platform-tabs" data-pencil-name="Platform Tabs">
+              <button type="button" class="platform-tab" data-platform="mac-linux" aria-label="macOS / Linux install command">
+                <svg data-icon-name="terminal" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px">
+                  <path d="M2.2251 2.35156q-0.19482 0.02734-0.32129 0.17432-0.12646 0.14697-0.14697 0.35205-0.02051 0.20166 0.09228 0.36914 0.05469 0.07178 1.60986 1.60986l1.55176 1.55518-1.5791 1.58252q-1.06641 1.06299-1.32617 1.33642-0.25635 0.27344-0.30078 0.3418-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.04443 0.37598-0.33838 0.30762-0.29395 1.5415-1.52441 1.81836-1.82178 1.86279-1.89014 0.05469-0.11279 0.05469-0.25976 0-0.14697-0.05469-0.27344-0.03076-0.05469-1.86279-1.89014-1.22021-1.23047-1.5415-1.53808-0.32129-0.30762-0.37598-0.33838-0.16748-0.06836-0.35205-0.04102z m4.63476 8.16211q-0.12646 0.02734-0.23925 0.1333-0.10938 0.10596-0.16749 0.23243-0.06836 0.2085 0.01368 0.42724 0.08545 0.21533 0.29394 0.31445l0.1128 0.04102 4.14599 0.01367q0.52978-0.01367 0.71094-0.02734 0.12647 0 0.20166-0.04102 0.07861-0.04443 0.14697-0.11963 0.07178-0.07861 0.11621-0.16064 0.0957-0.22559 0.01026-0.44775-0.08203-0.22559-0.32129-0.33838l-0.08203-0.02735-2.43702-0.01367q-2.41992 0-2.50537 0.01367z" fill="#9AA79E"></path>
+                </svg>
+                <span class="platform-tab-label">macOS / Linux</span>
+              </button>
+              <button type="button" class="platform-tab" data-platform="windows" aria-label="Windows install command">
+                <svg data-icon-name="app-window" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px">
+                  <path d="M2.05762 1.77734q-0.28027 0.04102-0.53321 0.16748-0.34863 0.19824-0.58789 0.50586-0.23584 0.30762-0.32129 0.70069-0.01367 0.10938-0.02734 0.66992l0 3.17871 0 3.17871q0.01367 0.56055 0.02734 0.66992 0.11279 0.5332 0.50245 0.90577 0.39307 0.36914 0.92627 0.46826 0.16748 0.02734 4.95605 0.02734 4.78857 0 4.95605-0.02734 0.5332-0.09912 0.92286-0.46826 0.39307-0.37256 0.50586-0.90577 0.01367-0.10938 0.02734-0.66992l0-3.17871 0-3.17871q-0.01367-0.56055-0.02734-0.66992-0.12647-0.54688-0.53321-0.92285-0.40674-0.37939-0.95019-0.46485-0.1709-0.01367-4.93897-0.01367-4.76465 0-4.90478 0.02734z m0.86816 1.72266l0 0.57422-1.17578 0 0-0.36572q0.01367-0.26318 0.02051-0.31787 0.00684-0.05811 0.04101-0.14014 0.0376-0.08545 0.12647-0.16748 0.09229-0.08545 0.1914-0.12989 0.05469-0.01367 0.12989-0.0205 0.07861-0.00684 0.3042-0.00684l0.3623 0 0 0.57422z m2.32422 0l0 0.57422-1.17578 0 0-1.14844 1.17578 0 0 0.57422z m6.6206-0.54688q0.21192 0.08545 0.32471 0.29395 0.02734 0.08545 0.03418 0.14356 0.00684 0.05469 0.02051 0.31787l0 0.36572-5.82422 0 0-1.14844 5.02783 0q0.34863 0 0.417 0.02734z m0.3794 5.00049l-0.01367 2.7002-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912-0.01367-5.40381 10.5 0 0 2.70361z" fill="#9AA79E"></path>
+                </svg>
+                <span class="platform-tab-label">Windows</span>
+              </button>
+              <button type="button" class="platform-tab" data-platform="other" aria-label="Other platforms install command">
+                <svg data-icon-name="code" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px">
+                  <path d="M4.48096 2.95313q-0.07178 0.01367-0.15039 0.07177-0.0752 0.05469-1.86621 1.84571l-1.42872 1.44238q-0.32129 0.33838-0.39306 0.44775-0.05469 0.08545-0.05469 0.19824l0 0.08204q0 0.11279 0.05469 0.19824 0.08545 0.12305 0.40674 0.46142l1.46972 1.46973q1.31592 1.31592 1.58936 1.58252 0.27344 0.2666 0.34521 0.29395 0.2085 0.06836 0.42383-0.01368 0.21875-0.08545 0.31787-0.28027 0.04102-0.09912 0.04102-0.23926l0-0.05469q0.01367-0.11279-0.04102-0.18457-0.07178-0.10938-0.35205-0.40332l-2.854-2.87109 2.854-2.87109q0.28027-0.29395 0.35205-0.40332 0.05469-0.07178 0.04102-0.18457l0-0.05469q0-0.14014-0.04444-0.22901-0.04102-0.09229-0.1333-0.17431-0.08887-0.08545-0.18115-0.11963-0.08887-0.0376-0.20849-0.0376-0.11963 0-0.18799 0.02735z m4.64843 0q-0.09912 0.04443-0.1914 0.12988-0.08887 0.08203-0.1333 0.17431-0.04102 0.08887-0.04102 0.22901l0 0.05469q-0.01367 0.11279 0.04102 0.18457 0.07178 0.10938 0.35205 0.40332l2.854 2.87109-2.854 2.87109q-0.28027 0.29395-0.35205 0.40332-0.05469 0.07178-0.04102 0.18457l0 0.05469q0 0.14014 0.04102 0.23926 0.09912 0.19482 0.31445 0.28027 0.21875 0.08203 0.42725 0.01367 0.07178-0.02734 0.34521-0.29394 0.27344-0.2666 1.58936-1.58252l1.46972-1.46973q0.32129-0.33838 0.40674-0.46142 0.05469-0.08545 0.05469-0.19824l0-0.08204q0-0.11279-0.05469-0.19824-0.08545-0.12305-0.40674-0.46142l-1.45605-1.45606q-1.10742-1.11768-1.48682-1.47998-0.37598-0.36572-0.43066-0.39648-0.08545-0.04102-0.22559-0.04102-0.14014 0-0.22217 0.02734z" fill="#9AA79E"></path>
+                </svg>
+                <span class="platform-tab-label">Other</span>
+              </button>
             </div>
-            <button
-              type="button"
-              class="copy-btn"
-              data-pencil-name="Copy Icon"
-              aria-label="Copy install command"
+            <div
+              data-pencil-name="Install Snippet"
+              class="platform-command"
+              data-cmd-mac-linux="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
+              data-cmd-windows="irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex"
+              data-cmd-other="go install github.com/brunodasilvalenga/act@latest"
+              style="align-items: center; background-color: #1B231E; border-radius: 8px; border: 1px solid #223028; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 16px; height: fit-content; justify-content: flex-start; padding: 14px 20px; width: 480px; max-width: 100%"
             >
-              <svg
-                data-icon-name="copy"
-                data-icon-set="lucide"
-                viewBox="0 0 13.99993896484375 14"
-                preserveAspectRatio="xMidYMid meet"
-                xmlns="http://www.w3.org/2000/svg"
-                style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+              <div
+                data-pencil-name="Snippet Text"
+                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex: 1 1 0; gap: 10px; height: fit-content; justify-content: flex-start; min-width: 0"
               >
-                <path
-                  d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                  fill="#9AA79E"
-                ></path>
-              </svg>
-            </button>
+                <div
+                  data-pencil-name="Prompt"
+                  style='box-sizing: border-box; color: #39E75F; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap; flex-shrink: 0'
+                >
+                  $
+                </div>
+                <div
+                  data-pencil-name="Command"
+                  class="command-text"
+                  data-copy-text="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
+                  style='box-sizing: border-box; color: #F5F7F5; font-family: "Geist Mono", system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap; min-width: 0'
+                >
+                  curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh |
+                  sh
+                </div>
+              </div>
+              <button
+                type="button"
+                class="copy-btn"
+                data-pencil-name="Copy Icon"
+                aria-label="Copy install command"
+              >
+                <span class="copy-tooltip">Copied!</span>
+                <svg
+                  class="icon-copy"
+                  data-icon-name="copy"
+                  data-icon-set="lucide"
+                  viewBox="0 0 13.99993896484375 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+                >
+                  <path
+                    d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
+                    fill="#9AA79E"
+                  ></path>
+                </svg>
+                <svg
+                  class="icon-check"
+                  data-icon-name="check"
+                  data-icon-set="lucide"
+                  viewBox="0 0 14 14"
+                  preserveAspectRatio="xMidYMid meet"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="box-sizing: border-box; flex-shrink: 0; height: 16px; width: 16px"
+                >
+                  <path
+                    d="M12 3.5 L5.5 10.5 L2 7"
+                    fill="none"
+                    stroke="#39E75F"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         <div
@@ -1417,8 +1559,7 @@
               data-pencil-name="Subtext"
               style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 26px; text-align: center; width: 560px; max-width: 100%"
             >
-              Install act with your favorite package manager. No AWS console tabs, no VPN client —
-              just your terminal.
+              Four steps from a blank terminal to your first AWS session.
             </div>
           </div>
           <a
@@ -1450,193 +1591,179 @@
             </div>
           </a>
           <div
-            data-pencil-name="Install Methods"
-            class="responsive-row"
-            style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 20px; height: fit-content; justify-content: flex-start; width: 100%"
+            data-pencil-name="Get Started Steps"
+            style="align-items: stretch; box-sizing: border-box; display: flex; flex-direction: column; flex-shrink: 0; gap: 28px; height: fit-content; justify-content: flex-start; width: 100%; max-width: 640px"
           >
             <div
-              data-pencil-name="curl Card"
-              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 16px"
+              data-pencil-name="Step 01"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; height: fit-content; justify-content: flex-start; width: 100%"
             >
               <div
-                data-pencil-name="Card Header"
-                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+                data-pencil-name="Step Number"
+                style="align-items: center; border-radius: 9999px; border: 1px solid #1FA648; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 32px; justify-content: center; width: 32px"
               >
-                <svg
-                  data-pencil-name="Method Icon"
-                  data-icon-name="terminal"
-                  data-icon-set="lucide"
-                  viewBox="0 0 13.99993896484375 14"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
-                >
-                  <path
-                    d="M2.2251 2.35156q-0.19482 0.02734-0.32129 0.17432-0.12646 0.14697-0.14697 0.35205-0.02051 0.20166 0.09228 0.36914 0.05469 0.07178 1.60986 1.60986l1.55176 1.55518-1.5791 1.58252q-1.06641 1.06299-1.32617 1.33642-0.25635 0.27344-0.30078 0.3418-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.04443 0.37598-0.33838 0.30762-0.29395 1.5415-1.52441 1.81836-1.82178 1.86279-1.89014 0.05469-0.11279 0.05469-0.25976 0-0.14697-0.05469-0.27344-0.03076-0.05469-1.86279-1.89014-1.22021-1.23047-1.5415-1.53808-0.32129-0.30762-0.37598-0.33838-0.16748-0.06836-0.35205-0.04102z m4.63476 8.16211q-0.12646 0.02734-0.23925 0.1333-0.10938 0.10596-0.16749 0.23243-0.06836 0.2085 0.01368 0.42724 0.08545 0.21533 0.29394 0.31445l0.1128 0.04102 4.14599 0.01367q0.52978-0.01367 0.71094-0.02734 0.12647 0 0.20166-0.04102 0.07861-0.04443 0.14697-0.11963 0.07178-0.07861 0.11621-0.16064 0.0957-0.22559 0.01026-0.44775-0.08203-0.22559-0.32129-0.33838l-0.08203-0.02735-2.43702-0.01367q-2.41992 0-2.50537 0.01367z"
-                    fill="#0B0F0D"
-                  ></path>
-                </svg>
-                <div
-                  data-pencil-name="Method Label"
-                  style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
-                >
-                  Linux/MacOS
+                <div style='box-sizing: border-box; color: #1FA648; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                  01
                 </div>
               </div>
+              <div style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                Install act
+              </div>
+              <div style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 13.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%">
+                Pick your platform and run the install command.
+              </div>
+              <div class="platform-tabs" style="justify-content: flex-start">
+                <button type="button" class="platform-tab" data-platform="mac-linux" aria-label="macOS / Linux install command">
+                  <svg data-icon-name="terminal" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 15px; width: 15px">
+                    <path d="M2.2251 2.35156q-0.19482 0.02734-0.32129 0.17432-0.12646 0.14697-0.14697 0.35205-0.02051 0.20166 0.09228 0.36914 0.05469 0.07178 1.60986 1.60986l1.55176 1.55518-1.5791 1.58252q-1.06641 1.06299-1.32617 1.33642-0.25635 0.27344-0.30078 0.3418-0.10938 0.23926-0.01367 0.46485 0.09912 0.22217 0.32128 0.32128 0.22559 0.0957 0.46485-0.01367 0.06836-0.04443 0.37598-0.33838 0.30762-0.29395 1.5415-1.52441 1.81836-1.82178 1.86279-1.89014 0.05469-0.11279 0.05469-0.25976 0-0.14697-0.05469-0.27344-0.03076-0.05469-1.86279-1.89014-1.22021-1.23047-1.5415-1.53808-0.32129-0.30762-0.37598-0.33838-0.16748-0.06836-0.35205-0.04102z m4.63476 8.16211q-0.12646 0.02734-0.23925 0.1333-0.10938 0.10596-0.16749 0.23243-0.06836 0.2085 0.01368 0.42724 0.08545 0.21533 0.29394 0.31445l0.1128 0.04102 4.14599 0.01367q0.52978-0.01367 0.71094-0.02734 0.12647 0 0.20166-0.04102 0.07861-0.04443 0.14697-0.11963 0.07178-0.07861 0.11621-0.16064 0.0957-0.22559 0.01026-0.44775-0.08203-0.22559-0.32129-0.33838l-0.08203-0.02735-2.43702-0.01367q-2.41992 0-2.50537 0.01367z" fill="#9AA79E"></path>
+                  </svg>
+                  <span class="platform-tab-label">macOS / Linux</span>
+                </button>
+                <button type="button" class="platform-tab" data-platform="windows" aria-label="Windows install command">
+                  <svg data-icon-name="app-window" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 15px; width: 15px">
+                    <path d="M2.05762 1.77734q-0.28027 0.04102-0.53321 0.16748-0.34863 0.19824-0.58789 0.50586-0.23584 0.30762-0.32129 0.70069-0.01367 0.10938-0.02734 0.66992l0 3.17871 0 3.17871q0.01367 0.56055 0.02734 0.66992 0.11279 0.5332 0.50245 0.90577 0.39307 0.36914 0.92627 0.46826 0.16748 0.02734 4.95605 0.02734 4.78857 0 4.95605-0.02734 0.5332-0.09912 0.92286-0.46826 0.39307-0.37256 0.50586-0.90577 0.01367-0.10938 0.02734-0.66992l0-3.17871 0-3.17871q-0.01367-0.56055-0.02734-0.66992-0.12647-0.54688-0.53321-0.92285-0.40674-0.37939-0.95019-0.46485-0.1709-0.01367-4.93897-0.01367-4.76465 0-4.90478 0.02734z m0.86816 1.72266l0 0.57422-1.17578 0 0-0.36572q0.01367-0.26318 0.02051-0.31787 0.00684-0.05811 0.04101-0.14014 0.0376-0.08545 0.12647-0.16748 0.09229-0.08545 0.1914-0.12989 0.05469-0.01367 0.12989-0.0205 0.07861-0.00684 0.3042-0.00684l0.3623 0 0 0.57422z m2.32422 0l0 0.57422-1.17578 0 0-1.14844 1.17578 0 0 0.57422z m6.6206-0.54688q0.21192 0.08545 0.32471 0.29395 0.02734 0.08545 0.03418 0.14356 0.00684 0.05469 0.02051 0.31787l0 0.36572-5.82422 0 0-1.14844 5.02783 0q0.34863 0 0.417 0.02734z m0.3794 5.00049l-0.01367 2.7002-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912-0.01367-5.40381 10.5 0 0 2.70361z" fill="#9AA79E"></path>
+                  </svg>
+                  <span class="platform-tab-label">Windows</span>
+                </button>
+                <button type="button" class="platform-tab" data-platform="other" aria-label="Other platforms install command">
+                  <svg data-icon-name="code" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 15px; width: 15px">
+                    <path d="M4.48096 2.95313q-0.07178 0.01367-0.15039 0.07177-0.0752 0.05469-1.86621 1.84571l-1.42872 1.44238q-0.32129 0.33838-0.39306 0.44775-0.05469 0.08545-0.05469 0.19824l0 0.08204q0 0.11279 0.05469 0.19824 0.08545 0.12305 0.40674 0.46142l1.46972 1.46973q1.31592 1.31592 1.58936 1.58252 0.27344 0.2666 0.34521 0.29395 0.2085 0.06836 0.42383-0.01368 0.21875-0.08545 0.31787-0.28027 0.04102-0.09912 0.04102-0.23926l0-0.05469q0.01367-0.11279-0.04102-0.18457-0.07178-0.10938-0.35205-0.40332l-2.854-2.87109 2.854-2.87109q0.28027-0.29395 0.35205-0.40332 0.05469-0.07178 0.04102-0.18457l0-0.05469q0-0.14014-0.04444-0.22901-0.04102-0.09229-0.1333-0.17431-0.08887-0.08545-0.18115-0.11963-0.08887-0.0376-0.20849-0.0376-0.11963 0-0.18799 0.02735z m4.64843 0q-0.09912 0.04443-0.1914 0.12988-0.08887 0.08203-0.1333 0.17431-0.04102 0.08887-0.04102 0.22901l0 0.05469q-0.01367 0.11279 0.04102 0.18457 0.07178 0.10938 0.35205 0.40332l2.854 2.87109-2.854 2.87109q-0.28027 0.29395-0.35205 0.40332-0.05469 0.07178-0.04102 0.18457l0 0.05469q0 0.14014 0.04102 0.23926 0.09912 0.19482 0.31445 0.28027 0.21875 0.08203 0.42725 0.01367 0.07178-0.02734 0.34521-0.29394 0.27344-0.2666 1.58936-1.58252l1.46972-1.46973q0.32129-0.33838 0.40674-0.46142 0.05469-0.08545 0.05469-0.19824l0-0.08204q0-0.11279-0.05469-0.19824-0.08545-0.12305-0.40674-0.46142l-1.45605-1.45606q-1.10742-1.11768-1.48682-1.47998-0.37598-0.36572-0.43066-0.39648-0.08545-0.04102-0.22559-0.04102-0.14014 0-0.22217 0.02734z" fill="#9AA79E"></path>
+                  </svg>
+                  <span class="platform-tab-label">Other</span>
+                </button>
+              </div>
               <div
-                data-pencil-name="Code Block"
-                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 12px; width: 100%"
+                class="platform-command"
+                data-cmd-mac-linux="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
+                data-cmd-windows="irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex"
+                data-cmd-other="go install github.com/brunodasilvalenga/act@latest"
+                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 10px 12px; width: 100%"
               >
                 <div
                   data-pencil-name="Command"
                   data-copy-text="curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
-                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left; min-width: 0; overflow-x: auto; white-space: nowrap'
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 18px; text-align: left; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap'
                 >
-                  curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh
-                  | sh
+                  curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh
                 </div>
-                <button
-                  type="button"
-                  class="copy-btn"
-                  data-pencil-name="Copy Icon"
-                  aria-label="Copy install command"
-                >
-                  <svg
-                    data-icon-name="copy"
-                    data-icon-set="lucide"
-                    viewBox="0 0 13.99993896484375 14"
-                    preserveAspectRatio="xMidYMid meet"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
-                  >
-                    <path
-                      d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                      fill="#9AA79E"
-                    ></path>
+                <button type="button" class="copy-btn" aria-label="Copy install command">
+                  <span class="copy-tooltip">Copied!</span>
+                  <svg class="icon-copy" data-icon-name="copy" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z" fill="#9AA79E"></path>
+                  </svg>
+                  <svg class="icon-check" data-icon-name="check" data-icon-set="lucide" viewBox="0 0 14 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M12 3.5 L5.5 10.5 L2 7" fill="none" stroke="#39E75F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
                   </svg>
                 </button>
               </div>
             </div>
             <div
-              data-pencil-name="Go install Card"
-              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 16px"
+              data-pencil-name="Step 02"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; height: fit-content; justify-content: flex-start; width: 100%"
             >
               <div
-                data-pencil-name="Card Header"
-                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+                data-pencil-name="Step Number"
+                style="align-items: center; border-radius: 9999px; border: 1px solid #1FA648; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 32px; justify-content: center; width: 32px"
               >
-                <svg
-                  data-pencil-name="Method Icon"
-                  data-icon-name="code"
-                  data-icon-set="lucide"
-                  viewBox="0 0 13.99993896484375 14"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
-                >
-                  <path
-                    d="M4.48096 2.95313q-0.07178 0.01367-0.15039 0.07177-0.0752 0.05469-1.86621 1.84571l-1.42872 1.44238q-0.32129 0.33838-0.39306 0.44775-0.05469 0.08545-0.05469 0.19824l0 0.08204q0 0.11279 0.05469 0.19824 0.08545 0.12305 0.40674 0.46142l1.46972 1.46973q1.31592 1.31592 1.58936 1.58252 0.27344 0.2666 0.34521 0.29395 0.2085 0.06836 0.42383-0.01368 0.21875-0.08545 0.31787-0.28027 0.04102-0.09912 0.04102-0.23926l0-0.05469q0.01367-0.11279-0.04102-0.18457-0.07178-0.10938-0.35205-0.40332l-2.854-2.87109 2.854-2.87109q0.28027-0.29395 0.35205-0.40332 0.05469-0.07178 0.04102-0.18457l0-0.05469q0-0.14014-0.04444-0.22901-0.04102-0.09229-0.1333-0.17431-0.08887-0.08545-0.18115-0.11963-0.08887-0.0376-0.20849-0.0376-0.11963 0-0.18799 0.02735z m4.64843 0q-0.09912 0.04443-0.1914 0.12988-0.08887 0.08203-0.1333 0.17431-0.04102 0.08887-0.04102 0.22901l0 0.05469q-0.01367 0.11279 0.04102 0.18457 0.07178 0.10938 0.35205 0.40332l2.854 2.87109-2.854 2.87109q-0.28027 0.29395-0.35205 0.40332-0.05469 0.07178-0.04102 0.18457l0 0.05469q0 0.14014 0.04102 0.23926 0.09912 0.19482 0.31445 0.28027 0.21875 0.08203 0.42725 0.01367 0.07178-0.02734 0.34521-0.29394 0.27344-0.2666 1.58936-1.58252l1.46972-1.46973q0.32129-0.33838 0.40674-0.46142 0.05469-0.08545 0.05469-0.19824l0-0.08204q0-0.11279-0.05469-0.19824-0.08545-0.12305-0.40674-0.46142l-1.45605-1.45606q-1.10742-1.11768-1.48682-1.47998-0.37598-0.36572-0.43066-0.39648-0.08545-0.04102-0.22559-0.04102-0.14014 0-0.22217 0.02734z"
-                    fill="#0B0F0D"
-                  ></path>
-                </svg>
-                <div
-                  data-pencil-name="Method Label"
-                  style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
-                >
-                  Go install
+                <div style='box-sizing: border-box; color: #1FA648; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                  02
                 </div>
               </div>
-              <div
-                data-pencil-name="Code Block"
-                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 12px; width: 100%"
-              >
+              <div style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                Check dependencies
+              </div>
+              <div style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 13.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%">
+                Verifies the AWS CLI, Session Manager plugin, and your credentials in one shot.
+              </div>
+              <div style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 10px 12px; width: 100%">
                 <div
                   data-pencil-name="Command"
-                  data-copy-text="go install github.com/brunodasilvalenga/act@latest"
-                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left; min-width: 0; overflow-x: auto; white-space: nowrap'
+                  data-copy-text="act doctor"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 18px; text-align: left; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap'
                 >
-                  go install github.com/brunodasilvalenga/act@latest
+                  act doctor
                 </div>
-                <button
-                  type="button"
-                  class="copy-btn"
-                  data-pencil-name="Copy Icon"
-                  aria-label="Copy install command"
-                >
-                  <svg
-                    data-icon-name="copy"
-                    data-icon-set="lucide"
-                    viewBox="0 0 13.99993896484375 14"
-                    preserveAspectRatio="xMidYMid meet"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
-                  >
-                    <path
-                      d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                      fill="#9AA79E"
-                    ></path>
+                <button type="button" class="copy-btn" aria-label="Copy command">
+                  <span class="copy-tooltip">Copied!</span>
+                  <svg class="icon-copy" data-icon-name="copy" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z" fill="#9AA79E"></path>
+                  </svg>
+                  <svg class="icon-check" data-icon-name="check" data-icon-set="lucide" viewBox="0 0 14 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M12 3.5 L5.5 10.5 L2 7" fill="none" stroke="#39E75F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
                   </svg>
                 </button>
               </div>
             </div>
             <div
-              data-pencil-name="Windows PowerShell Card"
-              style="align-items: flex-start; background-color: #FFFFFF; border-radius: 8px; border: 1px solid #DDE3DD; box-sizing: border-box; display: flex; flex-direction: column; flex: 1 1 0; gap: 12px; height: fit-content; justify-content: flex-start; padding: 16px"
+              data-pencil-name="Step 03"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; height: fit-content; justify-content: flex-start; width: 100%"
             >
               <div
-                data-pencil-name="Card Header"
-                style="align-items: center; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: flex-start; width: 100%"
+                data-pencil-name="Step Number"
+                style="align-items: center; border-radius: 9999px; border: 1px solid #1FA648; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 32px; justify-content: center; width: 32px"
               >
-                <svg
-                  data-pencil-name="Method Icon"
-                  data-icon-name="app-window"
-                  data-icon-set="lucide"
-                  viewBox="0 0 13.99993896484375 14"
-                  preserveAspectRatio="xMidYMid meet"
-                  xmlns="http://www.w3.org/2000/svg"
-                  style="box-sizing: border-box; flex-shrink: 0; height: 18px; width: 18px"
-                >
-                  <path
-                    d="M2.05762 1.77734q-0.28027 0.04102-0.53321 0.16748-0.34863 0.19824-0.58789 0.50586-0.23584 0.30762-0.32129 0.70069-0.01367 0.10938-0.02734 0.66992l0 3.17871 0 3.17871q0.01367 0.56055 0.02734 0.66992 0.11279 0.5332 0.50245 0.90577 0.39307 0.36914 0.92627 0.46826 0.16748 0.02734 4.95605 0.02734 4.78857 0 4.95605-0.02734 0.5332-0.09912 0.92286-0.46826 0.39307-0.37256 0.50586-0.90577 0.01367-0.10938 0.02734-0.66992l0-3.17871 0-3.17871q-0.01367-0.56055-0.02734-0.66992-0.12647-0.54688-0.53321-0.92285-0.40674-0.37939-0.95019-0.46485-0.1709-0.01367-4.93897-0.01367-4.76465 0-4.90478 0.02734z m0.86816 1.72266l0 0.57422-1.17578 0 0-0.36572q0.01367-0.26318 0.02051-0.31787 0.00684-0.05811 0.04101-0.14014 0.0376-0.08545 0.12647-0.16748 0.09229-0.08545 0.1914-0.12989 0.05469-0.01367 0.12989-0.0205 0.07861-0.00684 0.3042-0.00684l0.3623 0 0 0.57422z m2.32422 0l0 0.57422-1.17578 0 0-1.14844 1.17578 0 0 0.57422z m6.6206-0.54688q0.21192 0.08545 0.32471 0.29395 0.02734 0.08545 0.03418 0.14356 0.00684 0.05469 0.02051 0.31787l0 0.36572-5.82422 0 0-1.14844 5.02783 0q0.34863 0 0.417 0.02734z m0.3794 5.00049l-0.01367 2.7002-0.04102 0.09912q-0.11279 0.2085-0.32471 0.29394l-0.0957 0.02735-9.5498 0-0.09571-0.02735q-0.21191-0.08545-0.3247-0.29394l-0.04102-0.09912-0.01367-5.40381 10.5 0 0 2.70361z"
-                    fill="#0B0F0D"
-                  ></path>
-                </svg>
-                <div
-                  data-pencil-name="Method Label"
-                  style="box-sizing: border-box; color: #0B0F0D; font-family: Inter, system-ui, sans-serif; font-size: 14px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap"
-                >
-                  Windows PowerShell
+                <div style='box-sizing: border-box; color: #1FA648; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                  03
                 </div>
               </div>
-              <div
-                data-pencil-name="Code Block"
-                style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 12px; width: 100%"
-              >
+              <div style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                Sign in to AWS
+              </div>
+              <div style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 13.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%">
+                act has no separate login — it uses your existing AWS CLI credentials or SSO session.
+              </div>
+              <div style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 10px 12px; width: 100%">
                 <div
                   data-pencil-name="Command"
-                  data-copy-text="irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex"
-                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 19px; text-align: left; min-width: 0; overflow-x: auto; white-space: nowrap'
+                  data-copy-text="aws sso login"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 18px; text-align: left; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap'
                 >
-                  irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex
+                  aws sso login
                 </div>
-                <button
-                  type="button"
-                  class="copy-btn"
-                  data-pencil-name="Copy Icon"
-                  aria-label="Copy install command"
+                <button type="button" class="copy-btn" aria-label="Copy command">
+                  <span class="copy-tooltip">Copied!</span>
+                  <svg class="icon-copy" data-icon-name="copy" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z" fill="#9AA79E"></path>
+                  </svg>
+                  <svg class="icon-check" data-icon-name="check" data-icon-set="lucide" viewBox="0 0 14 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M12 3.5 L5.5 10.5 L2 7" fill="none" stroke="#39E75F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div
+              data-pencil-name="Step 04"
+              style="align-items: flex-start; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; height: fit-content; justify-content: flex-start; width: 100%"
+            >
+              <div
+                data-pencil-name="Step Number"
+                style="align-items: center; border-radius: 9999px; border: 1px solid #1FA648; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 0px; height: 32px; justify-content: center; width: 32px"
+              >
+                <div style='box-sizing: border-box; color: #1FA648; font-family: "Geist Mono", system-ui, sans-serif; font-size: 13px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                  04
+                </div>
+              </div>
+              <div style='box-sizing: border-box; color: #0B0F0D; font-family: "Geist Mono", system-ui, sans-serif; font-size: 17px; font-style: normal; font-weight: 600; letter-spacing: 0px; line-height: normal; text-align: left; white-space: nowrap'>
+                Start connecting
+              </div>
+              <div style="box-sizing: border-box; color: #4B564F; font-family: Inter, system-ui, sans-serif; font-size: 13.5px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 20px; text-align: left; width: 100%">
+                See every command — EC2, ECS, RDS, port forwarding, favorites, and more.
+              </div>
+              <div style="align-items: flex-start; background-color: #141B17; border-radius: 4px; box-sizing: border-box; display: flex; flex-direction: row; flex-shrink: 0; gap: 8px; height: fit-content; justify-content: space-between; padding: 10px 12px; width: 100%">
+                <div
+                  data-pencil-name="Command"
+                  data-copy-text="act help"
+                  style='box-sizing: border-box; color: #F5F7F5; flex: 1 1 0; font-family: "Geist Mono", system-ui, sans-serif; font-size: 12px; font-style: normal; font-weight: 400; letter-spacing: 0px; line-height: 18px; text-align: left; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap'
                 >
-                  <svg
-                    data-icon-name="copy"
-                    data-icon-set="lucide"
-                    viewBox="0 0 13.99993896484375 14"
-                    preserveAspectRatio="xMidYMid meet"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px"
-                  >
-                    <path
-                      d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z"
-                      fill="#9AA79E"
-                    ></path>
+                  act help
+                </div>
+                <button type="button" class="copy-btn" aria-label="Copy command">
+                  <span class="copy-tooltip">Copied!</span>
+                  <svg class="icon-copy" data-icon-name="copy" data-icon-set="lucide" viewBox="0 0 13.99993896484375 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M2.15674 0.60156q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.36573-0.30762 0.32129-0.43408 0.78271l-0.04102 0.16748 0 6.33008 0.04102 0.16748q0.22559 0.78271 0.91259 1.13477 0.2085 0.10938 0.46827 0.16748 0.25977 0.05469 0.41357 0.02734 0.24951-0.05469 0.38965-0.24268 0.14014-0.19141 0.08545-0.44433-0.02734-0.16748-0.16065-0.30762-0.1333-0.14014-0.3999-0.16748-0.39307-0.04102-0.5332-0.34863l-0.04102-0.09912 0-6.1045 0.04102-0.09912q0.09912-0.19482 0.29394-0.29394l0.09912-0.04102 6.1045 0 0.09912 0.04102q0.30762 0.14014 0.34863 0.51953 0.02734 0.2666 0.18115 0.42041 0.12646 0.12646 0.30762 0.15381 0.29395 0.05469 0.50586-0.15381 0.11279-0.11279 0.14697-0.24609 0.03418-0.1333 0.02051-0.32813-0.08545-0.646-0.52637-1.07666-0.44092-0.43408-1.08349-0.49219-0.16748-0.02734-3.06592-0.02734-2.89844 0-3.07959 0.02734z m3.5 3.5q-0.29395 0.02734-0.58789 0.16748-0.29395 0.14014-0.50586 0.3794-0.30762 0.32129-0.43408 0.79638l-0.04102 0.1709 0 6.29932 0.04102 0.16748q0.07178 0.25293 0.18115 0.44092 0.11279 0.18799 0.29394 0.37256 0.18457 0.18115 0.37256 0.29394 0.18799 0.10938 0.44092 0.18115l0.16748 0.04102 6.33008 0 0.16748-0.04102q0.25293-0.07178 0.44092-0.18115 0.18799-0.11279 0.36914-0.29394 0.18457-0.18457 0.29394-0.37256 0.11279-0.18799 0.18457-0.44092l0.04102-0.16748 0-6.33008-0.04102-0.16748q-0.12646-0.46143-0.43408-0.78271-0.44775-0.4751-1.13476-0.54688-0.16748-0.01367-3.06592-0.01367-2.89844 0-3.07959 0.02734z m6.24463 1.20313q0.19482 0.09912 0.29394 0.29394l0.04102 0.09912 0 6.1045-0.02735 0.08545q-0.12646 0.26318-0.37939 0.33496-0.08203 0.02734-3.07959 0.02734-2.99756 0-3.07959-0.02734-0.25293-0.07178-0.37939-0.33496l-0.02735-0.08545 0-6.1045 0.04102-0.09912q0.11279-0.24951 0.37939-0.32129 0.08545-0.02734 3.10694-0.02734l3.01123 0.01367 0.09912 0.04102z" fill="#9AA79E"></path>
+                  </svg>
+                  <svg class="icon-check" data-icon-name="check" data-icon-set="lucide" viewBox="0 0 14 14" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="box-sizing: border-box; flex-shrink: 0; height: 14px; width: 14px">
+                    <path d="M12 3.5 L5.5 10.5 L2 7" fill="none" stroke="#39E75F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
                   </svg>
                 </button>
               </div>
@@ -1771,6 +1898,41 @@
           });
         });
       });
+
+      function setPlatform(key) {
+        document.querySelectorAll(".platform-tab").forEach(function (tab) {
+          tab.classList.toggle("is-active", tab.getAttribute("data-platform") === key);
+        });
+        document.querySelectorAll(".platform-command").forEach(function (block) {
+          var cmd = block.getAttribute("data-cmd-" + key);
+          if (!cmd) return;
+          var commandEl = block.querySelector("[data-copy-text]");
+          if (commandEl) {
+            commandEl.setAttribute("data-copy-text", cmd);
+            commandEl.textContent = cmd;
+          }
+        });
+      }
+
+      document.querySelectorAll(".platform-tab").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          setPlatform(tab.getAttribute("data-platform"));
+        });
+      });
+
+      (function detectPlatform() {
+        var ua = navigator.userAgent || "";
+        var plat = navigator.platform || "";
+        var key = "mac-linux";
+        if (/Win/i.test(ua) || /Win/i.test(plat)) {
+          key = "windows";
+        } else if (/Mac|Linux|X11/i.test(ua) || /Mac|Linux/i.test(plat)) {
+          key = "mac-linux";
+        } else {
+          key = "other";
+        }
+        setPlatform(key);
+      })();
     </script>
   </body>
 </html>

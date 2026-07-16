@@ -1,0 +1,2392 @@
+{
+  "version": "2.14",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "act Landing Page",
+      "clip": true,
+      "width": 1440,
+      "fill": "$bg-dark",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "tlHXH",
+          "name": "Hero",
+          "width": "fill_container",
+          "fill": "$bg-dark",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "lj1Al",
+              "name": "Nav",
+              "width": "fill_container",
+              "padding": [
+                24,
+                64
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "uksE9",
+                  "name": "Logo",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "z1KSU",
+                      "name": "Logo Prompt",
+                      "fill": "$accent",
+                      "content": ">",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "F6YKuv",
+                      "name": "Logo Wordmark",
+                      "fill": "$text-primary-dark",
+                      "content": "act",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 20,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TCOnz",
+                  "name": "Nav Links",
+                  "gap": 40,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "OazuD",
+                      "name": "Features",
+                      "fill": "$text-secondary-dark",
+                      "content": "Features",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yC5IO",
+                      "name": "How it works",
+                      "fill": "$text-secondary-dark",
+                      "content": "How it works",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "UHCpg",
+                      "name": "Install",
+                      "fill": "$text-secondary-dark",
+                      "content": "Install",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "AqoI1",
+                  "name": "Nav Right",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "M8NKf",
+                      "name": "GitHub Icon Button",
+                      "width": 36,
+                      "height": 36,
+                      "cornerRadius": "$radius-md",
+                      "stroke": "$border-dark",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "fckPT",
+                          "name": "GitHub Icon",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "github",
+                          "library": "lucide",
+                          "fill": "$text-primary-dark"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UALEr",
+                      "name": "Get Started Nav Button",
+                      "fill": "$accent",
+                      "cornerRadius": "$radius-full",
+                      "padding": [
+                        10,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Ubkpg",
+                          "name": "Label",
+                          "fill": "$text-on-accent",
+                          "content": "Get Started",
+                          "fontFamily": "$font-body",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "N5uiK",
+              "name": "Hero Content",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                72,
+                64,
+                0,
+                64
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "tVsuk",
+                  "name": "Badge",
+                  "cornerRadius": "$radius-full",
+                  "stroke": "$accent-dim",
+                  "strokeWidth": 1,
+                  "gap": 8,
+                  "padding": [
+                    7,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "h9QKA",
+                      "name": "Dot",
+                      "fill": "$accent",
+                      "content": "●",
+                      "fontFamily": "$font-body",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "yNGTi",
+                      "name": "Badge Label",
+                      "fill": "$text-secondary-dark",
+                      "content": "Open Source · MIT Licensed",
+                      "fontFamily": "$font-body",
+                      "fontSize": 13,
+                      "fontWeight": "500",
+                      "letterSpacing": 0.3
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "c9izxh",
+                  "name": "Headline",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "bJGkf",
+                      "name": "Headline Line 1",
+                      "fill": "$text-primary-dark",
+                      "content": "SSH into AWS instances",
+                      "textAlign": "center",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 56,
+                      "fontWeight": "700",
+                      "letterSpacing": -1
+                    },
+                    {
+                      "type": "text",
+                      "id": "r64HD",
+                      "name": "Headline Line 2",
+                      "fill": "$accent",
+                      "content": "without the bastion headache",
+                      "textAlign": "center",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 56,
+                      "fontWeight": "700",
+                      "letterSpacing": -1
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "BOAUj",
+                  "name": "Subheadline",
+                  "fill": "$text-secondary-dark",
+                  "textGrowth": "fixed-width",
+                  "width": 640,
+                  "content": "act is an open-source terminal UI for connecting to EC2, ECS, and RDS through AWS Session Manager — no open inbound ports, no SSH key distribution, no extra dependencies beyond the AWS CLI.",
+                  "lineHeight": 1.5,
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "Sn8s6",
+                  "name": "CTA Row",
+                  "gap": 14,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "mpq0R",
+                      "name": "Primary CTA",
+                      "fill": "$accent",
+                      "cornerRadius": "$radius-full",
+                      "gap": 8,
+                      "padding": [
+                        14,
+                        28
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "g8Op2C",
+                          "name": "Label",
+                          "fill": "$text-on-accent",
+                          "content": "Get Started",
+                          "fontFamily": "$font-body",
+                          "fontSize": 15,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "tBWC8",
+                          "name": "Arrow",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "arrow-right",
+                          "library": "lucide",
+                          "fill": "$text-on-accent"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YKbOT",
+                      "name": "Secondary CTA",
+                      "cornerRadius": "$radius-full",
+                      "stroke": "$border-dark",
+                      "strokeWidth": 1,
+                      "gap": 8,
+                      "padding": [
+                        14,
+                        28
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "d1UhJT",
+                          "name": "GitHub Icon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "github",
+                          "library": "lucide",
+                          "fill": "$text-primary-dark"
+                        },
+                        {
+                          "type": "text",
+                          "id": "W66M82",
+                          "name": "Label",
+                          "fill": "$text-primary-dark",
+                          "content": "View on GitHub",
+                          "fontFamily": "$font-body",
+                          "fontSize": 15,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "SnMLF",
+                  "name": "Install Snippet",
+                  "fill": "$surface-dark-raised",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border-dark",
+                  "strokeWidth": 1,
+                  "gap": 16,
+                  "padding": [
+                    14,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "cI3Mh",
+                      "name": "Snippet Text",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "FmDfa",
+                          "name": "Prompt",
+                          "fill": "$accent",
+                          "content": "$",
+                          "fontFamily": "$font-data",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "IZhlU",
+                          "name": "Command",
+                          "fill": "$text-primary-dark",
+                          "content": "curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh",
+                          "fontFamily": "$font-data",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "Hecxe",
+                      "name": "Copy Icon",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "copy",
+                      "library": "lucide",
+                      "fill": "$text-secondary-dark"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zOo8T",
+              "name": "Terminal Mockup Wrap",
+              "width": "fill_container",
+              "layout": "vertical",
+              "padding": [
+                56,
+                64,
+                96,
+                64
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "u4Rt6",
+                  "name": "Terminal Window",
+                  "clip": true,
+                  "width": 900,
+                  "fill": "$surface-dark",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border-dark",
+                  "strokeWidth": 1,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000080",
+                    "offset": {
+                      "x": 0,
+                      "y": 12
+                    },
+                    "blur": 32
+                  },
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "KOo1F",
+                      "name": "Title Bar",
+                      "width": "fill_container",
+                      "stroke": "$border-dark",
+                      "strokeWidth": {
+                        "bottom": 1
+                      },
+                      "padding": [
+                        12,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "c31kdu",
+                          "name": "Traffic Lights",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "A47Nw",
+                              "name": "Dot",
+                              "fill": "#FF5F56",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "ellipse",
+                              "id": "W8t1yU",
+                              "name": "Dot",
+                              "fill": "#FFBD2E",
+                              "width": 10,
+                              "height": 10
+                            },
+                            {
+                              "type": "ellipse",
+                              "id": "nonUS",
+                              "name": "Dot",
+                              "fill": "#27C93F",
+                              "width": 10,
+                              "height": 10
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "eCRsz",
+                          "name": "Title",
+                          "fill": "$text-secondary-dark",
+                          "content": "act ec2 — production",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "DOVh1",
+                          "name": "Spacer",
+                          "width": 52,
+                          "height": 1
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W6JiyD",
+                      "name": "Body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 14,
+                      "padding": 20,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "S0gOJ",
+                          "name": "Prompt Line",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "gl84v",
+                              "name": "Prompt Symbol",
+                              "fill": "$accent",
+                              "content": "$",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "qUYEJ",
+                              "name": "Prompt Command",
+                              "fill": "$text-primary-dark",
+                              "content": "act ec2",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "lSUSU",
+                          "name": "Filter Line",
+                          "fill": "$text-secondary-dark",
+                          "content": "Filter: prod_",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "wGVdJ",
+                          "name": "Instance List",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "m8dCn",
+                              "name": "Row prod-api-01",
+                              "width": "fill_container",
+                              "fill": "$surface-dark-raised",
+                              "cornerRadius": "$radius-sm",
+                              "gap": 12,
+                              "padding": [
+                                8,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "xTFOA",
+                                  "name": "Status Dot",
+                                  "fill": "$accent",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "q3Kyey",
+                                  "name": "Name",
+                                  "fill": "$accent",
+                                  "content": "prod-api-01",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "yhD5r",
+                                  "name": "Id",
+                                  "fill": "$text-secondary-dark",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "i-0a1b2c3d4e5f67890",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "BZETS",
+                                  "name": "Type",
+                                  "fill": "$text-secondary-dark",
+                                  "content": "t3.medium",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "M7N4NF",
+                              "name": "Row prod-worker-02",
+                              "width": "fill_container",
+                              "fill": "#00000000",
+                              "cornerRadius": "$radius-sm",
+                              "gap": 12,
+                              "padding": [
+                                8,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "jkg7d",
+                                  "name": "Status Dot",
+                                  "fill": "$accent",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "qYm59",
+                                  "name": "Name",
+                                  "fill": "$text-primary-dark",
+                                  "content": "prod-worker-02",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "xVzvG",
+                                  "name": "Id",
+                                  "fill": "$text-secondary-dark",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "i-0f9e8d7c6b5a43210",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "oX89Y",
+                                  "name": "Type",
+                                  "fill": "$text-secondary-dark",
+                                  "content": "t3.large",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "eXQJg",
+                              "name": "Row prod-cache-01",
+                              "width": "fill_container",
+                              "fill": "#00000000",
+                              "cornerRadius": "$radius-sm",
+                              "gap": 12,
+                              "padding": [
+                                8,
+                                10
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "ellipse",
+                                  "id": "X4Vre",
+                                  "name": "Status Dot",
+                                  "fill": "$text-secondary-dark",
+                                  "width": 8,
+                                  "height": 8
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "BHK4d",
+                                  "name": "Name",
+                                  "fill": "$text-primary-dark",
+                                  "content": "prod-cache-01",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ElBFO",
+                                  "name": "Id",
+                                  "fill": "$text-secondary-dark",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "i-0123456789abcdef0",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "x1oKw",
+                                  "name": "Type",
+                                  "fill": "$text-secondary-dark",
+                                  "content": "r6g.large",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "bxBHd",
+                          "name": "Footer Hint",
+                          "width": "fill_container",
+                          "stroke": "$border-dark",
+                          "strokeWidth": {
+                            "top": 1
+                          },
+                          "gap": 20,
+                          "padding": [
+                            10,
+                            2,
+                            0,
+                            2
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "L5mJP",
+                              "name": "↑/↓ navigate",
+                              "fill": "$text-secondary-dark",
+                              "content": "↑/↓ navigate",
+                              "fontFamily": "$font-body",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "N36fKt",
+                              "name": "enter connect",
+                              "fill": "$text-secondary-dark",
+                              "content": "enter connect",
+                              "fontFamily": "$font-body",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "aTBE0",
+                              "name": "esc quit",
+                              "fill": "$text-secondary-dark",
+                              "content": "esc quit",
+                              "fontFamily": "$font-body",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YjmcV",
+          "name": "Features",
+          "width": "fill_container",
+          "fill": "$bg-light",
+          "layout": "vertical",
+          "gap": 56,
+          "padding": [
+            96,
+            120
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "WoFwL",
+              "name": "Section Header",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y96n1",
+                  "name": "Eyebrow",
+                  "fill": "$accent-dim",
+                  "content": "FEATURES",
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "600",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "YeRc9",
+                  "name": "Heading",
+                  "fill": "$text-primary-light",
+                  "textGrowth": "fixed-width",
+                  "width": 640,
+                  "content": "Everything you need, nothing you don't",
+                  "textAlign": "center",
+                  "fontFamily": "$font-heading",
+                  "fontSize": 36,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "Lfn8b",
+                  "name": "Subheading",
+                  "fill": "$text-secondary-light",
+                  "textGrowth": "fixed-width",
+                  "width": 600,
+                  "content": "act wraps AWS Session Manager in a single terminal UI, so you can reach EC2, ECS, and RDS without bastions, open ports, or SSH keys.",
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "cUiUZ",
+              "name": "Feature Grid",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "pZEr7",
+                  "name": "Feature Row 1",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "O4Yke",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "EC2 Connect",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "server"
+                        },
+                        "O9Sl45": {
+                          "content": "EC2 Connect"
+                        },
+                        "n59ag": {
+                          "content": "List and filter running EC2 instances, then start an SSM session in one step."
+                        }
+                      }
+                    },
+                    {
+                      "id": "uez7U",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "ECS Exec",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "boxes"
+                        },
+                        "O9Sl45": {
+                          "content": "ECS Exec"
+                        },
+                        "n59ag": {
+                          "content": "Pick a cluster, service, and task, then exec straight into the running container."
+                        }
+                      }
+                    },
+                    {
+                      "id": "mmhsu",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "Port Forwarding",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "arrow-right-left"
+                        },
+                        "O9Sl45": {
+                          "content": "Port Forwarding"
+                        },
+                        "n59ag": {
+                          "content": "Forward local ports through SSM, including to remote hosts like RDS behind a bastion."
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "bK6YE",
+                  "name": "Feature Row 2",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "Qcjjw",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "ECS Logs",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "scroll-text"
+                        },
+                        "O9Sl45": {
+                          "content": "ECS Logs"
+                        },
+                        "n59ag": {
+                          "content": "Auto-detects the right log group and tails CloudWatch logs without extra setup."
+                        }
+                      }
+                    },
+                    {
+                      "id": "SDEU3",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "RDP over SSM",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "monitor"
+                        },
+                        "O9Sl45": {
+                          "content": "RDP over SSM"
+                        },
+                        "n59ag": {
+                          "content": "RDP into Windows instances through SSM and auto-launch your RDP client."
+                        }
+                      }
+                    },
+                    {
+                      "id": "iT7Ua",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "SSH over SSM",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "terminal"
+                        },
+                        "O9Sl45": {
+                          "content": "SSH over SSM"
+                        },
+                        "n59ag": {
+                          "content": "Real SSH via ProxyCommand, no open inbound ports, with SCP, rsync, and agent forwarding."
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "X1i2n",
+                  "name": "Feature Row 3",
+                  "width": "fill_container",
+                  "gap": 24,
+                  "children": [
+                    {
+                      "id": "I44cy",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "Run Command",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "square-terminal"
+                        },
+                        "O9Sl45": {
+                          "content": "Run Command"
+                        },
+                        "n59ag": {
+                          "content": "Execute scripts or commands via SSM Run Command without opening a session."
+                        }
+                      }
+                    },
+                    {
+                      "id": "AaO5p",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "Favorites & Environments",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "star"
+                        },
+                        "O9Sl45": {
+                          "content": "Favorites & Environments"
+                        },
+                        "n59ag": {
+                          "content": "Save frequent targets and switch instantly between prod, staging, and other environments."
+                        }
+                      }
+                    },
+                    {
+                      "id": "OFoEM",
+                      "type": "ref",
+                      "ref": "jdNRB",
+                      "name": "Doctor & Self-Upgrade",
+                      "width": "fill_container",
+                      "descendants": {
+                        "rXMO4": {
+                          "icon": "stethoscope"
+                        },
+                        "O9Sl45": {
+                          "content": "Doctor & Self-Upgrade"
+                        },
+                        "n59ag": {
+                          "content": "Verify local dependencies and upgrade the binary with a single command."
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "r9VIt",
+          "name": "Demo",
+          "width": "fill_container",
+          "fill": "$bg-dark",
+          "layout": "vertical",
+          "gap": 64,
+          "padding": 120,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "BSZ77",
+              "name": "Section Header",
+              "width": 640,
+              "layout": "vertical",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "n3N5b",
+                  "name": "Eyebrow Badge",
+                  "fill": "$surface-dark-raised",
+                  "cornerRadius": "$radius-full",
+                  "stroke": "$border-dark",
+                  "strokeWidth": 1,
+                  "padding": [
+                    6,
+                    14
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "s3PCLJ",
+                      "name": "Eyebrow Label",
+                      "fill": "$accent",
+                      "content": "HOW IT WORKS",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "600",
+                      "letterSpacing": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "AX9SW",
+                  "name": "Heading",
+                  "fill": "$text-primary-dark",
+                  "textGrowth": "fixed-width",
+                  "width": 640,
+                  "content": "From API call to shell — in seconds",
+                  "lineHeight": 1.15,
+                  "textAlign": "center",
+                  "fontFamily": "$font-heading",
+                  "fontSize": 40,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "YiiIM",
+                  "name": "Subheading",
+                  "fill": "$text-secondary-dark",
+                  "textGrowth": "fixed-width",
+                  "width": 600,
+                  "content": "No bastion hosts. No open inbound ports. No SSH keys to distribute. Just the AWS APIs you already trust.",
+                  "lineHeight": 1.5,
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "eA6aV",
+              "name": "Steps Row",
+              "width": 960,
+              "gap": 40,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "o6e9w0",
+                  "name": "Step 01",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "dZLvc",
+                      "name": "Step Number",
+                      "width": 36,
+                      "height": 36,
+                      "cornerRadius": "$radius-full",
+                      "stroke": "$accent",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "rGemd",
+                          "name": "Number Label",
+                          "fill": "$accent",
+                          "content": "01",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "uFqxx",
+                      "name": "Step Title",
+                      "fill": "$text-primary-dark",
+                      "content": "Discover",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zJEjY",
+                      "name": "Step Description",
+                      "fill": "$text-secondary-dark",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Runs live AWS API calls to list EC2 instances, ECS clusters & tasks, and RDS databases in your account.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cbWdb",
+                  "name": "Step 02",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "lv1aH",
+                      "name": "Step Number",
+                      "width": 36,
+                      "height": 36,
+                      "cornerRadius": "$radius-full",
+                      "stroke": "$accent",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "RpJva",
+                          "name": "Number Label",
+                          "fill": "$accent",
+                          "content": "02",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "plY9l",
+                      "name": "Step Title",
+                      "fill": "$text-primary-dark",
+                      "content": "Pick",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "WG9Ix",
+                      "name": "Step Description",
+                      "fill": "$text-secondary-dark",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "An interactive TUI shows every target with real-time fuzzy filtering — no copy-pasting instance IDs ever again.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "dwHrC",
+                  "name": "Step 03",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "J8Fmt",
+                      "name": "Step Number",
+                      "width": 36,
+                      "height": 36,
+                      "cornerRadius": "$radius-full",
+                      "stroke": "$accent",
+                      "strokeWidth": 1,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "W6U1zl",
+                          "name": "Number Label",
+                          "fill": "$accent",
+                          "content": "03",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "cMiMZ",
+                      "name": "Step Title",
+                      "fill": "$text-primary-dark",
+                      "content": "Connect",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "y6cRS",
+                      "name": "Step Description",
+                      "fill": "$text-secondary-dark",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Executes the right action for you — an SSM session, a port-forward tunnel, ecs execute-command, or a live log tail.",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HDvXu",
+              "name": "Terminal Mockup",
+              "clip": true,
+              "width": 1100,
+              "fill": "$surface-dark",
+              "cornerRadius": "$radius-md",
+              "stroke": "$border-dark",
+              "strokeWidth": 1,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#00000080",
+                "offset": {
+                  "x": 0,
+                  "y": 4
+                },
+                "blur": 8
+              },
+              "layout": "vertical",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Ez1lG",
+                  "name": "Title Bar",
+                  "width": "fill_container",
+                  "fill": "$surface-dark-raised",
+                  "stroke": "$border-dark",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "gap": 8,
+                  "padding": [
+                    12,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "kS0Vc",
+                      "name": "Dot Red",
+                      "fill": "#FF5F56",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "Uclav",
+                      "name": "Dot Yellow",
+                      "fill": "#FFBD2E",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "avV2U",
+                      "name": "Dot Green",
+                      "fill": "#27C93F",
+                      "width": 12,
+                      "height": 12
+                    },
+                    {
+                      "type": "frame",
+                      "id": "u5XrD",
+                      "name": "Spacer",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "nXMA4",
+                      "name": "Window Title",
+                      "fill": "$text-secondary-dark",
+                      "content": "zsh — act",
+                      "fontFamily": "$font-data",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Cw5bN",
+                      "name": "Spacer Right",
+                      "width": "fill_container",
+                      "height": 1
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "LCl3o",
+                  "name": "Terminal Body",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 22,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "A3jBOV",
+                      "name": "Command: act ec2",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "X2jBP",
+                          "name": "Command Line",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "x7edGV",
+                              "name": "Prompt Symbol",
+                              "fill": "$accent",
+                              "content": "❯",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "kZmzt",
+                              "name": "Command Text",
+                              "fill": "$text-primary-dark",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "act ec2",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "Z30LG",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Fetching EC2 instances via DescribeInstances…",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "JSPuN",
+                          "name": "Picker List",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "padding": [
+                            4,
+                            0
+                          ],
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "Og7Kj",
+                              "name": "Picker Row Selected",
+                              "width": "fill_container",
+                              "fill": "$accent-dim",
+                              "cornerRadius": "$radius-sm",
+                              "padding": [
+                                4,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "aM2qc",
+                                  "name": "Row Text",
+                                  "fill": "$text-on-accent",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "❯ web-prod-01   i-0a1b2c3d4e5f67890   running",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "keTzq",
+                              "name": "Picker Row",
+                              "width": "fill_container",
+                              "padding": [
+                                4,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "wTZl8",
+                                  "name": "Row Text",
+                                  "fill": "$text-secondary-dark",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "  web-prod-02   i-0d4e5f67890a1b2c3   running",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "W2HcQE",
+                              "name": "Picker Row",
+                              "width": "fill_container",
+                              "padding": [
+                                4,
+                                8
+                              ],
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "TNr0F",
+                                  "name": "Row Text",
+                                  "fill": "$text-secondary-dark",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
+                                  "content": "  api-worker-03  i-0c3d4e5f67890a1b2  stopped",
+                                  "fontFamily": "$font-data",
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "tKogI",
+                          "name": "Footer Hint",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Type to filter…",
+                          "fontFamily": "$font-data",
+                          "fontSize": 12,
+                          "fontWeight": "normal",
+                          "fontStyle": "italic"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mlpvb",
+                      "name": "Command: act ec2 ssh --user ec2-user",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TKMKc",
+                          "name": "Command Line",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "UqgoL",
+                              "name": "Prompt Symbol",
+                              "fill": "$accent",
+                              "content": "❯",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "JHsMh",
+                              "name": "Command Text",
+                              "fill": "$text-primary-dark",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "act ec2 ssh --user ec2-user",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "rVhPW",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Starting session via AWS SSM — no bastion, no open ports…",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n8yQh",
+                          "name": "Output Line",
+                          "fill": "$accent",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "✓ Connected to i-0a1b2c3d4e5f67890 as ec2-user",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "H8YI3G",
+                          "name": "Output Line",
+                          "fill": "$text-primary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "[ec2-user@web-prod-01 ~]$",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "k5t44g",
+                      "name": "Command: act forward --local-port 5432 --remote-port 5432 --target i-0123456789abcdef0",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "o0qvC",
+                          "name": "Command Line",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "eGqcK",
+                              "name": "Prompt Symbol",
+                              "fill": "$accent",
+                              "content": "❯",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "mavP6",
+                              "name": "Command Text",
+                              "fill": "$text-primary-dark",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "act forward --local-port 5432 --remote-port 5432 --target i-0123456789abcdef0",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "UEHZZ",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Opening SSM port-forwarding session…",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "m39Wo",
+                          "name": "Output Line",
+                          "fill": "$accent",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "✓ Forwarding localhost:5432 → i-0123456789abcdef0:5432",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "XJmAX",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Press Ctrl+C to stop",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FAsY0",
+                      "name": "Command: act ecs logs --cluster my-cluster --service my-service",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "REWAK",
+                          "name": "Command Line",
+                          "width": "fill_container",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "m05Pd",
+                              "name": "Prompt Symbol",
+                              "fill": "$accent",
+                              "content": "❯",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "cwPN3",
+                              "name": "Command Text",
+                              "fill": "$text-primary-dark",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "act ecs logs --cluster my-cluster --service my-service",
+                              "fontFamily": "$font-data",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "u4zSZ",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Tailing CloudWatch Logs for service my-service…",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "eQbIa",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "2026-07-16T10:32:01Z  INFO  Health check passed",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "DvtIy",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "2026-07-16T10:32:04Z  INFO  Request served in 42ms",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yndHX",
+                          "name": "Output Line",
+                          "fill": "$text-secondary-dark",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "2026-07-16T10:32:06Z  WARN  Retrying connection to db",
+                          "fontFamily": "$font-data",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qswG0",
+          "name": "Install and Footer",
+          "width": "fill_container",
+          "fill": "$bg-light",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "S2ZLo",
+              "name": "Install",
+              "width": "fill_container",
+              "fill": "$bg-light",
+              "layout": "vertical",
+              "gap": 56,
+              "padding": [
+                140,
+                120,
+                120,
+                120
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "EIG41",
+                  "name": "Eyebrow",
+                  "fill": "$accent-dim",
+                  "content": "OPEN SOURCE · MIT LICENSED",
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "600",
+                  "letterSpacing": 1.5
+                },
+                {
+                  "type": "frame",
+                  "id": "TNWM7",
+                  "name": "Header Group",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 20,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "z9fZmp",
+                      "name": "Headline",
+                      "fill": "$text-primary-light",
+                      "textGrowth": "fixed-width",
+                      "width": 700,
+                      "content": "Get started in under a minute",
+                      "lineHeight": 1.1,
+                      "textAlign": "center",
+                      "fontFamily": "$font-heading",
+                      "fontSize": 52,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "SB3B8",
+                      "name": "Subtext",
+                      "fill": "$text-secondary-light",
+                      "textGrowth": "fixed-width",
+                      "width": 560,
+                      "content": "Install act with your favorite package manager. No AWS console tabs, no VPN client — just your terminal.",
+                      "lineHeight": 1.5,
+                      "textAlign": "center",
+                      "fontFamily": "$font-body",
+                      "fontSize": 17,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "VWLJX",
+                  "name": "CTA Button",
+                  "fill": "$accent",
+                  "cornerRadius": "$radius-full",
+                  "gap": 8,
+                  "padding": [
+                    14,
+                    28
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "M2kCy",
+                      "name": "Github Icon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "github",
+                      "library": "lucide",
+                      "fill": "$text-on-accent"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CjJdd",
+                      "name": "CTA Label",
+                      "fill": "$text-on-accent",
+                      "content": "View on GitHub",
+                      "fontFamily": "$font-body",
+                      "fontSize": 15,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "kkBmK",
+                  "name": "Install Methods",
+                  "width": "fill_container",
+                  "gap": 20,
+                  "children": [
+                    {
+                      "id": "Hku7V",
+                      "type": "ref",
+                      "ref": "PCmHk",
+                      "name": "curl Card",
+                      "width": "fill_container",
+                      "descendants": {
+                        "Yj6Rg": {
+                          "icon": "terminal"
+                        },
+                        "yiLRg": {
+                          "content": "Linux/MacOS"
+                        },
+                        "clmf3": {
+                          "content": "curl -sSfL https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.sh | sh"
+                        }
+                      }
+                    },
+                    {
+                      "id": "Y4bkR",
+                      "type": "ref",
+                      "ref": "PCmHk",
+                      "name": "Go install Card",
+                      "width": "fill_container",
+                      "descendants": {
+                        "Yj6Rg": {
+                          "icon": "code"
+                        },
+                        "yiLRg": {
+                          "content": "Go install"
+                        },
+                        "clmf3": {
+                          "content": "go install github.com/brunodasilvalenga/act@latest"
+                        }
+                      }
+                    },
+                    {
+                      "id": "u3B26",
+                      "type": "ref",
+                      "ref": "PCmHk",
+                      "name": "Windows PowerShell Card",
+                      "width": "fill_container",
+                      "descendants": {
+                        "Yj6Rg": {
+                          "icon": "app-window"
+                        },
+                        "yiLRg": {
+                          "content": "Windows PowerShell"
+                        },
+                        "clmf3": {
+                          "content": "irm https://raw.githubusercontent.com/brunodasilvalenga/act/main/install.ps1 | iex"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rSK1n",
+                  "name": "Prerequisite Note",
+                  "gap": 6,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "PBvx5",
+                      "name": "Info Icon",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "info",
+                      "library": "lucide",
+                      "fill": "$text-secondary-light"
+                    },
+                    {
+                      "type": "text",
+                      "id": "EvNOp",
+                      "name": "Prerequisite Text",
+                      "fill": "$text-secondary-light",
+                      "content": "Requires AWS CLI v2 and the Session Manager plugin installed.",
+                      "fontFamily": "$font-body",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "evLFY",
+              "name": "Footer",
+              "width": "fill_container",
+              "fill": "$bg-dark",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": [
+                40,
+                120,
+                32,
+                120
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "YQmEW",
+                  "name": "Footer Top Row",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "JH3K3",
+                      "name": "Brand Group",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "t0orkf",
+                          "name": "Wordmark",
+                          "fill": "$accent",
+                          "content": ">_ act",
+                          "fontFamily": "$font-heading",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "o46hK",
+                          "name": "Tagline",
+                          "fill": "$text-secondary-dark",
+                          "content": "A terminal UI for navigating AWS Session Manager connections.",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "lsBVZ",
+                      "name": "Links Row",
+                      "gap": 28,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "JQah1",
+                          "name": "GitHub Link",
+                          "fill": "$text-secondary-dark",
+                          "content": "GitHub",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "wxHKG",
+                          "name": "Issues Link",
+                          "fill": "$text-secondary-dark",
+                          "content": "Issues",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "By5tp",
+                          "name": "Contributing Link",
+                          "fill": "$text-secondary-dark",
+                          "content": "Contributing",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "QSWrY",
+                          "name": "License · MIT Link",
+                          "fill": "$text-secondary-dark",
+                          "content": "License · MIT",
+                          "fontFamily": "$font-body",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle",
+                  "id": "PgmXo",
+                  "name": "Divider",
+                  "fill": "$border-dark",
+                  "width": "fill_container",
+                  "height": 1
+                },
+                {
+                  "type": "frame",
+                  "id": "wOi6h",
+                  "name": "Copyright Row",
+                  "width": "fill_container",
+                  "justifyContent": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "P7Z4Io",
+                      "name": "Copyright Text",
+                      "fill": "$text-secondary-dark",
+                      "content": "© 2026 act. Released under the MIT License.",
+                      "fontFamily": "$font-body",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jdNRB",
+      "x": 0,
+      "y": -340,
+      "name": "Feature Card",
+      "reusable": true,
+      "width": 400,
+      "fill": "$surface-light",
+      "cornerRadius": "$radius-md",
+      "stroke": "$border-light",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "NcI0j",
+          "name": "Icon Wrap",
+          "width": 40,
+          "height": 40,
+          "fill": "#1FA64822",
+          "cornerRadius": "$radius-sm",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "rXMO4",
+              "name": "Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "server",
+              "library": "lucide",
+              "fill": "$accent-dim"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "daIf7",
+          "name": "Text Stack",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 6,
+          "children": [
+            {
+              "type": "text",
+              "id": "O9Sl45",
+              "name": "Title",
+              "fill": "$text-primary-light",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "EC2 Connect",
+              "fontFamily": "$font-heading",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "n59ag",
+              "name": "Description",
+              "fill": "$text-secondary-light",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "List and filter running instances, then start an SSM session in one step.",
+              "lineHeight": 1.4,
+              "fontFamily": "$font-body",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "PCmHk",
+      "x": 580,
+      "y": -254,
+      "name": "Install Command Card",
+      "reusable": true,
+      "width": 280,
+      "fill": "$surface-light",
+      "cornerRadius": "$radius-md",
+      "stroke": "$border-light",
+      "strokeWidth": 1,
+      "layout": "vertical",
+      "gap": 12,
+      "padding": 16,
+      "children": [
+        {
+          "type": "frame",
+          "id": "vdXJW",
+          "name": "Card Header",
+          "width": "fill_container",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "Yj6Rg",
+              "name": "Method Icon",
+              "width": 18,
+              "height": 18,
+              "icon": "package",
+              "library": "lucide",
+              "fill": "$text-primary-light"
+            },
+            {
+              "type": "text",
+              "id": "yiLRg",
+              "name": "Method Label",
+              "fill": "$text-primary-light",
+              "content": "Homebrew",
+              "fontFamily": "$font-body",
+              "fontSize": 14,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "awCii",
+          "name": "Code Block",
+          "width": "fill_container",
+          "fill": "$surface-dark",
+          "cornerRadius": "$radius-sm",
+          "gap": 8,
+          "padding": 12,
+          "justifyContent": "space_between",
+          "children": [
+            {
+              "type": "text",
+              "id": "clmf3",
+              "name": "Command",
+              "fill": "$text-primary-dark",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "brew install brunodasilvalenga/tap/act",
+              "lineHeight": 1.5,
+              "fontFamily": "$font-data",
+              "fontSize": 12.5,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "tzuZ5",
+              "name": "Copy Icon",
+              "width": 14,
+              "height": 14,
+              "icon": "copy",
+              "library": "lucide",
+              "fill": "$text-secondary-dark"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg-dark": {
+      "type": "color",
+      "value": "#0B0F0D"
+    },
+    "surface-dark": {
+      "type": "color",
+      "value": "#141B17"
+    },
+    "surface-dark-raised": {
+      "type": "color",
+      "value": "#1B231E"
+    },
+    "bg-light": {
+      "type": "color",
+      "value": "#F7F9F7"
+    },
+    "surface-light": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "text-primary-dark": {
+      "type": "color",
+      "value": "#F5F7F5"
+    },
+    "text-secondary-dark": {
+      "type": "color",
+      "value": "#9AA79E"
+    },
+    "text-primary-light": {
+      "type": "color",
+      "value": "#0B0F0D"
+    },
+    "text-secondary-light": {
+      "type": "color",
+      "value": "#4B564F"
+    },
+    "accent": {
+      "type": "color",
+      "value": "#39E75F"
+    },
+    "accent-dim": {
+      "type": "color",
+      "value": "#1FA648"
+    },
+    "text-on-accent": {
+      "type": "color",
+      "value": "#0B0F0D"
+    },
+    "border-dark": {
+      "type": "color",
+      "value": "#223028"
+    },
+    "border-light": {
+      "type": "color",
+      "value": "#DDE3DD"
+    },
+    "font-heading": {
+      "type": "string",
+      "value": "Geist Mono"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "Inter"
+    },
+    "font-data": {
+      "type": "string",
+      "value": "Geist Mono"
+    },
+    "radius-sm": {
+      "type": "number",
+      "value": 4
+    },
+    "radius-md": {
+      "type": "number",
+      "value": 8
+    },
+    "radius-full": {
+      "type": "number",
+      "value": 9999
+    }
+  },
+  "fileToken": "cf69a4af-c91e-42a4-b503-34c4a3bd4864"
+}
