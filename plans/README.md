@@ -30,7 +30,7 @@ and update your row when done.
 | 015 | Add test coverage for internal/updater and internal/doctor | P3 | M | 003, 004 (satisfied — both merged) | DONE (merged to main) |
 | 016 | Add `act ssm run` — execute commands/scripts via SSM Run Command | P2 | M | — | DONE (merged to main) |
 | 017 | Add a static landing page hosted on GitHub Pages | P3 | S | — | DONE (executed, reviewed, not merged — branch `advisor/017-add-landing-page-github-pages`) |
-| 018 | Add `act doctor --fix` to auto-remediate failing checks | P2 | M | — | TODO |
+| 018 | Add `act doctor --fix` to auto-remediate failing checks | P2 | M | — | DONE (merged to main) |
 
 Plan 017 was written on 2026-07-16 via a `plan <description>` invocation
 (skip-the-audit mode) — it did not come from the original 16-finding audit
@@ -43,6 +43,40 @@ invocation (user request: auto-fix `act doctor` failures — e.g. installing
 a missing AWS CLI or Session Manager plugin — with a verbose confirm-first
 flow, a fix log, and a `--skip-confirm` opt-in for unattended runs). Not
 from the original audit; no dependency on any other plan.
+
+**Plan 018 executed 2026-07-17** in an isolated worktree (executor stalled
+once mid-run on an unrelated tangent — investigating why `main.go`'s
+AWS-CLI-in-PATH guard would gate the new AWS-CLI fix path — and was resumed
+with a nudge to finish Step 7 and commit rather than keep investigating).
+All 8 in-scope files present (`internal/doctor/{doctor.go,fix.go,
+fix_test.go,install_awscli.go,install_ssmplugin.go,download.go}`, `main.go`,
+`README.md`), no out-of-scope files touched, `plans/README.md` correctly
+left untouched by the executor per the reviewer override. Reviewer
+independently re-verified (not just trusting the executor's report):
+`go build/vet/gofmt/test` all clean (99 tests, 6 packages); `act doctor
+--help`/`help` unchanged; `act doctor --skip-confirm` (no `--fix`) errors
+and exits 1; declining the fix prompt on a real failing check (Session
+Manager plugin, sandboxed HOME) skips the install and writes a
+`SKIPPED (user declined)` line to a 0600 `~/.act-doctor-fix.log` — the
+core safety property (no install without explicit `y`/`yes` or
+`--skip-confirm`) holds. All AWS CLI / Session Manager plugin download
+URLs return HTTP 200, verified live. All `exec.Command` calls use fixed
+argv (no shell injection surface). Executor added one unscoped-but-sensible
+zip-slip guard (`isWithinDir`) in the shared unzip helper — judged in-spirit
+and approved, not scope creep. One cosmetic deviation: committed to the
+pre-existing worktree branch `worktree-agent-a7f5cf16a116dc6af` (commit
+`e6cf7d5`) instead of creating `advisor/018-add-doctor-fix` as the plan
+specified — not merged, merging is the user's decision.
+
+**Flagged for a possible follow-up plan** (not part of 018's scope): the
+executor observed that `main.go`'s early guard (lines 22-26) exits the
+entire binary with an error if `aws` isn't in `PATH`, *before* subcommand
+dispatch ever runs — meaning `act doctor --fix`'s AWS-CLI-install path can
+never actually be reached today; the binary refuses to start first. The
+Session Manager plugin fix path is unaffected and was verified working
+end-to-end. If the maintainer wants the AWS-CLI auto-fix to be reachable,
+that early guard needs to become conditional (e.g. skip it specifically for
+`doctor --fix`) — a separate, small follow-up plan.
 
 ### Execution batch: plans 001–010 (2026-07-15)
 
