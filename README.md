@@ -25,7 +25,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 - **Config File** — Set defaults in `~/.act.json` (profile, region, favorites, environments)
 - **Environment Variables** — Falls back to `AWS_PROFILE`, `AWS_REGION`, `AWS_DEFAULT_REGION`
 - **Self-Upgrade** — Update to latest version with `act upgrade`
-- **Doctor** — Verify dependencies and configuration with `act doctor`
+- **Doctor** — Verify dependencies and configuration with `act doctor`, or auto-fix missing tools with `act doctor --fix`
 - **Cross-Platform** — Works on macOS, Linux, and Windows
 
 ## Prerequisites
@@ -192,6 +192,12 @@ act init
 
 # Check dependencies
 act doctor
+
+# Auto-fix missing dependencies (prompts before each install)
+act doctor --fix
+
+# Auto-fix without prompting (e.g. in a provisioning script)
+act doctor --fix --skip-confirm
 
 # Upgrade to latest version
 act upgrade

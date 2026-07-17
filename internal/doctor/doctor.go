@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -23,6 +24,20 @@ type result struct {
 	Name   string
 	Status status
 	Detail string
+	Fix    *fixAction // nil when this check has no automated fix
+}
+
+// fixAction describes an automated remediation for a failing check.
+type fixAction struct {
+	// Describe returns a one-line, human-readable summary of what Apply
+	// will do (e.g. "Download and install AWS CLI v2 for macOS via the
+	// official .pkg installer"). Shown before the confirmation prompt.
+	Describe func() string
+	// Apply performs the fix. It must write progress to the provided
+	// io.Writer (both for live stdout echo and for the fix log) and
+	// return an error if the fix failed. It must be safe to call at most
+	// once per fixAction.
+	Apply func(w io.Writer) error
 }
 
 var (
@@ -31,7 +46,7 @@ var (
 	failStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("1")) // red
 )
 
-func Run(profile, region, version string) error {
+func Run(profile, region, version string, fix, skipConfirm bool) error {
 	results := []result{
 		checkAWSCLI(),
 		checkSessionManagerPlugin(),
@@ -40,6 +55,20 @@ func Run(profile, region, version string) error {
 		checkProfile(profile),
 		checkConfigFile(),
 		checkVersion(version),
+	}
+
+	if fix {
+		recheck := func(name string) result {
+			switch name {
+			case "AWS CLI":
+				return checkAWSCLI()
+			case "Session Manager plugin":
+				return checkSessionManagerPlugin()
+			default:
+				return result{Name: name, Status: statusFail, Detail: "unknown check"}
+			}
+		}
+		results, _ = runFixes(results, skipConfirm, recheck)
 	}
 
 	fmt.Println()
@@ -78,6 +107,10 @@ func checkAWSCLI() result {
 			Name:   "AWS CLI",
 			Status: statusFail,
 			Detail: "not found. Install: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html",
+			Fix: &fixAction{
+				Describe: describeAWSCLIInstall,
+				Apply:    installAWSCLI,
+			},
 		}
 	}
 
@@ -100,6 +133,10 @@ func checkSessionManagerPlugin() result {
 			Name:   "Session Manager plugin",
 			Status: statusFail,
 			Detail: "not found. Install: https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html",
+			Fix: &fixAction{
+				Describe: describeSSMPluginInstall,
+				Apply:    installSSMPlugin,
+			},
 		}
 	}
 	return result{

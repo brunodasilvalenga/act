@@ -153,7 +153,24 @@ func main() {
 			printDoctorHelp()
 			os.Exit(0)
 		}
-		doctor.Run(profile, region, version)
+		fix := false
+		skipConfirm := false
+		var doctorArgs []string
+		for _, a := range subArgs {
+			switch a {
+			case "--fix":
+				fix = true
+			case "--skip-confirm":
+				skipConfirm = true
+			default:
+				doctorArgs = append(doctorArgs, a)
+			}
+		}
+		if skipConfirm && !fix {
+			fmt.Fprintln(os.Stderr, "Error: --skip-confirm has no effect without --fix")
+			os.Exit(1)
+		}
+		doctor.Run(profile, region, version, fix, skipConfirm)
 		os.Exit(0)
 
 	case "init":
@@ -469,14 +486,28 @@ Examples:
 func printDoctorHelp() {
 	fmt.Fprintf(os.Stderr, `act doctor - Check system dependencies and configuration
 
-Usage: act [global flags] doctor
+Usage: act [global flags] doctor [--fix] [--skip-confirm]
 
 Checks that all required tools are installed, credentials are valid,
 and configuration is correct.
 
+Flags:
+  --fix            Attempt to automatically fix failing checks (currently:
+                    installing a missing AWS CLI or Session Manager plugin).
+                    Prompts for confirmation before each install unless
+                    --skip-confirm is also given. Writes a log of every fix
+                    attempt to ~/.act-doctor-fix.log.
+  --skip-confirm   With --fix, run every available fix without prompting.
+                    Has no effect without --fix.
+
 Global Flags:
   --profile    AWS profile to use
   --region     AWS region to use
+
+Examples:
+  act doctor
+  act doctor --fix
+  act doctor --fix --skip-confirm
 `)
 }
 
