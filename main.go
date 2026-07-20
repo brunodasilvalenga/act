@@ -20,26 +20,28 @@ import (
 var version = "dev"
 
 func main() {
-	if _, err := exec.LookPath("aws"); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: 'aws' CLI not found in PATH.\nInstall it from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html\n")
-		os.Exit(1)
-	}
-
 	// Parse global flags manually from os.Args
 	var profile, region, env string
 	var showVersion bool
 	args := os.Args[1:]
 	args = parseGlobalFlags(args, &profile, &region, &env, &showVersion)
 
-	if showVersion {
-		printVersion()
-		os.Exit(0)
-	}
-
 	// Determine subcommand
 	subcmd := ""
 	if len(args) > 0 {
 		subcmd = args[0]
+	}
+
+	if subcommandNeedsAWSCLI(subcmd) {
+		if _, err := exec.LookPath("aws"); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: 'aws' CLI not found in PATH.\nInstall it from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html\n")
+			os.Exit(1)
+		}
+	}
+
+	if showVersion {
+		printVersion()
+		os.Exit(0)
 	}
 
 	switch subcmd {
@@ -230,6 +232,14 @@ func hasHelp(args []string) bool {
 		return true
 	}
 	return false
+}
+
+// subcommandNeedsAWSCLI reports whether subcmd requires the AWS CLI to be
+// installed before it can do anything useful. "doctor" is the one
+// exception: it diagnoses (and, with --fix, can install) a missing AWS
+// CLI itself, so it must be reachable even when aws isn't on PATH yet.
+func subcommandNeedsAWSCLI(subcmd string) bool {
+	return subcmd != "doctor"
 }
 
 func printUsage() {

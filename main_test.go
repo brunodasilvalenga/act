@@ -115,6 +115,34 @@ func TestHasHelp(t *testing.T) {
 	}
 }
 
+func TestSubcommandNeedsAWSCLI(t *testing.T) {
+	tests := []struct {
+		name   string
+		subcmd string
+		want   bool
+	}{
+		{"doctor does not need aws cli", "doctor", false},
+		{"ec2 needs aws cli", "ec2", true},
+		{"forward needs aws cli", "forward", true},
+		{"ecs needs aws cli", "ecs", true},
+		{"ssm needs aws cli", "ssm", true},
+		{"rds needs aws cli", "rds", true},
+		{"fav needs aws cli", "fav", true},
+		{"env needs aws cli (unchanged behavior)", "env", true},
+		{"init needs aws cli (unchanged behavior)", "init", true},
+		{"upgrade needs aws cli (unchanged behavior)", "upgrade", true},
+		{"empty subcmd needs aws cli (unchanged behavior)", "", true},
+		{"unknown subcmd needs aws cli (unchanged behavior)", "bogus", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := subcommandNeedsAWSCLI(tt.subcmd); got != tt.want {
+				t.Errorf("subcommandNeedsAWSCLI(%q) = %v, want %v", tt.subcmd, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestParseTags(t *testing.T) {
 	tests := []struct {
 		name          string
