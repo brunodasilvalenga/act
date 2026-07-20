@@ -31,7 +31,7 @@ and update your row when done.
 | 016 | Add `act ssm run` — execute commands/scripts via SSM Run Command | P2 | M | — | DONE (merged to main) |
 | 017 | Add a static landing page hosted on GitHub Pages | P3 | S | — | DONE (executed, reviewed, not merged — branch `advisor/017-add-landing-page-github-pages`) |
 | 018 | Add `act doctor --fix` to auto-remediate failing checks | P2 | M | — | DONE (merged to main) |
-| 019 | Let `act doctor` run without the AWS CLI already installed | P2 | S | 018 (satisfied — merged) | TODO |
+| 019 | Let `act doctor` run without the AWS CLI already installed | P2 | S | 018 (satisfied — merged) | DONE (merged to main) |
 
 Plan 017 was written on 2026-07-16 via a `plan <description>` invocation
 (skip-the-audit mode) — it did not come from the original 16-finding audit
@@ -215,6 +215,37 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   and 006 respectively — see "Recommended execution order" above. Neither
   is a hard dependency; each plan's STOP conditions describe how to
   reconcile if executed out of the suggested order.
+
+## Plan 019 execution notes (2026-07-17 to 2026-07-20)
+
+Plan 019 required three executor dispatches before landing, none of them
+the plan's fault in the way that matters most:
+
+1. **First two attempts stopped on stale worktrees.** The automatic
+   worktree-isolation mechanism branches new worktrees from `origin/main`,
+   but local `main` was 2 commits ahead (unpushed) at the time, including
+   plan 018's merge. Both executors correctly detected the mismatch via
+   their drift checks (plan 018's `doctor --fix` code wasn't present) and
+   stopped without making changes, exactly as instructed — no plan defect,
+   a tooling/workflow gap (local commits weren't pushed). Fixed by manually
+   creating a worktree branched from local `main` directly
+   (`.claude/worktrees/plan-019`, branch `advisor/019-fix-early-aws-cli-guard`)
+   and dispatching into that specific path instead of relying on the
+   automatic isolation.
+2. **Third attempt found a real bug in the plan itself.** The plan's
+   original Step 1 code sample left the `if showVersion { ... }` block
+   *before* the new `subcommandNeedsAWSCLI` guard, which meant
+   `act --version` with `aws` missing would silently exit 0 instead of
+   erroring like it did pre-plan — a real behavior regression the
+   executor's own Step 4.6 verification was designed to catch, and did.
+   The executor correctly stopped rather than patching around it (per the
+   plan's own "do not patch around it" STOP condition). The plan file was
+   corrected in place (moved the `showVersion` check to after the guard,
+   added an explicit ordering note and STOP-condition wording) before
+   re-dispatching a fourth time, which completed cleanly and was reviewed/
+   merged. `plans/019-fix-early-aws-cli-guard-for-doctor-fix.md` on disk
+   now reflects the corrected version only — the buggy intermediate
+   version was never committed anywhere.
 
 ## Findings considered and rejected
 
