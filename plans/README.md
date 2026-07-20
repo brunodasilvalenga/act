@@ -31,6 +31,7 @@ and update your row when done.
 | 016 | Add `act ssm run` — execute commands/scripts via SSM Run Command | P2 | M | — | DONE (merged to main) |
 | 017 | Add a static landing page hosted on GitHub Pages | P3 | S | — | DONE (executed, reviewed, not merged — branch `advisor/017-add-landing-page-github-pages`) |
 | 018 | Add `act doctor --fix` to auto-remediate failing checks | P2 | M | — | DONE (merged to main) |
+| 019 | Let `act doctor` run without the AWS CLI already installed | P2 | S | 018 (satisfied — merged) | TODO |
 
 Plan 017 was written on 2026-07-16 via a `plan <description>` invocation
 (skip-the-audit mode) — it did not come from the original 16-finding audit
