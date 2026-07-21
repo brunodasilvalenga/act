@@ -39,6 +39,25 @@ type listClustersOutput struct {
 	ClusterArns []string `json:"clusterArns"`
 }
 
+// arnSuffix returns the last "/"-delimited segment of an ARN — the
+// resource name/ID that AWS CLI list-* commands return as a full ARN but
+// that this tool displays and passes to other commands as a bare name.
+// logs.go's ListECSServices also uses this helper.
+func arnSuffix(arn string) string {
+	parts := strings.Split(arn, "/")
+	return parts[len(parts)-1]
+}
+
+// serviceNameFromGroup extracts the service name from an ECS task's Group
+// field. AWS formats Group as "service:<name>" for tasks launched by a
+// service, and leaves it as some other value (e.g. "family:<name>") for
+// standalone tasks not launched by a service; TrimPrefix returns the input
+// unchanged when the prefix isn't present, so this already handles both
+// cases correctly.
+func serviceNameFromGroup(group string) string {
+	return strings.TrimPrefix(group, "service:")
+}
+
 func ListECSClusters(profile, region string) ([]string, error) {
 	args := []string{"ecs", "list-clusters", "--output", "json"}
 	if profile != "" {
@@ -64,8 +83,7 @@ func ListECSClusters(profile, region string) ([]string, error) {
 
 	clusters := make([]string, len(result.ClusterArns))
 	for i, arn := range result.ClusterArns {
-		parts := strings.Split(arn, "/")
-		clusters[i] = parts[len(parts)-1]
+		clusters[i] = arnSuffix(arn)
 	}
 	return clusters, nil
 }
@@ -128,15 +146,8 @@ func ListECSTasks(cluster, profile, region, serviceName string) ([]ECSTask, erro
 
 	var tasks []ECSTask
 	for _, task := range descResult.Tasks {
-		taskParts := strings.Split(task.TaskArn, "/")
-		taskID := taskParts[len(taskParts)-1]
-
-		serviceName := ""
-		if strings.HasPrefix(task.Group, "service:") {
-			serviceName = strings.TrimPrefix(task.Group, "service:")
-		} else {
-			serviceName = task.Group
-		}
+		taskID := arnSuffix(task.TaskArn)
+		serviceName := serviceNameFromGroup(task.Group)
 
 		for _, container := range task.Containers {
 			tasks = append(tasks, ECSTask{
