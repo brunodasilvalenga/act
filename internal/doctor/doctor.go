@@ -46,13 +46,13 @@ var (
 	failStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("1")) // red
 )
 
-func Run(profile, region, version string, fix, skipConfirm bool) error {
+func Run(profile, region, env, version string, fix, skipConfirm bool) error {
 	results := []result{
 		checkAWSCLI(),
 		checkSessionManagerPlugin(),
-		checkCredentials(profile, region),
-		checkRegion(region),
-		checkProfile(profile),
+		checkCredentials(profile, region, env),
+		checkRegion(region, env),
+		checkProfile(profile, env),
 		checkConfigFile(),
 		checkVersion(version),
 	}
@@ -146,9 +146,9 @@ func checkSessionManagerPlugin() result {
 	}
 }
 
-func checkCredentials(profile, region string) result {
-	resolvedProfile := config.ResolveProfile(profile, "")
-	resolvedRegion := config.ResolveRegion(region, "")
+func checkCredentials(profile, region, env string) result {
+	resolvedProfile := config.ResolveProfile(profile, env)
+	resolvedRegion := config.ResolveRegion(region, env)
 
 	args := []string{"sts", "get-caller-identity", "--output", "json"}
 	if resolvedProfile != "" {
@@ -186,8 +186,8 @@ func checkCredentials(profile, region string) result {
 	}
 }
 
-func checkRegion(flagRegion string) result {
-	resolved := config.ResolveRegion(flagRegion, "")
+func checkRegion(flagRegion, env string) result {
+	resolved := config.ResolveRegion(flagRegion, env)
 	if resolved == "" {
 		return result{
 			Name:   "Region",
@@ -202,8 +202,8 @@ func checkRegion(flagRegion string) result {
 	}
 }
 
-func checkProfile(flagProfile string) result {
-	resolved := config.ResolveProfile(flagProfile, "")
+func checkProfile(flagProfile, env string) result {
+	resolved := config.ResolveProfile(flagProfile, env)
 	if resolved == "" {
 		return result{
 			Name:   "Profile",
