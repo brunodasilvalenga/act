@@ -117,27 +117,33 @@ func TestHasHelp(t *testing.T) {
 
 func TestSubcommandNeedsAWSCLI(t *testing.T) {
 	tests := []struct {
-		name   string
-		subcmd string
-		want   bool
+		name    string
+		subcmd  string
+		subArgs []string
+		want    bool
 	}{
-		{"doctor does not need aws cli", "doctor", false},
-		{"ec2 needs aws cli", "ec2", true},
-		{"forward needs aws cli", "forward", true},
-		{"ecs needs aws cli", "ecs", true},
-		{"ssm needs aws cli", "ssm", true},
-		{"rds needs aws cli", "rds", true},
-		{"fav needs aws cli", "fav", true},
-		{"env needs aws cli (unchanged behavior)", "env", true},
-		{"init needs aws cli (unchanged behavior)", "init", true},
-		{"upgrade needs aws cli (unchanged behavior)", "upgrade", true},
-		{"empty subcmd needs aws cli (unchanged behavior)", "", true},
-		{"unknown subcmd needs aws cli (unchanged behavior)", "bogus", true},
+		{"doctor does not need aws cli", "doctor", nil, false},
+		{"env does not need aws cli", "env", nil, false},
+		{"env list does not need aws cli", "env", []string{"list"}, false},
+		{"init does not need aws cli", "init", nil, false},
+		{"bare fav needs aws cli (picker + StartSession)", "fav", nil, true},
+		{"fav list does not need aws cli", "fav", []string{"list"}, false},
+		{"fav add does not need aws cli", "fav", []string{"add", "i-0123456789abcdef0"}, false},
+		{"fav rm does not need aws cli", "fav", []string{"rm", "i-0123456789abcdef0"}, false},
+		{"fav with unknown subcommand needs aws cli", "fav", []string{"bogus"}, true},
+		{"ec2 needs aws cli", "ec2", nil, true},
+		{"forward needs aws cli", "forward", nil, true},
+		{"ecs needs aws cli", "ecs", nil, true},
+		{"ssm needs aws cli", "ssm", nil, true},
+		{"rds needs aws cli", "rds", nil, true},
+		{"upgrade needs aws cli (unchanged behavior)", "upgrade", nil, true},
+		{"empty subcmd needs aws cli (unchanged behavior)", "", nil, true},
+		{"unknown subcmd needs aws cli (unchanged behavior)", "bogus", nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := subcommandNeedsAWSCLI(tt.subcmd); got != tt.want {
-				t.Errorf("subcommandNeedsAWSCLI(%q) = %v, want %v", tt.subcmd, got, tt.want)
+			if got := subcommandNeedsAWSCLI(tt.subcmd, tt.subArgs); got != tt.want {
+				t.Errorf("subcommandNeedsAWSCLI(%q, %v) = %v, want %v", tt.subcmd, tt.subArgs, got, tt.want)
 			}
 		})
 	}
