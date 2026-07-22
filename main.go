@@ -1175,11 +1175,13 @@ Subcommands:
   list                                       List configured environments
   add <name>                                 Add or update an environment (use global --profile/--region flags)
   rm <name>                                  Remove an environment
+  use <name>                                 Set an environment as the default (used when --env is omitted)
 
 Examples:
   act env list
   act --profile production --region us-west-2 env add prod
   act env rm prod
+  act env use prod
 `)
 }
 
@@ -1196,6 +1198,7 @@ func runEnv(subArgs []string, profile, region string) {
 			fmt.Println("No environments configured.")
 			return
 		}
+		cfg := config.Load()
 		names := make([]string, 0, len(envs))
 		for name := range envs {
 			names = append(names, name)
@@ -1203,7 +1206,11 @@ func runEnv(subArgs []string, profile, region string) {
 		sort.Strings(names)
 		for _, name := range names {
 			e := envs[name]
-			fmt.Printf("%s: profile=%s region=%s\n", name, e.Profile, e.Region)
+			marker := ""
+			if name == cfg.DefaultEnvironment {
+				marker = " (current)"
+			}
+			fmt.Printf("%s: profile=%s region=%s%s\n", name, e.Profile, e.Region, marker)
 		}
 
 	case "add":
@@ -1233,6 +1240,18 @@ func runEnv(subArgs []string, profile, region string) {
 			os.Exit(1)
 		}
 		fmt.Printf("Removed environment %q.\n", name)
+
+	case "use":
+		if len(subArgs) < 2 {
+			fmt.Fprintf(os.Stderr, "Usage: act env use <name>\n")
+			os.Exit(1)
+		}
+		name := subArgs[1]
+		if err := config.SetDefaultEnvironment(name); err != nil {
+			fmt.Fprintf(os.Stderr, "Error setting default environment: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Environment %q is now the default (used when --env is omitted).\n", name)
 
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown env subcommand: %s\n", subArgs[0])

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -13,10 +14,11 @@ type Environment struct {
 }
 
 type Config struct {
-	DefaultProfile string                 `json:"default_profile,omitempty"`
-	DefaultRegion  string                 `json:"default_region,omitempty"`
-	Favorites      []string               `json:"favorites,omitempty"`
-	Environments   map[string]Environment `json:"environments,omitempty"`
+	DefaultProfile     string                 `json:"default_profile,omitempty"`
+	DefaultRegion      string                 `json:"default_region,omitempty"`
+	DefaultEnvironment string                 `json:"default_environment,omitempty"`
+	Favorites          []string               `json:"favorites,omitempty"`
+	Environments       map[string]Environment `json:"environments,omitempty"`
 }
 
 func ConfigPath() string {
@@ -119,9 +121,21 @@ func AddEnvironment(name, profile, region string) error {
 	return Save(cfg)
 }
 
+func SetDefaultEnvironment(name string) error {
+	cfg := Load()
+	if _, ok := cfg.Environments[name]; !ok {
+		return fmt.Errorf("environment %q not found; run `act env list` to see configured environments", name)
+	}
+	cfg.DefaultEnvironment = name
+	return Save(cfg)
+}
+
 func RemoveEnvironment(name string) error {
 	cfg := Load()
 	delete(cfg.Environments, name)
+	if cfg.DefaultEnvironment == name {
+		cfg.DefaultEnvironment = ""
+	}
 	return Save(cfg)
 }
 
@@ -133,6 +147,13 @@ func ResolveProfile(flagValue, envName string) string {
 		cfg := Load()
 		if env, ok := cfg.Environments[envName]; ok && env.Profile != "" {
 			return env.Profile
+		}
+	} else {
+		cfg := Load()
+		if cfg.DefaultEnvironment != "" {
+			if env, ok := cfg.Environments[cfg.DefaultEnvironment]; ok && env.Profile != "" {
+				return env.Profile
+			}
 		}
 	}
 	if env := os.Getenv("AWS_PROFILE"); env != "" {
@@ -150,6 +171,13 @@ func ResolveRegion(flagValue, envName string) string {
 		cfg := Load()
 		if env, ok := cfg.Environments[envName]; ok && env.Region != "" {
 			return env.Region
+		}
+	} else {
+		cfg := Load()
+		if cfg.DefaultEnvironment != "" {
+			if env, ok := cfg.Environments[cfg.DefaultEnvironment]; ok && env.Region != "" {
+				return env.Region
+			}
 		}
 	}
 	if env := os.Getenv("AWS_REGION"); env != "" {

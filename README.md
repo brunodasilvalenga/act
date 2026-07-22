@@ -186,6 +186,7 @@ act fav rm i-0123456789abcdef0       # remove from favorites
 act env list                                            # list environments
 act --profile production --region us-west-2 env add prod
 act env rm prod
+act env use prod                                        # set as default (used when --env is omitted)
 
 # Create config file interactively
 act init
@@ -247,6 +248,7 @@ Run `act init` to create `~/.act.json` interactively, or create it manually:
 {
   "default_profile": "production",
   "default_region": "ap-southeast-2",
+  "default_environment": "prod",
   "favorites": ["i-0123456789abcdef0"],
   "environments": {
     "prod": {
@@ -261,11 +263,15 @@ Run `act init` to create `~/.act.json` interactively, or create it manually:
 }
 ```
 
+`default_environment` is set via `act env use <name>` and marks which named
+environment to use when `--env` is omitted.
+
 Resolution order for profile/region:
 1. CLI flag (`--profile`, `--region`)
 2. Environment lookup (`--env` name in config)
-3. Environment variable (`AWS_PROFILE`, `AWS_REGION`, `AWS_DEFAULT_REGION`)
-4. Config file defaults (`~/.act.json`)
+3. Default environment (`default_environment` in config, set via `act env use`)
+4. Environment variable (`AWS_PROFILE`, `AWS_REGION`, `AWS_DEFAULT_REGION`)
+5. Config file defaults (`~/.act.json`)
 
 ## How it works
 
