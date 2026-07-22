@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"github.com/brunodasilvalenga/act/internal/config"
 	"github.com/brunodasilvalenga/act/internal/updater"
@@ -47,15 +48,36 @@ var (
 )
 
 func Run(profile, region, version string, fix, skipConfirm bool) error {
-	results := []result{
-		checkAWSCLI(),
-		checkSessionManagerPlugin(),
-		checkCredentials(profile, region),
-		checkRegion(region),
-		checkProfile(profile),
-		checkConfigFile(),
-		checkVersion(version),
-	}
+	// results is pre-sized so each check writes into a fixed, known index.
+	// This preserves the exact print order below regardless of which of
+	// checkCredentials/checkVersion finishes first.
+	results := make([]result, 7)
+	results[0] = checkAWSCLI()
+	results[1] = checkSessionManagerPlugin()
+	results[3] = checkRegion(region)
+	results[4] = checkProfile(profile)
+	results[5] = checkConfigFile()
+
+	// checkCredentials (index 2) and checkVersion (index 6) are the only
+	// two checks that make a network call (AWS STS and the GitHub API,
+	// respectively). Neither depends on the other or on any of the checks
+	// above, so run them concurrently to pay the max of their two
+	// round-trips instead of the sum. Each goroutine writes to its own
+	// slice index — no two goroutines (and no sequential code above)
+	// write index 2 or 6 — and Wait() is the synchronization point that
+	// makes those writes visible to this goroutine before they're read
+	// below, so this has no data race.
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		results[2] = checkCredentials(profile, region)
+	}()
+	go func() {
+		defer wg.Done()
+		results[6] = checkVersion(version)
+	}()
+	wg.Wait()
 
 	if fix {
 		recheck := func(name string) result {
