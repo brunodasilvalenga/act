@@ -69,6 +69,12 @@ func main() {
 				os.Exit(0)
 			}
 			runRDP(resolvedProfile, resolvedRegion, subArgs[1:])
+		} else if len(subArgs) > 0 && subArgs[0] == "cp" {
+			if hasHelp(subArgs[1:]) {
+				printEC2CPHelp()
+				os.Exit(0)
+			}
+			runCP(resolvedProfile, resolvedRegion, subArgs[1:])
 		} else {
 			runConnect(resolvedProfile, resolvedRegion, subArgs)
 		}
@@ -283,6 +289,7 @@ to the selected instance.
 Subcommands:
   ssh          SSH to EC2 instance via SSM (see 'act ec2 ssh help')
   rdp          RDP to Windows EC2 instance via SSM (see 'act ec2 rdp help')
+  cp           Copy a file to/from EC2 instance via SSM (see 'act ec2 cp help')
 
 Flags:
   --tag        Filter instances by tag (key=value, can be repeated)
@@ -466,6 +473,41 @@ Examples:
   act ec2 ssh
   act ec2 ssh --user ubuntu
   act ec2 ssh --user ec2-user --target i-0123456789abcdef0
+`)
+}
+
+func printEC2CPHelp() {
+	fmt.Fprintf(os.Stderr, `act ec2 cp - Copy a file or directory to/from an EC2 instance via SSM
+
+Usage: act [global flags] ec2 cp [flags] <source> <destination>
+
+Copies a file (or, with --recursive, a directory) between the local
+machine and an EC2 instance using scp over an SSM-proxied SSH tunnel —
+the same mechanism 'act ec2 ssh' uses. By default source is a local path
+and destination is a remote path (upload); use --download to reverse the
+direction.
+
+Requires an SSH key configured on the target instance (same requirement
+as 'act ec2 ssh').
+
+Flags:
+  --target      Target instance ID (skip instance picker)
+  --user        SSH user (default: prompt interactively)
+  --download    Copy from the instance to local instead of local to instance
+  --recursive   Copy directories recursively
+  --tag         Filter instances by tag (key=value, can be repeated)
+
+Global Flags:
+  --profile     AWS profile to use
+  --region      AWS region to use
+  --env         Environment name
+
+Examples:
+  act ec2 cp ./deploy.tar.gz /opt/app/deploy.tar.gz
+  act ec2 cp --user ubuntu ./deploy.tar.gz /home/ubuntu/deploy.tar.gz
+  act ec2 cp --target i-0123456789abcdef0 ./config.yml /etc/app/config.yml
+  act ec2 cp --download /var/log/app.log ./app.log
+  act ec2 cp --recursive ./dist /opt/app/dist
 `)
 }
 
@@ -1017,6 +1059,48 @@ func runSSH(profile, region string, subArgs []string) {
 	err := aws.StartSSHSession(instanceID, profile, region, sshUser)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting SSH session: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func runCP(profile, region string, subArgs []string) {
+	subArgs, tags := parseTags(subArgs)
+
+	fs := flag.NewFlagSet("ec2 cp", flag.ExitOnError)
+	target := fs.String("target", "", "Target instance ID")
+	user := fs.String("user", "", "SSH user (default: prompt)")
+	download := fs.Bool("download", false, "Copy from the instance to local instead of local to instance")
+	recursive := fs.Bool("recursive", false, "Copy directories recursively")
+	fs.Parse(subArgs)
+
+	positional := fs.Args()
+	if len(positional) != 2 {
+		fmt.Fprintf(os.Stderr, "Error: 'ec2 cp' requires exactly 2 positional arguments (source and destination), got %d.\nRun 'act ec2 cp help' for usage.\n", len(positional))
+		os.Exit(1)
+	}
+	source, dest := positional[0], positional[1]
+
+	instanceID := *target
+	if instanceID == "" {
+		loadFunc := func() ([]aws.Instance, error) {
+			return aws.ListRunningInstances(profile, region, tags)
+		}
+		instanceID = pickInstance(loadFunc)
+	}
+
+	sshUser := *user
+	if sshUser == "" {
+		picked, err := tui.RunPicker("Select SSH user", []string{"ec2-user", "ubuntu", "root", "ssm-user"})
+		if err != nil || picked == "" {
+			sshUser = "ec2-user"
+		} else {
+			sshUser = picked
+		}
+	}
+
+	err := aws.CopyFile(instanceID, profile, region, sshUser, source, dest, *download, *recursive)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error copying file: %v\n", err)
 		os.Exit(1)
 	}
 }

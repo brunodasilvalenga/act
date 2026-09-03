@@ -18,6 +18,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 - **ECS Logs** — Auto-detect and tail CloudWatch logs from ECS services
 - **RDP over SSM** — RDP to Windows instances via SSM port forwarding with auto-client launch
 - **SSH over SSM** — SSH to instances without open inbound ports
+- **File Copy over SSM** — Copy files to/from instances via `act ec2 cp` (scp over the same SSM tunnel)
 - **Run Command** — Execute a command or script on an instance via SSM Run Command (no session needed)
 - **Favorites** — Save and quickly connect to frequently used instances
 - **Tag Filtering** — Filter EC2 instances by tags
@@ -34,7 +35,7 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 - [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) installed
 - IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ssm:SendCommand`, `ssm:GetCommandInvocation`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `ecs:ListServices`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
 - EC2 instances must have the SSM Agent running and proper IAM role attached
-- For `ec2 ssh`: OpenSSH client (`ssh`) and an SSH key configured on the target instance
+- For `ec2 ssh`/`ec2 cp`: OpenSSH client (`ssh`/`scp`) and an SSH key configured on the target instance
 - For `ec2 rdp`: An RDP client (macOS: Microsoft Remote Desktop or built-in; Windows: mstsc)
 
 ## Installation
@@ -79,6 +80,7 @@ act [global flags] <command> [command flags]
 |---------|-------------|
 | `ec2` | Connect to EC2 instance via SSM session |
 | `ec2 ssh` | SSH to EC2 instance via SSM |
+| `ec2 cp` | Copy a file to/from EC2 instance via SSM |
 | `ec2 rdp` | RDP to Windows EC2 instance via SSM |
 | `forward` | Port forwarding via SSM |
 | `ecs` | Connect to ECS container via execute-command |
@@ -148,6 +150,16 @@ act ec2 rdp --target i-0123456789abcdef0
 act ec2 ssh
 act ec2 ssh --user ubuntu
 act ec2 ssh --user ec2-user --target i-0123456789abcdef0
+
+# Copy a file to an instance via SSM (scp over the same SSH ProxyCommand)
+act ec2 cp ./deploy.tar.gz /opt/app/deploy.tar.gz
+act ec2 cp --user ubuntu --target i-0123456789abcdef0 ./config.yml /etc/app/config.yml
+
+# Copy a file *from* an instance
+act ec2 cp --download /var/log/app.log ./app.log
+
+# Copy a directory recursively
+act ec2 cp --recursive ./dist /opt/app/dist
 
 # Tail ECS service logs (auto-detects log group)
 act ecs logs

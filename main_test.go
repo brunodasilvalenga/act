@@ -214,7 +214,7 @@ func TestHelpFunctionsContainDocumentedFlags(t *testing.T) {
 		wantContains []string
 	}{
 		{"printUsage", printUsage, []string{"ec2", "forward", "ecs", "rds", "fav", "init", "doctor", "upgrade", "--profile", "--region", "--env", "--version"}},
-		{"printEC2Help", printEC2Help, []string{"ssh", "rdp", "--tag"}},
+		{"printEC2Help", printEC2Help, []string{"ssh", "rdp", "cp", "--tag"}},
 		{"printForwardHelp", printForwardHelp, []string{"--local-port", "--remote-port", "--target", "--remote-host", "--tag"}},
 		{"printECSHelp", printECSHelp, []string{"logs", "--cluster", "--service"}},
 		{"printRDSHelp", printRDSHelp, []string{"--local-port", "--bastion", "--no-bastion", "--tag"}},
@@ -224,6 +224,7 @@ func TestHelpFunctionsContainDocumentedFlags(t *testing.T) {
 		{"printDoctorHelp", printDoctorHelp, []string{"--profile", "--region"}},
 		{"printInitHelp", printInitHelp, []string{"~/.act.json"}},
 		{"printEC2RDPHelp", printEC2RDPHelp, []string{"--target", "--local-port", "--key", "--no-open", "--tag"}},
+		{"printEC2CPHelp", printEC2CPHelp, []string{"--target", "--user", "--download", "--recursive", "--tag"}},
 	}
 
 	for _, tt := range tests {
