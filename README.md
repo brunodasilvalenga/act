@@ -33,9 +33,9 @@ No extra dependencies — just the AWS CLI and the Session Manager plugin.
 
 - [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) installed and configured
 - [Session Manager plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html) installed
-- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ssm:StartSession`, `ssm:SendCommand`, `ssm:GetCommandInvocation`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `ecs:ListServices`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
+- IAM permissions for `ec2:DescribeInstances`, `ec2:GetPasswordData`, `ec2-instance-connect:SendSSHPublicKey`, `ssm:StartSession`, `ssm:SendCommand`, `ssm:GetCommandInvocation`, `ecs:ListClusters`, `ecs:ListTasks`, `ecs:DescribeTasks`, `ecs:ExecuteCommand`, `ecs:ListServices`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `rds:DescribeDBInstances`, `logs:GetLogEvents`, `logs:FilterLogEvents`
 - EC2 instances must have the SSM Agent running and proper IAM role attached
-- For `ec2 ssh`/`ec2 cp`: OpenSSH client (`ssh`/`scp`) and an SSH key configured on the target instance
+- For `ec2 ssh`: OpenSSH client (`ssh`), and either an SSH key already configured on the target instance, or `--push-key` to push your local public key via EC2 Instance Connect (requires the EC2 Instance Connect agent on the instance — preinstalled on Amazon Linux 2/2023 and Ubuntu AMIs); for `ec2 cp`: OpenSSH client (`scp`) and an SSH key configured on the target instance
 - For `ec2 rdp`: An RDP client (macOS: Microsoft Remote Desktop or built-in; Windows: mstsc)
 
 ## Installation
@@ -150,6 +150,8 @@ act ec2 rdp --target i-0123456789abcdef0
 act ec2 ssh
 act ec2 ssh --user ubuntu
 act ec2 ssh --user ec2-user --target i-0123456789abcdef0
+act ec2 ssh --push-key                                       # push your local pubkey via EC2 Instance Connect first
+act ec2 ssh --push-key --push-key-path ~/.ssh/my_key.pub     # push a specific key
 
 # Copy a file to an instance via SSM (scp over the same SSH ProxyCommand)
 act ec2 cp ./deploy.tar.gz /opt/app/deploy.tar.gz

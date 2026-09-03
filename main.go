@@ -457,12 +457,18 @@ Usage: act [global flags] ec2 ssh [flags]
 Starts a real SSH session using SSM as a ProxyCommand. This enables
 SCP, rsync, agent forwarding (-A), and port forwarding (-L/-R).
 
-Requires an SSH key configured on the target instance.
+Requires an SSH key configured on the target instance, or use --push-key
+to push your local public key via EC2 Instance Connect first.
 
 Flags:
-  --target     Target instance ID (skip instance picker)
-  --user       SSH user (default: prompt interactively)
-  --tag        Filter instances by tag (key=value, can be repeated)
+  --target        Target instance ID (skip instance picker)
+  --user          SSH user (default: prompt interactively)
+  --tag           Filter instances by tag (key=value, can be repeated)
+  --push-key      Push local SSH public key via EC2 Instance Connect before
+                  connecting (valid 60 seconds; requires the EC2 Instance
+                  Connect agent on the target instance)
+  --push-key-path Path to public key to push (default: ~/.ssh/id_ed25519.pub
+                  or ~/.ssh/id_rsa.pub)
 
 Global Flags:
   --profile    AWS profile to use
@@ -473,6 +479,8 @@ Examples:
   act ec2 ssh
   act ec2 ssh --user ubuntu
   act ec2 ssh --user ec2-user --target i-0123456789abcdef0
+  act ec2 ssh --push-key
+  act ec2 ssh --push-key --push-key-path ~/.ssh/my_key.pub
 `)
 }
 
@@ -1036,6 +1044,8 @@ func runSSH(profile, region string, subArgs []string) {
 	fs := flag.NewFlagSet("ssh", flag.ExitOnError)
 	target := fs.String("target", "", "Target instance ID")
 	user := fs.String("user", "", "SSH user (default: prompt)")
+	pushKey := fs.Bool("push-key", false, "Push local SSH public key via EC2 Instance Connect before connecting")
+	pushKeyPath := fs.String("push-key-path", "", "Path to public key to push (default: ~/.ssh/id_ed25519.pub or ~/.ssh/id_rsa.pub)")
 	fs.Parse(subArgs)
 
 	instanceID := *target
@@ -1054,6 +1064,23 @@ func runSSH(profile, region string, subArgs []string) {
 		} else {
 			sshUser = picked
 		}
+	}
+
+	if *pushKey {
+		keyPath := *pushKeyPath
+		if keyPath == "" {
+			var err error
+			keyPath, err = aws.DefaultSSHPublicKeyPath()
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
+		}
+		if err := aws.SendSSHPublicKey(instanceID, profile, region, sshUser, keyPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Error pushing SSH public key: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "Pushed %s to %s@%s via EC2 Instance Connect (valid 60s).\n", keyPath, sshUser, instanceID)
 	}
 
 	err := aws.StartSSHSession(instanceID, profile, region, sshUser)
