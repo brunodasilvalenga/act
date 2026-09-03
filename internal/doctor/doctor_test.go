@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"os"
+	"runtime"
 	"testing"
 )
 
@@ -63,6 +64,11 @@ func overrideHomeForDoctorTest(t *testing.T, dir string) {
 	t.Helper()
 	orig := os.Getenv("HOME")
 	os.Setenv("HOME", dir)
+	if runtime.GOOS == "windows" {
+		origUP := os.Getenv("USERPROFILE")
+		os.Setenv("USERPROFILE", dir)
+		t.Cleanup(func() { os.Setenv("USERPROFILE", origUP) })
+	}
 	t.Cleanup(func() { os.Setenv("HOME", orig) })
 }
 
