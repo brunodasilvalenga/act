@@ -219,7 +219,7 @@ func TestHelpFunctionsContainDocumentedFlags(t *testing.T) {
 		{"printECSHelp", printECSHelp, []string{"logs", "--cluster", "--service"}},
 		{"printRDSHelp", printRDSHelp, []string{"--local-port", "--bastion", "--no-bastion", "--tag"}},
 		{"printECSLogsHelp", printECSLogsHelp, []string{"--cluster", "--service", "--log-group", "--since", "--no-follow"}},
-		{"printEC2SSHHelp", printEC2SSHHelp, []string{"--target", "--user", "--tag"}},
+		{"printEC2SSHHelp", printEC2SSHHelp, []string{"--target", "--user", "--tag", "--push-key", "--push-key-path"}},
 		{"printFavHelp", printFavHelp, []string{"add", "rm"}},
 		{"printDoctorHelp", printDoctorHelp, []string{"--profile", "--region"}},
 		{"printInitHelp", printInitHelp, []string{"~/.act.json"}},
