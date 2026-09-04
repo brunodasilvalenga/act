@@ -458,15 +458,16 @@ Starts a real SSH session using SSM as a ProxyCommand. This enables
 SCP, rsync, agent forwarding (-A), and port forwarding (-L/-R).
 
 Requires an SSH key configured on the target instance, or use --push-key
-to push your local public key via EC2 Instance Connect first.
+to add your local public key to the target's authorized_keys via SSM
+Run Command first.
 
 Flags:
   --target        Target instance ID (skip instance picker)
   --user          SSH user (default: prompt interactively)
   --tag           Filter instances by tag (key=value, can be repeated)
-  --push-key      Push local SSH public key via EC2 Instance Connect before
-                  connecting (valid 60 seconds; requires the EC2 Instance
-                  Connect agent on the target instance)
+  --push-key      Add local SSH public key to the target's authorized_keys
+                  via SSM Run Command before connecting (persists until
+                  removed; prints the command to remove it)
   --push-key-path Path to public key to push (default: ~/.ssh/id_ed25519.pub
                   or ~/.ssh/id_rsa.pub)
 
@@ -1044,7 +1045,7 @@ func runSSH(profile, region string, subArgs []string) {
 	fs := flag.NewFlagSet("ssh", flag.ExitOnError)
 	target := fs.String("target", "", "Target instance ID")
 	user := fs.String("user", "", "SSH user (default: prompt)")
-	pushKey := fs.Bool("push-key", false, "Push local SSH public key via EC2 Instance Connect before connecting")
+	pushKey := fs.Bool("push-key", false, "Add local SSH public key to the target's authorized_keys via SSM before connecting")
 	pushKeyPath := fs.String("push-key-path", "", "Path to public key to push (default: ~/.ssh/id_ed25519.pub or ~/.ssh/id_rsa.pub)")
 	fs.Parse(subArgs)
 
@@ -1076,11 +1077,13 @@ func runSSH(profile, region string, subArgs []string) {
 				os.Exit(1)
 			}
 		}
-		if err := aws.SendSSHPublicKey(instanceID, profile, region, sshUser, keyPath); err != nil {
+		removeCmd, err := aws.PushSSHKeyViaSSM(instanceID, profile, region, sshUser, keyPath)
+		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error pushing SSH public key: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Fprintf(os.Stderr, "Pushed %s to %s@%s via EC2 Instance Connect (valid 60s).\n", keyPath, sshUser, instanceID)
+		fmt.Fprintf(os.Stderr, "Pushed %s to %s@%s via SSM (added to authorized_keys).\n", keyPath, sshUser, instanceID)
+		fmt.Fprintf(os.Stderr, "To remove it later: %s\n", removeCmd)
 	}
 
 	err := aws.StartSSHSession(instanceID, profile, region, sshUser)

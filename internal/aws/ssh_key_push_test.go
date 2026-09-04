@@ -54,3 +54,23 @@ func TestFindSSHPublicKey(t *testing.T) {
 		}
 	})
 }
+
+func TestShellSingleQuote(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"plain word", "ec2-user", "'ec2-user'"},
+		{"empty string", "", "''"},
+		{"embedded single quote", "o'brien", `'o'"'"'brien'`},
+		{"ssh-ed25519 key with comment", "ssh-ed25519 AAAAC3 me@host", "'ssh-ed25519 AAAAC3 me@host'"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := shellSingleQuote(tt.in); got != tt.want {
+				t.Errorf("shellSingleQuote(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
