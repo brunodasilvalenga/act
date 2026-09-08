@@ -32,21 +32,21 @@ and update your row when done.
 | 017 | Add a static landing page hosted on GitHub Pages | P3 | S | — | DONE (executed, reviewed, not merged — branch `advisor/017-add-landing-page-github-pages`) |
 | 018 | Add `act doctor --fix` to auto-remediate failing checks | P2 | M | — | DONE (merged to main) |
 | 019 | Let `act doctor` run without the AWS CLI already installed | P2 | S | 018 (satisfied — merged) | DONE (merged to main) |
-| 020 | Let `env`/`init`/pure-config `fav` run without AWS CLI installed | P2 | S | none | TODO |
-| 021 | Make `act doctor` honor the global `--env` flag | P1 | S | none | TODO |
-| 022 | Bump `golang.org/x/sys` past v0.44.0 (GO-2026-5024) | P3 | S | none | TODO |
-| 023 | Make `act doctor` reject unknown/misspelled flags | P2 | S | none | TODO |
-| 024 | Test coverage for the `isWithinDir` zip-slip guard | P3 | S | none | TODO |
-| 025 | Add missing `sts:GetCallerIdentity` to README IAM list | P3 | S | none | TODO |
-| 026 | Extract duplicated "pick ECS cluster" block into a helper | P3 | S | none (soft conflict with 033 — see below) | TODO |
-| 027 | Test coverage for `downloadToTempFile`/`unzipTo` | P2 | S | none (soft naming note with 024) | TODO |
-| 028 | Extract + test ARN-suffix / ECS-group-name helpers | P3 | S | none | TODO |
-| 029 | Test coverage for `pickerModel.Update`/`ecsModel.applyFilter` | P3 | S | none | TODO |
-| 030 | Verify checksums for `doctor --fix` installers (Linux; documents macOS/Windows gap) | P2 | M | none (soft: recommended after 031) | TODO |
-| 031 | Extract shared download-extract-run helper for the 6 installer functions | P3 | M | none (soft: recommended before 030 — see below) | TODO |
-| 032 | Run `act doctor`'s 2 network-bound checks concurrently | P2 | S | none | TODO |
-| 033 | Split `main.go` into per-concern files (same `package main`) | P3 | L | none (soft conflict with 026 — see below) | TODO |
-| 034 | Add `act env use <name>` (persistent default environment) | P3 | S | none | TODO |
+| 020 | Let `env`/`init`/pure-config `fav` run without AWS CLI installed | P2 | S | none | DONE (merged to main) |
+| 021 | Make `act doctor` honor the global `--env` flag | P1 | S | none | DONE (merged to main; required manual reconciliation with 032's concurrent-checks refactor and 034/035/036's later main.go changes) |
+| 022 | Bump `golang.org/x/sys` past v0.44.0 (GO-2026-5024) | P3 | S | none | DONE (merged to main) |
+| 023 | Make `act doctor` reject unknown/misspelled flags | P2 | S | none | BLOCKED (executor worktree/branch exists but contains zero commits — work was never actually done despite the branch existing; needs re-dispatch) |
+| 024 | Test coverage for the `isWithinDir` zip-slip guard | P3 | S | none | DONE (merged to main) |
+| 025 | Add missing `sts:GetCallerIdentity` to README IAM list | P3 | S | none | DONE (merged to main) |
+| 026 | Extract duplicated "pick ECS cluster" block into a helper | P3 | S | none (soft conflict with 033 — see below) | TODO (never executed — no worktree/branch was ever created for this plan) |
+| 027 | Test coverage for `downloadToTempFile`/`unzipTo` | P2 | S | none (soft naming note with 024) | DONE (merged to main) |
+| 028 | Extract + test ARN-suffix / ECS-group-name helpers | P3 | S | none | DONE (merged to main) |
+| 029 | Test coverage for `pickerModel.Update`/`ecsModel.applyFilter` | P3 | S | none | DONE (merged to main) |
+| 030 | Verify checksums for `doctor --fix` installers (Linux; documents macOS/Windows gap) | P2 | M | none (soft: recommended after 031) | BLOCKED (executor worktree/branch exists but contains zero commits — work was never actually done despite the branch existing; needs re-dispatch; note 031 has since merged, so a re-dispatch will target the deduped installer helper, not the original six-function layout) |
+| 031 | Extract shared download-extract-run helper for the 6 installer functions | P3 | M | none (soft: recommended before 030 — see below) | DONE (merged to main) |
+| 032 | Run `act doctor`'s 2 network-bound checks concurrently | P2 | S | none | DONE (merged to main; required manual reconciliation with 021's `--env` threading) |
+| 033 | Split `main.go` into per-concern files (same `package main`) | P3 | L | none (soft conflict with 026 — see below) | DONE (merged to main; required manually re-splitting against main.go's post-020/021/034/035/036 content, since this branch was cut before those landed — see "Reconcile pass (2026-09-09)" below) |
+| 034 | Add `act env use <name>` (persistent default environment) | P3 | S | none | DONE (merged to main) |
 | 035 | Add `act ec2 cp` — copy files to/from an EC2 instance via SSM | P2 | M | none | DONE (executed, reviewed, not merged — branch `advisor/035-add-ec2-cp-command`) |
 | 036 | Add `act ec2 ssh --push-key` — push a local SSH pubkey via EC2 Instance Connect | P2 | S | none | DONE |
 
@@ -445,6 +445,85 @@ byte-for-byte the plan's specified code, scope is exactly the 5 listed files
 worktree. Committed as `28c2800` on branch
 `advisor/036-ec2-ssh-push-key-instance-connect`. Not merged to `main` —
 merging is the user's decision.
+
+## Reconcile pass (2026-09-09)
+
+A new `improve` session found that 14 of plans 020-034 already had
+completed executor work sitting in local git worktrees/branches
+(`advisor/020-...` through `advisor/034-...`), created by an earlier
+session but never reviewed, merged, or reflected in this index — every row
+above still said `TODO`. `026` had no branch at all (never started); `023`
+and `030` had branches with zero commits (the executor worktree was
+created but no work was ever done in it, despite the branch existing).
+
+All 12 branches with real commits (020, 021, 022, 024, 025, 027, 028, 029,
+031, 032, 033, 034) were independently reviewed — each plan's diff checked
+against its own done-criteria, `go build`/`go vet`/`gofmt -l`/`go test`
+(plus `-race` for 021/032/033) re-run in the branch's worktree, not just
+trusted from the executor's prior report. 9 passed cleanly (020, 022, 024,
+025, 027, 029, 031, 033, 034). Three had non-blocking process-only issues,
+not code defects: 021 and 032 were stale relative to `main` and needed a
+real merge (not fast-forward) since `main` had advanced past their common
+base commit `aa50614` via plans 035/036; 028 had one done-criterion grep
+that the plan itself made unsatisfiable by construction (the grep matches
+the plan's own prescribed helper-function body) — a plan-authoring defect,
+not an implementation defect.
+
+All 12 were then merged into `main`, one at a time, with a full
+`go build && go vet && gofmt -l . && go test -race ./...` re-run after each
+merge:
+
+- **022, 024, 025, 027, 028, 029, 031** merged with zero conflicts (each
+  touches files no other pending branch or later `main` commit touched).
+- **032** conflicted with `main`'s later `c5605fe` (Windows `USERPROFILE`
+  fix) in `internal/doctor/doctor_test.go` — both added a different import
+  and a different test function in the same region; resolved by keeping
+  both imports and both test functions (no logic overlap).
+- **020, 034** merged with zero conflicts despite both touching `main.go`
+  (auto-merged cleanly since git's 3-way merge resolved non-overlapping
+  hunks).
+- **021** conflicted with 032 (which merged just before it) in both
+  `internal/doctor/doctor.go` (021's `env`-threading through
+  `checkCredentials`/`checkRegion`/`checkProfile` vs. 032's concurrent
+  `sync.WaitGroup` restructuring of `Run`) and `doctor_test.go` (same
+  import/test-function pattern as above). Resolved by keeping 032's
+  concurrency structure and threading 021's new `env` parameter through
+  the calls inside it — i.e. applying both changes together rather than
+  picking one side.
+- **033** (the `main.go` split) was the hardest: its branch was cut from
+  `aa50614`, before plans 020, 021, 034, and 035/036 all added or changed
+  code inside the functions it relocates (`runSSH` gained `--push-key`,
+  `runEnv` gained the `use` subcommand, a new `runCP`/`printEC2CPHelp`
+  pair was added, `printDoctorHelp`/`printEC2Help` gained new lines,
+  `subcommandNeedsAWSCLI` gained the env/init/fav exemptions). A plain
+  merge would have either lost all of that newer code or produced a
+  main.go-wide conflict spanning ~1100 lines. Resolved by re-deriving the
+  split against `main`'s current (post-020/021/034/035/036) `main.go`
+  instead of the branch's old content: extracted every relocated
+  function's *current* body from `main` and placed each into the exact
+  file `033` had chosen for it (`help.go`, `helpers.go`, `cmd_ec2.go`,
+  `cmd_forward.go`, `cmd_ecs.go`, `cmd_rds.go`, `cmd_ssm.go`, `cmd_fav.go`,
+  `cmd_env.go`, `cmd_init.go`), adding `runCP`/`printEC2CPHelp` to
+  `cmd_ec2.go`/`help.go` (new functions 033's branch never had). Verified
+  after reassembly: `go build/vet/gofmt/test -race` all clean (183 tests),
+  `main.go` down to 294 lines (just `main`, `parseGlobalFlags`, `hasHelp`,
+  `subcommandNeedsAWSCLI`, `printVersion`), all 14 `<subcommand> help`
+  outputs plus `--version` smoke-tested against the built binary, and a
+  full `env add` → `env use` → `env list` round-trip exercised manually to
+  confirm 034's feature survived the re-split intact.
+
+One process slip during this pass: the conflict-resolution commit for 021
+was staged with `git add -A` instead of naming files explicitly, which
+swept the (harmless, docs-only, no secrets) untracked `plans/020-*.md`
+through `plans/036-*.md` and this `plans/README.md` into that commit
+alongside the actual code fix. Not a correctness or security issue, just a
+messier commit than intended — flagged here rather than silently ignored.
+
+**Not touched by this pass**: 023 and 030 remain unexecuted (branches
+exist but are empty) — both need a fresh executor dispatch. 030 in
+particular should be re-planned against the now-merged 031 (the installer
+functions it targets were restructured by 031's dedupe), not the original
+plan text's six-function layout. 026 has never been started at all.
 
 ## Findings considered and rejected
 
