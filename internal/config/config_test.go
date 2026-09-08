@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -102,6 +103,53 @@ func TestResolveWithEnvironment(t *testing.T) {
 	}
 }
 
+func TestResolveWithDefaultEnvironment(t *testing.T) {
+	tmpDir := t.TempDir()
+	tmpFile := filepath.Join(tmpDir, ".act.json")
+
+	content := `{
+		"default_profile": "default-prof",
+		"default_region": "us-east-1",
+		"default_environment": "staging",
+		"environments": {
+			"prod": {"profile": "prod-profile", "region": "ap-southeast-2"},
+			"staging": {"profile": "staging-profile", "region": "eu-west-1"}
+		}
+	}`
+	os.WriteFile(tmpFile, []byte(content), 0644)
+
+	overrideHome(t, tmpDir)
+
+	os.Unsetenv("AWS_PROFILE")
+	os.Unsetenv("AWS_REGION")
+	os.Unsetenv("AWS_DEFAULT_REGION")
+
+	// No flag, no --env: falls through to default_environment tier.
+	if result := ResolveProfile("", ""); result != "staging-profile" {
+		t.Errorf("expected 'staging-profile', got %q", result)
+	}
+	if result := ResolveRegion("", ""); result != "eu-west-1" {
+		t.Errorf("expected 'eu-west-1', got %q", result)
+	}
+
+	// Explicit --env still overrides default_environment.
+	if result := ResolveProfile("", "prod"); result != "prod-profile" {
+		t.Errorf("expected 'prod-profile', got %q", result)
+	}
+
+	// CLI flag still wins over everything.
+	if result := ResolveProfile("flag-prof", ""); result != "flag-prof" {
+		t.Errorf("expected 'flag-prof', got %q", result)
+	}
+
+	// AWS_PROFILE env var must NOT beat default_environment.
+	os.Setenv("AWS_PROFILE", "env-profile")
+	defer os.Unsetenv("AWS_PROFILE")
+	if result := ResolveProfile("", ""); result != "staging-profile" {
+		t.Errorf("expected 'staging-profile' (default_environment should win over AWS_PROFILE), got %q", result)
+	}
+}
+
 func TestAddRemoveFavorite(t *testing.T) {
 	tmpDir := t.TempDir()
 	overrideHome(t, tmpDir)
@@ -195,6 +243,75 @@ func TestEnvironmentCRUD(t *testing.T) {
 	envs = ListEnvironments()
 	if len(envs) != 0 {
 		t.Errorf("expected 0 environments after remove, got %d", len(envs))
+	}
+}
+
+func TestSetDefaultEnvironment(t *testing.T) {
+	tmpDir := t.TempDir()
+	overrideHome(t, tmpDir)
+
+	Init("test", "us-east-1")
+
+	err := SetDefaultEnvironment("prod")
+	if err == nil {
+		t.Fatal("expected error setting default environment before it exists, got nil")
+	}
+	if !strings.Contains(err.Error(), "prod") || !strings.Contains(err.Error(), "not found") {
+		t.Errorf("expected error to mention %q and %q, got: %v", "prod", "not found", err)
+	}
+
+	if err := AddEnvironment("prod", "prod-profile", "us-west-2"); err != nil {
+		t.Fatalf("AddEnvironment failed: %v", err)
+	}
+
+	if err := SetDefaultEnvironment("prod"); err != nil {
+		t.Fatalf("SetDefaultEnvironment failed: %v", err)
+	}
+
+	cfg := Load()
+	if cfg.DefaultEnvironment != "prod" {
+		t.Errorf("expected DefaultEnvironment 'prod', got %q", cfg.DefaultEnvironment)
+	}
+}
+
+func TestRemoveEnvironmentClearsDefault(t *testing.T) {
+	tmpDir := t.TempDir()
+	overrideHome(t, tmpDir)
+
+	Init("test", "us-east-1")
+
+	if err := AddEnvironment("prod", "prod-profile", "us-west-2"); err != nil {
+		t.Fatalf("AddEnvironment failed: %v", err)
+	}
+	if err := SetDefaultEnvironment("prod"); err != nil {
+		t.Fatalf("SetDefaultEnvironment failed: %v", err)
+	}
+	if cfg := Load(); cfg.DefaultEnvironment != "prod" {
+		t.Fatalf("expected DefaultEnvironment 'prod', got %q", cfg.DefaultEnvironment)
+	}
+
+	if err := RemoveEnvironment("prod"); err != nil {
+		t.Fatalf("RemoveEnvironment failed: %v", err)
+	}
+	if cfg := Load(); cfg.DefaultEnvironment != "" {
+		t.Errorf("expected DefaultEnvironment cleared after removing it, got %q", cfg.DefaultEnvironment)
+	}
+
+	// Removing an unrelated environment must not clear a different default.
+	if err := AddEnvironment("prod", "prod-profile", "us-west-2"); err != nil {
+		t.Fatalf("AddEnvironment failed: %v", err)
+	}
+	if err := AddEnvironment("staging", "staging-profile", "eu-west-1"); err != nil {
+		t.Fatalf("AddEnvironment failed: %v", err)
+	}
+	if err := SetDefaultEnvironment("staging"); err != nil {
+		t.Fatalf("SetDefaultEnvironment failed: %v", err)
+	}
+	if err := RemoveEnvironment("prod"); err != nil {
+		t.Fatalf("RemoveEnvironment failed: %v", err)
+	}
+	if cfg := Load(); cfg.DefaultEnvironment != "staging" {
+		t.Errorf("expected DefaultEnvironment to remain 'staging', got %q", cfg.DefaultEnvironment)
 	}
 }
 
