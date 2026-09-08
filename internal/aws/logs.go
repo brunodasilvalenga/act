@@ -54,8 +54,7 @@ func ListECSServices(cluster, profile, region string) ([]string, error) {
 
 	services := make([]string, len(result.ServiceArns))
 	for i, arn := range result.ServiceArns {
-		parts := strings.Split(arn, "/")
-		services[i] = parts[len(parts)-1]
+		services[i] = arnSuffix(arn)
 	}
 	return services, nil
 }
