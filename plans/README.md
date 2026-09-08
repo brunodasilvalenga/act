@@ -32,6 +32,23 @@ and update your row when done.
 | 017 | Add a static landing page hosted on GitHub Pages | P3 | S | — | DONE (executed, reviewed, not merged — branch `advisor/017-add-landing-page-github-pages`) |
 | 018 | Add `act doctor --fix` to auto-remediate failing checks | P2 | M | — | DONE (merged to main) |
 | 019 | Let `act doctor` run without the AWS CLI already installed | P2 | S | 018 (satisfied — merged) | DONE (merged to main) |
+| 020 | Let `env`/`init`/pure-config `fav` run without AWS CLI installed | P2 | S | none | TODO |
+| 021 | Make `act doctor` honor the global `--env` flag | P1 | S | none | TODO |
+| 022 | Bump `golang.org/x/sys` past v0.44.0 (GO-2026-5024) | P3 | S | none | TODO |
+| 023 | Make `act doctor` reject unknown/misspelled flags | P2 | S | none | TODO |
+| 024 | Test coverage for the `isWithinDir` zip-slip guard | P3 | S | none | TODO |
+| 025 | Add missing `sts:GetCallerIdentity` to README IAM list | P3 | S | none | TODO |
+| 026 | Extract duplicated "pick ECS cluster" block into a helper | P3 | S | none (soft conflict with 033 — see below) | TODO |
+| 027 | Test coverage for `downloadToTempFile`/`unzipTo` | P2 | S | none (soft naming note with 024) | TODO |
+| 028 | Extract + test ARN-suffix / ECS-group-name helpers | P3 | S | none | TODO |
+| 029 | Test coverage for `pickerModel.Update`/`ecsModel.applyFilter` | P3 | S | none | TODO |
+| 030 | Verify checksums for `doctor --fix` installers (Linux; documents macOS/Windows gap) | P2 | M | none (soft: recommended after 031) | TODO |
+| 031 | Extract shared download-extract-run helper for the 6 installer functions | P3 | M | none (soft: recommended before 030 — see below) | TODO |
+| 032 | Run `act doctor`'s 2 network-bound checks concurrently | P2 | S | none | TODO |
+| 033 | Split `main.go` into per-concern files (same `package main`) | P3 | L | none (soft conflict with 026 — see below) | TODO |
+| 034 | Add `act env use <name>` (persistent default environment) | P3 | S | none | TODO |
+| 035 | Add `act ec2 cp` — copy files to/from an EC2 instance via SSM | P2 | M | none | DONE (executed, reviewed, not merged — branch `advisor/035-add-ec2-cp-command`) |
+| 036 | Add `act ec2 ssh --push-key` — push a local SSH pubkey via EC2 Instance Connect | P2 | S | none | DONE |
 
 Plan 017 was written on 2026-07-16 via a `plan <description>` invocation
 (skip-the-audit mode) — it did not come from the original 16-finding audit
@@ -201,6 +218,31 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
    (new file `internal/aws/ssm.go`, new `main.go` dispatch case) so it does
    not conflict with any other plan's edits to existing AWS-CLI wrapper
    files.
+10. **021, 023** — both small, independent bug fixes to `act doctor`'s
+    `main.go` dispatch case; can run in either order or in parallel with
+    each other, but see "Dependency notes" below for their soft interaction
+    with 020 and 033.
+11. **020** — independent; touches the same `subcommandNeedsAWSCLI`
+    predicate and doctor dispatch case as 021/023 but a different part of
+    it (the exemption list, not the flag-parsing loop or the `--env`
+    threading) — low collision risk, but if executing all three together,
+    do 020 first since it's the most likely to touch the same function
+    signature the other two read from.
+12. **031 → 030** — see "Planning batch" narrative above: land the
+    installer dedupe refactor before the checksum-verification feature, so
+    030 builds its new step into the shared helper once instead of into six
+    functions.
+13. **026 → 033** — see "Planning batch" narrative above: land the small
+    ECS-cluster-picker dedupe before the large `main.go` file split, so 033
+    carries the already-deduped helper along rather than the two plans
+    fighting over the same duplicated block.
+14. **024, 027, 028, 029** — fully independent test-coverage additions,
+    safe to run in any order or in parallel with each other and with
+    everything else in this batch (all are new test files, zero production
+    code changes).
+15. **022, 025, 032, 034** — fully independent (dependency bump, docs fix,
+    doctor perf change, new `env use` subcommand respectively); run
+    whenever convenient.
 
 ## Dependency notes
 
@@ -215,6 +257,20 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
   and 006 respectively — see "Recommended execution order" above. Neither
   is a hard dependency; each plan's STOP conditions describe how to
   reconcile if executed out of the suggested order.
+- 033 requires 026 (soft) because both edit `runECS`/`runLogs` in
+  `main.go` — 026 extracts a shared cluster-picker helper in place, 033
+  relocates the whole functions into `cmd_ecs.go`; landing 026 first means
+  033 carries the deduped helper along instead of re-doing the dedupe
+  after the move. Neither plan hard-blocks the other; each documents how
+  to reconcile if executed out of order.
+- 030 requires 031 (soft) because both edit `install_awscli.go`/
+  `install_ssmplugin.go` — 031 extracts a shared installer-orchestration
+  helper, 030 adds checksum/signature verification on top; landing 031
+  first means 030's new verification step is written once into the shared
+  helper instead of duplicated across six functions.
+- 024 and 027 both add new test files to `internal/doctor/` with no
+  functional or naming overlap (confirmed by both plans' authors) — no
+  ordering dependency, safe in parallel.
 
 ## Plan 019 execution notes (2026-07-17 to 2026-07-20)
 
@@ -246,6 +302,149 @@ the plan's fault in the way that matters most:
    merged. `plans/019-fix-early-aws-cli-guard-for-doctor-fix.md` on disk
    now reflects the corrected version only — the buggy intermediate
    version was never committed anywhere.
+
+### Planning batch: plans 020–034 (2026-07-21)
+
+A second `improve` audit pass (standard depth, all nine categories) ran
+against `main` at commit `aa50614` — the state after plan 019 merged. Since
+the repo had already been through one full audit-and-fix cycle (plans
+001–019), this pass fanned out four parallel category subagents
+(correctness+security, perf+tests, tech-debt+deps, DX+docs+direction),
+each explicitly told what plans 001–019 already fixed or rejected so it
+wouldn't re-surface settled ground. All candidate findings were
+independently re-verified by reading the live code (and for the top three,
+by building the binary and reproducing the bug live) before being
+presented to the user. The user selected **all 14 vetted findings** for
+planning, plus one direction item (`env use`) that had been raised as an
+unplanned suggestion during the findings review — asked for as plan 034.
+
+All 15 plans (020–034) were written by 15 separate parallel subagents (one
+per plan, per the user's explicit request to "spawn different and separate
+agents"), each briefed with its own self-contained ground truth (exact
+file/line excerpts it verified itself against the live repo, not just
+copied from the audit) so no plan depends on another plan's file to be
+understood. **None of these plans have been executed yet** — writing them
+out was this batch's only scope; execution is a separate future step.
+
+Two real cross-plan conflicts surfaced during writing, both **soft**
+(resolvable by sequencing, not by rewriting either plan) and already
+recorded in the affected plans' own "Maintenance notes":
+
+1. **026 vs. 033** — plan 026 edits `runECS`/`runLogs` in place inside
+   `main.go` (extracting a `pickECSCluster` helper); plan 033 relocates
+   those same two functions wholesale into a new `cmd_ecs.go` file. Textual
+   conflict if both are executed from the same base commit. Recommended
+   order: **026 before 033** (033's file-split step for `cmd_ecs.go` then
+   carries 026's already-extracted helper along, rather than 033 moving the
+   duplicated block and 026 having nothing left to dedupe against). If 033
+   runs first instead, 026's STOP conditions call for the executor to
+   re-locate the duplicated block inside `cmd_ecs.go` and re-verify before
+   proceeding — either order is executable, just not concurrently on
+   diverging branches without a manual reconcile.
+2. **030 vs. 031** — both touch `internal/doctor/install_awscli.go` and
+   `install_ssmplugin.go`; 031 is a pure refactor (extracts a shared
+   download-extract-run helper across all six installer functions), 030
+   adds new behavior (checksum/signature verification, scoped to the
+   variants confirmed to have real upstream verification material).
+   Recommended order: **031 before 030**, so 030's verification step gets
+   built into the new shared helper once rather than into six separate
+   functions. Either order is executable; whichever lands second should
+   rebase onto the other's structure rather than reverting it.
+
+One soft naming-only note: **024 vs. 027** — both add new test files to
+`internal/doctor/` (024: `TestIsWithinDir`; 027: `TestDownloadToTempFile`/
+`TestUnzipTo`). No functional overlap (024 tests the zip-slip guard in
+isolation with pure string paths; 027 integration-tests the download/unzip
+plumbing with real httptest servers and an in-memory zip fixture, including
+one traversal-attempt entry that exercises 024's guard via `unzipTo`'s real
+call into it — testing the wiring, not re-testing the guard's internals).
+Both plans' authors confirmed no test-name collision. No ordering
+dependency; safe to execute in either order or in parallel.
+
+Plan 030 required the most investigation of the batch: it's a
+security-category finding but was deliberately scoped as a design/spike
+plan (per the audit playbook's rule for uncertain-confidence findings)
+because whether AWS publishes verifiable checksums/signatures for its CLI
+and Session Manager plugin installers was unknown going in. The plan's
+author ran live `curl -sI` checks against real AWS/S3 endpoints and fetched
+AWS's own documentation pages rather than guessing, and found the answer is
+platform-dependent: **AWS CLI v2 Linux (both arches)** and **SSM plugin
+Linux (deb/rpm)** both have real, documented GPG-signature verification
+available (`.sig` sidecars + a published public key) — the plan wires
+verification in for exactly those four variants. **AWS CLI v2 macOS/Windows**
+and **SSM plugin macOS/Windows** have no discoverable sidecar or documented
+verification story — the plan explicitly documents this as a known,
+accepted gap in each variant's `Describe()` text rather than blocking on
+AWS publishing something it currently doesn't.
+
+Plan 033 (split `main.go`) is the largest and highest-risk plan in this
+batch (Effort L, Risk MED — it's the only plan here touching double-digit
+files). Its author read `main.go` end-to-end and found the real symbol
+counts differ slightly from the audit's estimates (14 `print*Help`
+functions, not ~15; 11 `run*` functions, not 10) and confirmed via a full
+read of `main_test.go` that a same-package, multi-file split (still
+`package main`, just spread across `main.go`/`help.go`/`helpers.go`/eight
+`cmd_*.go` files) requires zero changes to any existing test — every
+symbol `main_test.go` references stays visible package-wide. This was
+chosen explicitly over moving code into an `internal/cmd/` package, which
+the plan documents as rejected due to a real import-cycle risk (`internal/`
+packages cannot call back into anything still in `package main`).
+
+Plan 035 was written on 2026-09-03 via a `plan <description>` invocation
+(user request: an scp-like `act ec2 cp` command using the same SSM-proxied
+SSH tunnel `act ec2 ssh` already uses, with the same interactive instance
+picker). Not from either audit batch — no dependency on any other plan.
+Purely additive (`internal/aws/scp.go` new file, one new `main.go` dispatch
+branch) except for a small refactor of `internal/aws/ssh_args.go` to share
+the `ProxyCommand` string builder — verified against the live file, no
+behavior change to the existing `sshProxyArgs`/`act ec2 ssh` path.
+
+**Plan 035 executed 2026-09-03** in an isolated worktree, single commit
+`e4a1eb0` on branch `advisor/035-add-ec2-cp-command` (created from `aa50614`,
+matching the plan exactly — not the auto-generated worktree branch name).
+Reviewer independently re-verified rather than trusting the executor's
+report: `go build/vet/gofmt/test` all clean (116 tests, 6 packages);
+`./act ec2 cp help` and `./act ec2 cp` (no args → exits 1 with the expected
+"requires exactly 2 positional arguments" error) both behave as specified;
+`git diff --stat aa50614..HEAD` touches exactly the 6 in-scope files
+(`internal/aws/{ssh_args.go,scp.go,scp_test.go}`, `main.go`, `main_test.go`,
+`README.md`) and nothing else. `CopyFile` calls `validateSSHProxyToken` on
+both `profile` and `region` before use, matching `StartSSHSession`'s
+injection guard — the core safety property carries over to the new path.
+`sshProxyArgs`'s behavior is unchanged; it now delegates to the extracted
+`ssmProxyCommand` helper. One documented, sensible deviation: the plan's
+own `scp_test.go` example table was internally inconsistent (same
+`source`/`dest` literals for both directions with only the `download` flag
+flipped, which the plan's own prose flagged as something to "reread
+carefully"); the executor computed `source`/`dest` correctly per direction
+instead of copying the plan's example literally, and the test still asserts
+the values the plan specified. Judged in-spirit and approved, not scope
+creep. Not merged to `main` — merging is the user's decision.
+
+Plan 036 was written on 2026-09-03 via a `plan <description>` invocation
+(user asked whether `act ec2 ssh` works without an SSH key/password already
+on the instance, then asked for a way to populate one before connecting).
+Not from either audit batch — no dependency on any other plan. Purely
+additive (`internal/aws/instance_connect.go` + test, new file; two new flags
+and a push step in `main.go`'s `runSSH`; one updated `main_test.go` table
+entry; README updates) — does not touch `ssh_args.go`/`ssh_unix.go`/
+`ssh_windows.go`, so it has no interaction with plan 035's `ssh_args.go`
+refactor even though 035 hasn't merged to `main` yet.
+
+Plan 036 executed on 2026-09-03. First dispatch surfaced a false drift: the
+executor's isolated worktree was based on stale `origin/main` (`aa50614`),
+which predates plan 035 — `origin/main` had never been pushed past that
+point even though local `main` was already at `1f93220`. Pushed local `main`
+to `origin` (fast-forward) and re-dispatched; the second run's worktree
+based cleanly on `1f93220`, matched the plan's "Current state" excerpts
+verbatim, and completed all 7 steps with no deviations. Reviewed: diff is
+byte-for-byte the plan's specified code, scope is exactly the 5 listed files
+(`internal/aws/instance_connect.go`, `internal/aws/instance_connect_test.go`,
+`main.go`, `main_test.go`, `README.md`), `go build`/`go vet`/`gofmt -l`/
+`go test ./...`/`go run . ec2 ssh --help` all verified independently in the
+worktree. Committed as `28c2800` on branch
+`advisor/036-ec2-ssh-push-key-instance-connect`. Not merged to `main` —
+merging is the user's decision.
 
 ## Findings considered and rejected
 

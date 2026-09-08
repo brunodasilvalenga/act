@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"os"
+	"path/filepath"
 	"runtime"
 	"sync"
 	"testing"
@@ -79,12 +80,12 @@ func TestCheckRegion(t *testing.T) {
 	os.Unsetenv("AWS_REGION")
 	os.Unsetenv("AWS_DEFAULT_REGION")
 
-	r := checkRegion("")
+	r := checkRegion("", "")
 	if r.Status != statusWarn {
 		t.Errorf("expected statusWarn when no region configured, got %v", r.Status)
 	}
 
-	r = checkRegion("us-west-2")
+	r = checkRegion("us-west-2", "")
 	if r.Status != statusPass {
 		t.Errorf("expected statusPass when region flag given, got %v", r.Status)
 	}
@@ -98,12 +99,12 @@ func TestCheckProfile(t *testing.T) {
 	overrideHomeForDoctorTest(t, tmpDir)
 	os.Unsetenv("AWS_PROFILE")
 
-	r := checkProfile("")
+	r := checkProfile("", "")
 	if r.Status != statusWarn {
 		t.Errorf("expected statusWarn when no profile configured, got %v", r.Status)
 	}
 
-	r = checkProfile("my-profile")
+	r = checkProfile("my-profile", "")
 	if r.Status != statusPass {
 		t.Errorf("expected statusPass when profile flag given, got %v", r.Status)
 	}
@@ -163,5 +164,54 @@ func TestRunResultOrder(t *testing.T) {
 				t.Fatalf("iteration %d: results[%d].Status = %v, want statusPass", iter, i, results[i].Status)
 			}
 		}
+	}
+}
+
+func TestCheckRegionWithEnv(t *testing.T) {
+	tmpDir := t.TempDir()
+	overrideHomeForDoctorTest(t, tmpDir)
+	os.Unsetenv("AWS_REGION")
+	os.Unsetenv("AWS_DEFAULT_REGION")
+
+	cfgJSON := `{"environments": {"staging": {"profile": "stagingprof", "region": "eu-west-1"}}}`
+	if err := os.WriteFile(filepath.Join(tmpDir, ".act.json"), []byte(cfgJSON), 0600); err != nil {
+		t.Fatalf("failed to write test config: %v", err)
+	}
+
+	r := checkRegion("", "staging")
+	if r.Status != statusPass {
+		t.Errorf("expected statusPass when env has a region, got %v (%s)", r.Status, r.Detail)
+	}
+	if r.Detail != "eu-west-1" {
+		t.Errorf("expected Detail 'eu-west-1', got %q", r.Detail)
+	}
+
+	r = checkRegion("us-east-2", "staging")
+	if r.Detail != "us-east-2" {
+		t.Errorf("expected explicit --region to win over --env, got %q", r.Detail)
+	}
+}
+
+func TestCheckProfileWithEnv(t *testing.T) {
+	tmpDir := t.TempDir()
+	overrideHomeForDoctorTest(t, tmpDir)
+	os.Unsetenv("AWS_PROFILE")
+
+	cfgJSON := `{"environments": {"staging": {"profile": "stagingprof", "region": "eu-west-1"}}}`
+	if err := os.WriteFile(filepath.Join(tmpDir, ".act.json"), []byte(cfgJSON), 0600); err != nil {
+		t.Fatalf("failed to write test config: %v", err)
+	}
+
+	r := checkProfile("", "staging")
+	if r.Status != statusPass {
+		t.Errorf("expected statusPass when env has a profile, got %v (%s)", r.Status, r.Detail)
+	}
+	if r.Detail != "stagingprof" {
+		t.Errorf("expected Detail 'stagingprof', got %q", r.Detail)
+	}
+
+	r = checkProfile("explicit-profile", "staging")
+	if r.Detail != "explicit-profile" {
+		t.Errorf("expected explicit --profile to win over --env, got %q", r.Detail)
 	}
 }

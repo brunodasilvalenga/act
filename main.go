@@ -182,7 +182,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Error: --skip-confirm has no effect without --fix")
 			os.Exit(1)
 		}
-		doctor.Run(profile, region, version, fix, skipConfirm)
+		doctor.Run(profile, region, env, version, fix, skipConfirm)
 		os.Exit(0)
 
 	case "init":
@@ -600,6 +600,7 @@ Flags:
 Global Flags:
   --profile    AWS profile to use
   --region     AWS region to use
+  --env        Environment name
 
 Examples:
   act doctor

@@ -47,15 +47,15 @@ var (
 	failStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("1")) // red
 )
 
-func Run(profile, region, version string, fix, skipConfirm bool) error {
+func Run(profile, region, env, version string, fix, skipConfirm bool) error {
 	// results is pre-sized so each check writes into a fixed, known index.
 	// This preserves the exact print order below regardless of which of
 	// checkCredentials/checkVersion finishes first.
 	results := make([]result, 7)
 	results[0] = checkAWSCLI()
 	results[1] = checkSessionManagerPlugin()
-	results[3] = checkRegion(region)
-	results[4] = checkProfile(profile)
+	results[3] = checkRegion(region, env)
+	results[4] = checkProfile(profile, env)
 	results[5] = checkConfigFile()
 
 	// checkCredentials (index 2) and checkVersion (index 6) are the only
@@ -71,7 +71,7 @@ func Run(profile, region, version string, fix, skipConfirm bool) error {
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
-		results[2] = checkCredentials(profile, region)
+		results[2] = checkCredentials(profile, region, env)
 	}()
 	go func() {
 		defer wg.Done()
@@ -168,9 +168,9 @@ func checkSessionManagerPlugin() result {
 	}
 }
 
-func checkCredentials(profile, region string) result {
-	resolvedProfile := config.ResolveProfile(profile, "")
-	resolvedRegion := config.ResolveRegion(region, "")
+func checkCredentials(profile, region, env string) result {
+	resolvedProfile := config.ResolveProfile(profile, env)
+	resolvedRegion := config.ResolveRegion(region, env)
 
 	args := []string{"sts", "get-caller-identity", "--output", "json"}
 	if resolvedProfile != "" {
@@ -208,8 +208,8 @@ func checkCredentials(profile, region string) result {
 	}
 }
 
-func checkRegion(flagRegion string) result {
-	resolved := config.ResolveRegion(flagRegion, "")
+func checkRegion(flagRegion, env string) result {
+	resolved := config.ResolveRegion(flagRegion, env)
 	if resolved == "" {
 		return result{
 			Name:   "Region",
@@ -224,8 +224,8 @@ func checkRegion(flagRegion string) result {
 	}
 }
 
-func checkProfile(flagProfile string) result {
-	resolved := config.ResolveProfile(flagProfile, "")
+func checkProfile(flagProfile, env string) result {
+	resolved := config.ResolveProfile(flagProfile, env)
 	if resolved == "" {
 		return result{
 			Name:   "Profile",
