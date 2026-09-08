@@ -32,7 +32,11 @@ func main() {
 		subcmd = args[0]
 	}
 
-	if subcommandNeedsAWSCLI(subcmd) {
+	var subcmdArgs []string
+	if len(args) > 1 {
+		subcmdArgs = args[1:]
+	}
+	if subcommandNeedsAWSCLI(subcmd, subcmdArgs) {
 		if _, err := exec.LookPath("aws"); err != nil {
 			fmt.Fprintf(os.Stderr, "Error: 'aws' CLI not found in PATH.\nInstall it from https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html\n")
 			os.Exit(1)
@@ -244,8 +248,40 @@ func hasHelp(args []string) bool {
 // installed before it can do anything useful. "doctor" is the one
 // exception: it diagnoses (and, with --fix, can install) a missing AWS
 // CLI itself, so it must be reachable even when aws isn't on PATH yet.
-func subcommandNeedsAWSCLI(subcmd string) bool {
-	return subcmd != "doctor"
+// subcommandNeedsAWSCLI reports whether subcmd (invoked with subArgs)
+// requires the AWS CLI to be installed before it can do anything useful.
+//
+// "doctor" is exempt: it diagnoses (and, with --fix, can install) a
+// missing AWS CLI itself, so it must be reachable even when aws isn't on
+// PATH yet.
+//
+// "env" and "init" are exempt: both are pure ~/.act.json local-config
+// commands (internal/config only) and never shell out to aws.
+//
+// "fav" is exempt only when its first sub-argument is "list", "add", or
+// "rm" — those subcommands are pure local-config too. A bare "fav" (no
+// sub-arguments) launches the interactive picker and starts a real SSM
+// session via aws.StartSession, so it still needs aws; so does any
+// unrecognized fav sub-argument, since runFav's default case is reached
+// via the same dispatch path and the guard errs toward requiring aws for
+// anything not explicitly known to be safe.
+func subcommandNeedsAWSCLI(subcmd string, subArgs []string) bool {
+	switch subcmd {
+	case "doctor", "env", "init":
+		return false
+	case "fav":
+		if len(subArgs) == 0 {
+			return true
+		}
+		switch subArgs[0] {
+		case "list", "add", "rm":
+			return false
+		default:
+			return true
+		}
+	default:
+		return true
+	}
 }
 
 func printUsage() {
