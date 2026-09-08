@@ -3,6 +3,7 @@ package doctor
 import (
 	"os"
 	"runtime"
+	"sync"
 	"testing"
 )
 
@@ -108,5 +109,59 @@ func TestCheckProfile(t *testing.T) {
 	}
 	if r.Detail != "my-profile" {
 		t.Errorf("expected Detail 'my-profile', got %q", r.Detail)
+	}
+}
+
+// TestRunResultOrder exercises the exact concurrency shape used by Run:
+// a pre-sized []result slice, 5 sequential writes to indices 0/1/3/4/5,
+// and two goroutines synchronized via sync.WaitGroup writing to indices
+// 2/6. It uses dummy stand-ins for checkCredentials/checkVersion instead
+// of invoking the real network-bound checks, so it stays deterministic
+// and fast while still proving the indexing pattern is race-free (run
+// with -race) and preserves the expected 0-6 print order regardless of
+// which goroutine finishes first.
+func TestRunResultOrder(t *testing.T) {
+	wantNames := []string{
+		"AWS CLI",
+		"Session Manager plugin",
+		"AWS credentials",
+		"Region",
+		"Profile",
+		"Config",
+		"Version",
+	}
+
+	dummy := func(name string) result {
+		return result{Name: name, Status: statusPass, Detail: "ok"}
+	}
+
+	for iter := 0; iter < 20; iter++ {
+		results := make([]result, 7)
+		results[0] = dummy("AWS CLI")
+		results[1] = dummy("Session Manager plugin")
+		results[3] = dummy("Region")
+		results[4] = dummy("Profile")
+		results[5] = dummy("Config")
+
+		var wg sync.WaitGroup
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			results[2] = dummy("AWS credentials")
+		}()
+		go func() {
+			defer wg.Done()
+			results[6] = dummy("Version")
+		}()
+		wg.Wait()
+
+		for i, want := range wantNames {
+			if results[i].Name != want {
+				t.Fatalf("iteration %d: results[%d].Name = %q, want %q", iter, i, results[i].Name, want)
+			}
+			if results[i].Status != statusPass {
+				t.Fatalf("iteration %d: results[%d].Status = %v, want statusPass", iter, i, results[i].Status)
+			}
+		}
 	}
 }
