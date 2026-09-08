@@ -44,19 +44,11 @@ func installAWSCLI(w io.Writer) error {
 
 func installAWSCLIDarwin(w io.Writer) error {
 	const url = "https://awscli.amazonaws.com/AWSCLIV2.pkg"
-	fmt.Fprintf(w, "Downloading AWS CLI v2 installer from %s...\n", url)
-	pkgPath, err := downloadToTempFile(url, "awscliv2-*.pkg")
+	err := runDownloadAndInstall(w, "Downloading AWS CLI v2 installer", url, "awscliv2-*.pkg", nil, func(artifactPath string) *exec.Cmd {
+		return exec.Command("sudo", "installer", "-pkg", artifactPath, "-target", "/")
+	})
 	if err != nil {
-		return fmt.Errorf("download failed: %w", err)
-	}
-	defer os.Remove(pkgPath)
-
-	fmt.Fprintf(w, "Running: sudo installer -pkg %s -target /\n", pkgPath)
-	cmd := exec.Command("sudo", "installer", "-pkg", pkgPath, "-target", "/")
-	cmd.Stdout = w
-	cmd.Stderr = w
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("installer failed: %w", err)
+		return err
 	}
 	fmt.Fprintln(w, "AWS CLI installed successfully.")
 	return nil
@@ -68,31 +60,19 @@ func installAWSCLILinux(w io.Writer) error {
 		url = "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"
 	}
 
-	fmt.Fprintf(w, "Downloading AWS CLI v2 install bundle from %s...\n", url)
-	zipPath, err := downloadToTempFile(url, "awscli-exe-linux-*.zip")
+	extract := func(archivePath, destDir string) (string, error) {
+		fmt.Fprintf(w, "Unzipping %s to %s...\n", archivePath, destDir)
+		if err := unzipTo(archivePath, destDir); err != nil {
+			return "", fmt.Errorf("unzip failed: %w", err)
+		}
+		return filepath.Join(destDir, "aws", "install"), nil
+	}
+
+	err := runDownloadAndInstall(w, "Downloading AWS CLI v2 install bundle", url, "awscli-exe-linux-*.zip", extract, func(artifactPath string) *exec.Cmd {
+		return exec.Command("sudo", artifactPath)
+	})
 	if err != nil {
-		return fmt.Errorf("download failed: %w", err)
-	}
-	defer os.Remove(zipPath)
-
-	tmpDir, err := os.MkdirTemp("", "awscli-install-*")
-	if err != nil {
-		return fmt.Errorf("failed to create temp dir: %w", err)
-	}
-	defer os.RemoveAll(tmpDir)
-
-	fmt.Fprintf(w, "Unzipping %s to %s...\n", zipPath, tmpDir)
-	if err := unzipTo(zipPath, tmpDir); err != nil {
-		return fmt.Errorf("unzip failed: %w", err)
-	}
-
-	installScript := filepath.Join(tmpDir, "aws", "install")
-	fmt.Fprintf(w, "Running: sudo %s\n", installScript)
-	cmd := exec.Command("sudo", installScript)
-	cmd.Stdout = w
-	cmd.Stderr = w
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("installer failed: %w", err)
+		return err
 	}
 	fmt.Fprintln(w, "AWS CLI installed successfully.")
 	return nil
@@ -100,21 +80,55 @@ func installAWSCLILinux(w io.Writer) error {
 
 func installAWSCLIWindows(w io.Writer) error {
 	const url = "https://awscli.amazonaws.com/AWSCLIV2.msi"
-	fmt.Fprintf(w, "Downloading AWS CLI v2 MSI installer from %s...\n", url)
-	msiPath, err := downloadToTempFile(url, "awscliv2-*.msi")
+	err := runDownloadAndInstall(w, "Downloading AWS CLI v2 MSI installer", url, "awscliv2-*.msi", nil, func(artifactPath string) *exec.Cmd {
+		return exec.Command("msiexec.exe", "/i", artifactPath, "/qn")
+	})
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(w, "AWS CLI installed successfully.")
+	return nil
+}
+
+// runDownloadAndInstall downloads url to a temp file (named per pattern, see
+// downloadToTempFile), optionally extracts it (when extract is non-nil)
+// into a fresh temp directory, then runs the *exec.Cmd built by buildCmd
+// against the resulting artifact path, streaming its output to w. It
+// returns an error if any stage fails. The downloaded file and any
+// extraction temp dir are always cleaned up before returning.
+//
+// downloadMsg is printed verbatim followed by " from <url>...\n" (e.g.
+// "Downloading AWS CLI v2 installer" becomes "Downloading AWS CLI v2
+// installer from <url>...\n"), matching each caller's original wording.
+func runDownloadAndInstall(w io.Writer, downloadMsg, url, tempPattern string, extract func(archivePath, destDir string) (artifactPath string, err error), buildCmd func(artifactPath string) *exec.Cmd) error {
+	fmt.Fprintf(w, "%s from %s...\n", downloadMsg, url)
+	downloaded, err := downloadToTempFile(url, tempPattern)
 	if err != nil {
 		return fmt.Errorf("download failed: %w", err)
 	}
-	defer os.Remove(msiPath)
+	defer os.Remove(downloaded)
 
-	fmt.Fprintf(w, "Running: msiexec.exe /i %s /qn\n", msiPath)
-	cmd := exec.Command("msiexec.exe", "/i", msiPath, "/qn")
+	artifactPath := downloaded
+	if extract != nil {
+		tmpDir, err := os.MkdirTemp("", "act-install-*")
+		if err != nil {
+			return fmt.Errorf("failed to create temp dir: %w", err)
+		}
+		defer os.RemoveAll(tmpDir)
+
+		artifactPath, err = extract(downloaded, tmpDir)
+		if err != nil {
+			return err
+		}
+	}
+
+	cmd := buildCmd(artifactPath)
+	fmt.Fprintf(w, "Running: %s\n", strings.Join(cmd.Args, " "))
 	cmd.Stdout = w
 	cmd.Stderr = w
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("installer failed: %w", err)
 	}
-	fmt.Fprintln(w, "AWS CLI installed successfully.")
 	return nil
 }
 
