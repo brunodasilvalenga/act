@@ -49,6 +49,48 @@ and update your row when done.
 | 034 | Add `act env use <name>` (persistent default environment) | P3 | S | none | DONE (merged to main) |
 | 035 | Add `act ec2 cp` — copy files to/from an EC2 instance via SSM | P2 | M | none | DONE (executed, reviewed, not merged — branch `advisor/035-add-ec2-cp-command`) |
 | 036 | Add `act ec2 ssh --push-key` — push a local SSH pubkey via EC2 Instance Connect | P2 | S | none | DONE |
+| 037 | Fix `--push-key`'s dedup check (unique marker defeats its own grep, causing unbounded `authorized_keys` growth) | P1 | M | none | TODO |
+| 038 | Stop `act ec2 rdp` reporting a working tunnel when `aws ssm start-session` already failed | P1 | M | none | TODO |
+| 039 | Fix README's stale "EC2 Instance Connect" comment for `--push-key` (now SSM Run Command) | P3 | S | none | TODO |
+| 040 | Validate `--user` (and guard positional argv) in `ec2 ssh`/`ec2 cp`, closing the gap left when `profile`/`region` were validated | P1 | S | none (soft: recommended after 042 — see below) | TODO |
+| 041 | Make `act doctor` warn when the OpenSSH client (`ssh`/`scp`) is missing | P2 | S | none | TODO |
+| 042 | Extract shared `sshProxyOptionArgs` helper for the SSH-proxy `-o` flags duplicated in `ssh_args.go`/`scp.go` | P3 | S | none (soft: recommended before 040 — see below) | TODO |
+| 043 | Reject `act ec2 ssh --push-key` against Windows targets before sending an SSM command | P2 | S | none (soft overlap with 037 — see below) | TODO |
+| 044 | Add a bounded wall-clock deadline to `WaitForCommandInvocation` so SSM polling can't hang forever | P1 | M | none | TODO |
+
+Plans 037–044 were written on 2026-09-09 by 8 separate parallel subagents (one
+per plan, mirroring the 020–034 batch's process), each dispatched with its own
+self-contained ground truth from a new `improve` audit pass (standard depth,
+focused on the newest code: `internal/aws/ssh_key_push.go`, `scp.go`,
+`ssm.go`, and `internal/doctor/{doctor.go,download.go,fix.go}`). The audit
+surfaced 14 findings plus 3 direction ideas; the user selected findings 3, 4,
+5, 6, 7, 8, 11, and 12 (by the audit table's row numbers) for planning —
+these became plans 037–044 respectively. Not selected (still open, not
+planned): the push-key script/`ssm.go` test-coverage gaps, `extractJSON`'s
+hand-rolled parsing, the 8+ duplicated "exec aws CLI, unwrap ExitError,
+unmarshal JSON" blocks across `internal/aws/*.go`, and adding a linter beyond
+`go vet`/`gofmt`. The 3 direction ideas (fleet-wide `act ssm run` via SSM tag
+targeting; environment-aware favorites; extending `doctor --fix` to
+`ssh`/`scp`) were not selected either.
+
+Two soft (non-blocking) cross-plan overlaps, both noted in the affected
+plans' own "Maintenance notes"/Status sections:
+
+1. **042 before 040 (recommended)** — both touch `internal/aws/ssh_args.go`
+   and `internal/aws/scp.go`. 042 extracts a shared `sshProxyOptionArgs`
+   helper for the duplicated `-o` flags; 040 adds a `validateSSHProxyToken`
+   call for `user` (plus a `--` argv separator) at the same call sites.
+   Landing 042 first means 040's validation lands on the final, deduped
+   structure instead of being re-applied after a refactor moves code
+   around. Neither plan hard-depends on the other — each is written to
+   re-read the live file and adapt if executed out of order.
+2. **037 / 043 (no ordering needed)** — both touch
+   `internal/aws/ssh_key_push.go` and its test file, but different regions
+   of `PushSSHKeyViaSSM`: 037 fixes the grep/marker dedup logic in the
+   generated shell script; 043 adds a platform check before the
+   `SendCommand` call. Safe in either order or in parallel; each plan notes
+   the overlap and tells its executor to re-read the live file rather than
+   trust stale line numbers if the other has already landed.
 
 Plan 017 was written on 2026-07-16 via a `plan <description>` invocation
 (skip-the-audit mode) — it did not come from the original 16-finding audit
@@ -243,6 +285,15 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 15. **022, 025, 032, 034** — fully independent (dependency bump, docs fix,
     doctor perf change, new `env use` subcommand respectively); run
     whenever convenient.
+16. **039** — trivial, independent one-line docs fix; run whenever
+    convenient.
+17. **042 → 040** — see "Planning batch: plans 037–044" narrative below:
+    land the SSH-proxy-flags dedupe before the `--user` validation add, so
+    040's validation lands on the final, deduped structure.
+18. **037, 043** — no ordering needed despite both touching
+    `internal/aws/ssh_key_push.go`; different regions of the same
+    function, safe in parallel.
+19. **038, 041, 044** — fully independent; run whenever convenient.
 
 ## Dependency notes
 
