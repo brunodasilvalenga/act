@@ -37,6 +37,19 @@ func shellSingleQuote(s string) string {
 	return "'" + strings.ReplaceAll(s, "'", `'"'"'`) + "'"
 }
 
+// rejectIfWindows returns an error if platform indicates a Windows
+// instance, using the same case-insensitive convention DocumentForPlatform
+// uses in ssm.go. --push-key's shell script is POSIX-specific (getent,
+// chown, .ssh/authorized_keys) and has no Windows equivalent, so
+// PushSSHKeyViaSSM must refuse before sending any SSM command rather than
+// letting AWS-RunShellScript fail confusingly against a Windows instance.
+func rejectIfWindows(platform string) error {
+	if strings.EqualFold(platform, "windows") {
+		return fmt.Errorf("--push-key is not supported for Windows targets (target platform: %s); Windows instances don't use authorized_keys the same way — see 'act ec2 rdp' for Windows access", platform)
+	}
+	return nil
+}
+
 // PushSSHKeyViaSSM appends the public key at publicKeyPath to osUser's
 // authorized_keys on the target instance, via an SSM Run Command rather than
 // EC2 Instance Connect — this only depends on the SSM Agent, which every
@@ -44,7 +57,13 @@ func shellSingleQuote(s string) string {
 // on-instance agent that isn't installed on every AMI. The appended line is
 // tagged with a unique marker so it can be found and removed later; the
 // returned string is the exact "act ssm run" invocation that removes it.
-func PushSSHKeyViaSSM(instanceID, profile, region, osUser, publicKeyPath string) (string, error) {
+// platform is the target's EC2 Platform value (as in Instance.Platform /
+// DocumentForPlatform); Windows targets are rejected immediately since this
+// function's script is POSIX-only.
+func PushSSHKeyViaSSM(instanceID, profile, region, osUser, publicKeyPath, platform string) (string, error) {
+	if err := rejectIfWindows(platform); err != nil {
+		return "", err
+	}
 	keyBytes, err := os.ReadFile(publicKeyPath)
 	if err != nil {
 		return "", fmt.Errorf("reading public key: %w", err)
