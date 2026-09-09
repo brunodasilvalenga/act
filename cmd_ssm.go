@@ -73,7 +73,8 @@ func runSSMRun(profile, region string, subArgs []string) {
 		return
 	}
 
-	result, err := aws.WaitForCommandInvocation(commandID, instanceID, profile, region, 2*time.Second)
+	maxWait := aws.MaxWaitFromTimeoutSeconds(*timeout)
+	result, err := aws.WaitForCommandInvocation(commandID, instanceID, profile, region, 2*time.Second, maxWait)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error waiting for command: %v\n", err)
 		os.Exit(1)

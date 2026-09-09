@@ -81,9 +81,30 @@ type CommandInvocationResult struct {
 	ExitCode int
 }
 
+// MaxWaitFromTimeoutSeconds derives a client-side polling deadline for
+// WaitForCommandInvocation from the --timeout-seconds value passed to
+// SendCommand for the same command. SSM itself should transition the
+// invocation to a terminal status (e.g. "TimedOut") once timeoutSeconds
+// elapses; doubling it gives headroom for polling latency before the client
+// independently gives up, which matters if SSM's own enforcement never
+// fires (e.g. the SSM Agent on the instance goes offline mid-command). The
+// result is floored at 1 minute and capped at 30 minutes.
+func MaxWaitFromTimeoutSeconds(timeoutSeconds int) time.Duration {
+	d := time.Duration(timeoutSeconds) * 2 * time.Second
+	if d < time.Minute {
+		return time.Minute
+	}
+	if d > 30*time.Minute {
+		return 30 * time.Minute
+	}
+	return d
+}
+
 // WaitForCommandInvocation polls ssm get-command-invocation until the
-// command reaches a terminal status (Success, Failed, Cancelled, TimedOut).
-func WaitForCommandInvocation(commandID, instanceID, profile, region string, pollInterval time.Duration) (CommandInvocationResult, error) {
+// command reaches a terminal status (Success, Failed, Cancelled, TimedOut),
+// or until maxWait elapses, in which case it returns a "timed out" error
+// rather than polling forever.
+func WaitForCommandInvocation(commandID, instanceID, profile, region string, pollInterval, maxWait time.Duration) (CommandInvocationResult, error) {
 	args := []string{"ssm", "get-command-invocation",
 		"--command-id", commandID,
 		"--instance-id", instanceID,
@@ -96,7 +117,14 @@ func WaitForCommandInvocation(commandID, instanceID, profile, region string, pol
 		args = append(args, "--region", region)
 	}
 
+	deadline := time.Now().Add(maxWait)
+	lastStatus := "Unknown"
+
 	for {
+		if time.Now().After(deadline) {
+			return CommandInvocationResult{}, fmt.Errorf("timed out after %s waiting for command %s to complete (last status: %s)", maxWait, commandID, lastStatus)
+		}
+
 		cmd := exec.Command("aws", args...)
 		out, err := cmd.Output()
 		if err != nil {
@@ -110,6 +138,7 @@ func WaitForCommandInvocation(commandID, instanceID, profile, region string, pol
 		if err := json.Unmarshal(out, &result); err != nil {
 			return CommandInvocationResult{}, fmt.Errorf("failed to parse get-command-invocation output: %w", err)
 		}
+		lastStatus = result.Status
 
 		switch result.Status {
 		case "Pending", "InProgress", "Delayed":
