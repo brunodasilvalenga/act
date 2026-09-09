@@ -1,6 +1,9 @@
 package aws
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestSSHProxyOptionArgs(t *testing.T) {
 	const base = "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"
@@ -46,5 +49,35 @@ func TestSSHProxyOptionArgs(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestSSHProxyArgs(t *testing.T) {
+	args := sshProxyArgs("i-0123456789abcdef0", "myprofile", "us-west-2", "ec2-user")
+
+	want := []string{
+		"-o", "StrictHostKeyChecking=no",
+		"-o", "UserKnownHostsFile=/dev/null",
+		"-o", "ProxyCommand=aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p --profile myprofile --region us-west-2",
+		"--",
+		"ec2-user@i-0123456789abcdef0",
+	}
+	if !reflect.DeepEqual(args, want) {
+		t.Errorf("sshProxyArgs() = %#v, want %#v", args, want)
+	}
+}
+
+func TestSSHProxyArgsEndsWithSeparatorThenPositional(t *testing.T) {
+	args := sshProxyArgs("i-abc", "", "", "-Fmyconfig")
+
+	if len(args) < 2 {
+		t.Fatalf("sshProxyArgs() returned too few elements: %#v", args)
+	}
+	last, secondLast := args[len(args)-1], args[len(args)-2]
+	if secondLast != "--" {
+		t.Errorf("expected \"--\" immediately before the final positional arg, got %q", secondLast)
+	}
+	if last != "-Fmyconfig@i-abc" {
+		t.Errorf("final positional arg = %q, want %q", last, "-Fmyconfig@i-abc")
 	}
 }

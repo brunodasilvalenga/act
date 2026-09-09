@@ -14,6 +14,9 @@ func StartSSHSession(instanceID, profile, region, user string) error {
 	if err := validateSSHProxyToken(region, "region"); err != nil {
 		return err
 	}
+	if err := validateSSHProxyToken(user, "user"); err != nil {
+		return err
+	}
 
 	args := sshProxyArgs(instanceID, profile, region, user)
 

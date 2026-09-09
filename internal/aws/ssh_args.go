@@ -29,5 +29,6 @@ func sshProxyOptionArgs(profile, region string) []string {
 // ProxyCommand.
 func sshProxyArgs(instanceID, profile, region, user string) []string {
 	args := sshProxyOptionArgs(profile, region)
+	args = append(args, "--")
 	return append(args, fmt.Sprintf("%s@%s", user, instanceID))
 }
