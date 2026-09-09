@@ -51,7 +51,7 @@ func Run(profile, region, env, version string, fix, skipConfirm bool) error {
 	// results is pre-sized so each check writes into a fixed, known index.
 	// This preserves the exact print order below regardless of which of
 	// checkCredentials/checkVersion finishes first.
-	results := make([]result, 7)
+	results := make([]result, 8)
 	results[0] = checkAWSCLI()
 	results[1] = checkSessionManagerPlugin()
 	results[3] = checkRegion(region, env)
@@ -78,6 +78,12 @@ func Run(profile, region, env, version string, fix, skipConfirm bool) error {
 		results[6] = checkVersion(version)
 	}()
 	wg.Wait()
+
+	// checkSSHClient is a plain sequential check (like indices 0/1/3/4/5
+	// above) — it does not need to run concurrently since it does not
+	// make a network call, and it must come after wg.Wait() so it does
+	// not race with the goroutines writing indices 2/6 above.
+	results[7] = checkSSHClient()
 
 	if fix {
 		recheck := func(name string) result {
@@ -165,6 +171,41 @@ func checkSessionManagerPlugin() result {
 		Name:   "Session Manager plugin",
 		Status: statusPass,
 		Detail: path,
+	}
+}
+
+// checkSSHClient reports whether the OpenSSH client binaries (ssh, scp) are
+// on PATH. Unlike checkAWSCLI/checkSessionManagerPlugin, this is statusWarn
+// rather than statusFail: only `act ec2 ssh` and `act ec2 cp` need these
+// binaries, so a user who never runs those subcommands should not get a
+// red, exit-code-1 doctor failure for a tool they don't use.
+func checkSSHClient() result {
+	_, sshErr := exec.LookPath("ssh")
+	_, scpErr := exec.LookPath("scp")
+
+	if sshErr == nil && scpErr == nil {
+		return result{
+			Name:   "SSH client",
+			Status: statusPass,
+			Detail: "ssh and scp found (used by `act ec2 ssh` / `act ec2 cp`)",
+		}
+	}
+
+	var missing []string
+	if sshErr != nil {
+		missing = append(missing, "ssh")
+	}
+	if scpErr != nil {
+		missing = append(missing, "scp")
+	}
+
+	return result{
+		Name:   "SSH client",
+		Status: statusWarn,
+		Detail: fmt.Sprintf(
+			"%s not found (only needed for `act ec2 ssh` / `act ec2 cp`). Install the OpenSSH client: https://www.openssh.com/",
+			strings.Join(missing, ", "),
+		),
 	}
 }
 
