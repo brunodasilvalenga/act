@@ -29,11 +29,15 @@ func CopyFile(instanceID, profile, region, user, source, dest string, download, 
 	if err := validateSSHProxyToken(region, "region"); err != nil {
 		return err
 	}
+	if err := validateSSHProxyToken(user, "user"); err != nil {
+		return err
+	}
 
 	args := sshProxyOptionArgs(profile, region)
 	if recursive {
 		args = append(args, "-r")
 	}
+	args = append(args, "--")
 
 	localPath, remoteSpec, remoteFirst := scpEndpoints(instanceID, user, source, dest, download)
 	if remoteFirst {

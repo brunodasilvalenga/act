@@ -17,6 +17,11 @@ func TestValidateSSHProxyToken(t *testing.T) {
 		{"dollar injection attempt", "prod$(whoami)", true},
 		{"space", "prod eu", true},
 		{"pipe", "prod|cat", true},
+		{"plain username", "ec2-user", false},
+		{"ubuntu username", "ubuntu", false},
+		{"root username", "root", false},
+		{"user with equals sign", "user=evil", true},
+		{"user with space", "ec2 user", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
