@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -113,14 +114,37 @@ func TestCheckProfile(t *testing.T) {
 	}
 }
 
+// TestCheckSSHClient verifies checkSSHClient's contract without asserting
+// a specific pass/warn outcome, since that depends on whether ssh/scp are
+// installed on the machine running the test (matching the pre-existing,
+// documented coverage limitation for the other exec.LookPath-based checks,
+// checkAWSCLI/checkSessionManagerPlugin, neither of which has a direct
+// unit test).
+func TestCheckSSHClient(t *testing.T) {
+	r := checkSSHClient()
+	if r.Name != "SSH client" {
+		t.Errorf("expected Name %q, got %q", "SSH client", r.Name)
+	}
+	if r.Status != statusPass && r.Status != statusWarn {
+		t.Errorf("expected statusPass or statusWarn (never statusFail), got %v", r.Status)
+	}
+	if r.Status == statusWarn && !strings.Contains(r.Detail, "not found") {
+		t.Errorf("expected Detail to mention 'not found' when warning, got %q", r.Detail)
+	}
+	if r.Fix != nil {
+		t.Errorf("expected no automated Fix action for checkSSHClient, got one")
+	}
+}
+
 // TestRunResultOrder exercises the exact concurrency shape used by Run:
 // a pre-sized []result slice, 5 sequential writes to indices 0/1/3/4/5,
-// and two goroutines synchronized via sync.WaitGroup writing to indices
-// 2/6. It uses dummy stand-ins for checkCredentials/checkVersion instead
-// of invoking the real network-bound checks, so it stays deterministic
-// and fast while still proving the indexing pattern is race-free (run
-// with -race) and preserves the expected 0-6 print order regardless of
-// which goroutine finishes first.
+// two goroutines synchronized via sync.WaitGroup writing to indices 2/6,
+// and one further sequential write to index 7 after wg.Wait(). It uses
+// dummy stand-ins for checkCredentials/checkVersion/checkSSHClient instead
+// of invoking the real checks, so it stays deterministic and fast while
+// still proving the indexing pattern is race-free (run with -race) and
+// preserves the expected 0-7 print order regardless of which goroutine
+// finishes first.
 func TestRunResultOrder(t *testing.T) {
 	wantNames := []string{
 		"AWS CLI",
@@ -130,6 +154,7 @@ func TestRunResultOrder(t *testing.T) {
 		"Profile",
 		"Config",
 		"Version",
+		"SSH client",
 	}
 
 	dummy := func(name string) result {
@@ -137,7 +162,7 @@ func TestRunResultOrder(t *testing.T) {
 	}
 
 	for iter := 0; iter < 20; iter++ {
-		results := make([]result, 7)
+		results := make([]result, 8)
 		results[0] = dummy("AWS CLI")
 		results[1] = dummy("Session Manager plugin")
 		results[3] = dummy("Region")
@@ -155,6 +180,7 @@ func TestRunResultOrder(t *testing.T) {
 			results[6] = dummy("Version")
 		}()
 		wg.Wait()
+		results[7] = dummy("SSH client")
 
 		for i, want := range wantNames {
 			if results[i].Name != want {
