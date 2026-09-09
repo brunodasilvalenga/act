@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+// pushKeyTimeoutSeconds is the SSM --timeout-seconds used for the push-key
+// command; also used to derive WaitForCommandInvocation's client-side
+// deadline via MaxWaitFromTimeoutSeconds, so the two values can't drift
+// apart.
+const pushKeyTimeoutSeconds = 60
+
 // DefaultSSHPublicKeyPath returns the first of the user's standard SSH
 // public key files that exists, preferring id_ed25519.pub over id_rsa.pub.
 func DefaultSSHPublicKeyPath() (string, error) {
@@ -75,12 +81,12 @@ chown %s "$homedir/.ssh" "$homedir/.ssh/authorized_keys"
 grep -qxF %s "$homedir/.ssh/authorized_keys" || echo %s >> "$homedir/.ssh/authorized_keys"
 echo "$homedir/.ssh/authorized_keys"`, osUserQ, osUserQ, ownerQ, keyLineQ, keyLineQ)
 
-	commandID, err := SendCommand(instanceID, profile, region, "AWS-RunShellScript", strings.Split(script, "\n"), 60, "act ec2 ssh --push-key")
+	commandID, err := SendCommand(instanceID, profile, region, "AWS-RunShellScript", strings.Split(script, "\n"), pushKeyTimeoutSeconds, "act ec2 ssh --push-key")
 	if err != nil {
 		return "", fmt.Errorf("sending push-key command: %w", err)
 	}
 
-	result, err := WaitForCommandInvocation(commandID, instanceID, profile, region, 2*time.Second)
+	result, err := WaitForCommandInvocation(commandID, instanceID, profile, region, 2*time.Second, MaxWaitFromTimeoutSeconds(pushKeyTimeoutSeconds))
 	if err != nil {
 		return "", fmt.Errorf("waiting for push-key command: %w", err)
 	}
