@@ -150,7 +150,7 @@ act ec2 rdp --target i-0123456789abcdef0
 act ec2 ssh
 act ec2 ssh --user ubuntu
 act ec2 ssh --user ec2-user --target i-0123456789abcdef0
-act ec2 ssh --push-key                                       # push your local pubkey via EC2 Instance Connect first
+act ec2 ssh --push-key                                       # push your local pubkey via SSM Run Command first
 act ec2 ssh --push-key --push-key-path ~/.ssh/my_key.pub     # push a specific key
 
 # Copy a file to an instance via SSM (scp over the same SSH ProxyCommand)
