@@ -30,11 +30,7 @@ func CopyFile(instanceID, profile, region, user, source, dest string, download, 
 		return err
 	}
 
-	args := []string{
-		"-o", "StrictHostKeyChecking=no",
-		"-o", "UserKnownHostsFile=/dev/null",
-		"-o", fmt.Sprintf("ProxyCommand=%s", ssmProxyCommand(profile, region)),
-	}
+	args := sshProxyOptionArgs(profile, region)
 	if recursive {
 		args = append(args, "-r")
 	}

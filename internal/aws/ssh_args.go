@@ -15,13 +15,19 @@ func ssmProxyCommand(profile, region string) string {
 	return proxyCmd
 }
 
-// sshProxyArgs builds the ssh CLI argument list using AWS SSM as a
-// ProxyCommand.
-func sshProxyArgs(instanceID, profile, region, user string) []string {
+// sshProxyOptionArgs builds the "-o" flag pairs shared by both the ssh
+// and scp code paths: SSH host-key hardening plus the SSM ProxyCommand.
+func sshProxyOptionArgs(profile, region string) []string {
 	return []string{
 		"-o", "StrictHostKeyChecking=no",
 		"-o", "UserKnownHostsFile=/dev/null",
 		"-o", fmt.Sprintf("ProxyCommand=%s", ssmProxyCommand(profile, region)),
-		fmt.Sprintf("%s@%s", user, instanceID),
 	}
+}
+
+// sshProxyArgs builds the ssh CLI argument list using AWS SSM as a
+// ProxyCommand.
+func sshProxyArgs(instanceID, profile, region, user string) []string {
+	args := sshProxyOptionArgs(profile, region)
+	return append(args, fmt.Sprintf("%s@%s", user, instanceID))
 }
