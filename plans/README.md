@@ -49,14 +49,14 @@ and update your row when done.
 | 034 | Add `act env use <name>` (persistent default environment) | P3 | S | none | DONE (merged to main) |
 | 035 | Add `act ec2 cp` — copy files to/from an EC2 instance via SSM | P2 | M | none | DONE (executed, reviewed, not merged — branch `advisor/035-add-ec2-cp-command`) |
 | 036 | Add `act ec2 ssh --push-key` — push a local SSH pubkey via EC2 Instance Connect | P2 | S | none | DONE |
-| 037 | Fix `--push-key`'s dedup check (unique marker defeats its own grep, causing unbounded `authorized_keys` growth) | P1 | M | none | TODO |
-| 038 | Stop `act ec2 rdp` reporting a working tunnel when `aws ssm start-session` already failed | P1 | M | none | TODO |
-| 039 | Fix README's stale "EC2 Instance Connect" comment for `--push-key` (now SSM Run Command) | P3 | S | none | TODO |
-| 040 | Validate `--user` (and guard positional argv) in `ec2 ssh`/`ec2 cp`, closing the gap left when `profile`/`region` were validated | P1 | S | none (soft: recommended after 042 — see below) | TODO |
-| 041 | Make `act doctor` warn when the OpenSSH client (`ssh`/`scp`) is missing | P2 | S | none | TODO |
-| 042 | Extract shared `sshProxyOptionArgs` helper for the SSH-proxy `-o` flags duplicated in `ssh_args.go`/`scp.go` | P3 | S | none (soft: recommended before 040 — see below) | TODO |
-| 043 | Reject `act ec2 ssh --push-key` against Windows targets before sending an SSM command | P2 | S | none (soft overlap with 037 — see below) | TODO |
-| 044 | Add a bounded wall-clock deadline to `WaitForCommandInvocation` so SSM polling can't hang forever | P1 | M | none | TODO |
+| 037 | Fix `--push-key`'s dedup check (unique marker defeats its own grep, causing unbounded `authorized_keys` growth) | P1 | M | none | DONE (executed, reviewed, not merged — branch `advisor/037-fix-push-key-dedup-check-manual`, commit `7d8e0e8`, worktree `.claude/worktrees/manual-037`. Two prior dispatch attempts via the `improve` skill's normal `isolation: "worktree"` path failed before this: both times the tool provisioned the worktree from stale `origin/main` (`c81703b`, missing the plan-033 `main.go` split among other merges) instead of local `main` HEAD (`4b1195d`) — see plan 041's status note above for the same class of bug. Worked around by manually running `git worktree add .claude/worktrees/manual-037 -b advisor/037-fix-push-key-dedup-check-manual HEAD` from the main worktree, then dispatching a non-isolated executor pinned to that path.) |
+| 038 | Stop `act ec2 rdp` reporting a working tunnel when `aws ssm start-session` already failed | P1 | M | none | DONE (executed, reviewed, not merged — branch `advisor/038-fix-rdp-false-success-report`) |
+| 039 | Fix README's stale "EC2 Instance Connect" comment for `--push-key` (now SSM Run Command) | P3 | S | none | DONE (executed, reviewed, not merged — branch `advisor/039-fix-readme-stale-push-key-comment`, commit `c0377a0`, worktree `.claude/worktrees/agent-a673651a44e885010`) |
+| 040 | Validate `--user` (and guard positional argv) in `ec2 ssh`/`ec2 cp`, closing the gap left when `profile`/`region` were validated | P1 | S | none (soft: recommended after 042 — see below) | DONE (executed, reviewed, not merged — branch `advisor/040-validate-ssh-scp-user-arg`) |
+| 041 | Make `act doctor` warn when the OpenSSH client (`ssh`/`scp`) is missing | P2 | S | none | DONE (executed manually against current `main`/`4b1195d` after two prior `improve`-skill dispatches failed on the same stale-worktree provisioning bug documented below; worked around per plan 044's precedent by running `git worktree add .claude/worktrees/plan-041 -b advisor/041-add-doctor-ssh-scp-client-check main` and implementing the plan's 5 steps directly in that worktree. `go build`/`go vet`/`gofmt -l`/`go test ./... -race` all clean; committed as `fd8fec2` on branch `advisor/041-add-doctor-ssh-scp-client-check`, not merged to `main`, not pushed.) |
+| 042 | Extract shared `sshProxyOptionArgs` helper for the SSH-proxy `-o` flags duplicated in `ssh_args.go`/`scp.go` | P3 | S | none (soft: recommended before 040 — see below) | DONE (executed, reviewed, not merged — branch `advisor/042-dedupe-scp-ssh-proxy-flags`) |
+| 043 | Reject `act ec2 ssh --push-key` against Windows targets before sending an SSM command | P2 | S | none (soft overlap with 037 — see below) | DONE (executed, reviewed, not merged — branch `advisor/043-guard-push-key-non-linux-target`) |
+| 044 | Add a bounded wall-clock deadline to `WaitForCommandInvocation` so SSM polling can't hang forever | P1 | M | none | DONE (executed, reviewed, not merged — branch `advisor/044-add-ssm-wait-deadline`, commit `9642a35`) |
 
 Plans 037–044 were written on 2026-09-09 by 8 separate parallel subagents (one
 per plan, mirroring the 020–034 batch's process), each dispatched with its own
@@ -482,6 +482,77 @@ entry; README updates) — does not touch `ssh_args.go`/`ssh_unix.go`/
 `ssh_windows.go`, so it has no interaction with plan 035's `ssh_args.go`
 refactor even though 035 hasn't merged to `main` yet.
 
+**Plan 042 executed 2026-09-09** in an isolated worktree (`.claude/worktrees/agent-a977ec848ecf1b4bf`),
+single commit `ef4a922` on branch `advisor/042-dedupe-scp-ssh-proxy-flags`
+(created off `4b1195d`, matching the plan's drift check — no drift found
+against the "Current state" excerpts). Reviewer independently re-verified
+in the worktree rather than trusting the executor's report: `go build`/
+`go vet`/`gofmt -l .`/`go test ./...` all clean (129 tests, 6 packages);
+`TestSSHProxyOptionArgs` (4 subtests) and `TestScpEndpoints` (3 subtests)
+both `PASS`; the three done-criteria `grep`s confirmed the inline `-o`
+duplicate is gone from `scp.go` and `sshProxyOptionArgs` exists exactly
+once in `ssh_args.go`. `git show --stat ef4a922` touches exactly the 3
+in-scope files (`internal/aws/{ssh_args.go,scp.go,ssh_args_test.go}`) and
+nothing else — no README/main.go changes, matching the plan's "pure
+internal refactor" scope call. The diff is byte-for-byte the plan's
+specified code (`sshProxyArgs` and `CopyFile` now both delegate to the new
+`sshProxyOptionArgs` helper; `ssmProxyCommand` untouched). Plan 040 had not
+yet landed on this file when 042 executed, so `CopyFile` still validates
+only profile/region — no reconciliation was needed. Not merged to `main` —
+merging is the user's decision.
+
+**Plan 040 executed 2026-09-09** in an isolated worktree
+(`.claude/worktrees/agent-a441994a1d03183fb`), single commit `e604a73` on
+branch `advisor/040-validate-ssh-scp-user-arg`. Plan 042 had already landed
+(unmerged) on `advisor/042-dedupe-scp-ssh-proxy-flags` by this point, which
+this plan's own drift check flags as an expected possibility — the executor
+was directed (via an override in the dispatch prompt, not improvised) to
+branch off `advisor/042-dedupe-scp-ssh-proxy-flags` instead of `main`, so
+040's fix lands on the deduped `sshProxyOptionArgs` structure rather than
+being re-applied after a later rebase. Reviewer independently re-verified
+in the worktree rather than trusting the executor's report: `go build
+./...`, `GOOS=windows go build ./...`, `go vet ./...`, and `gofmt -l .` all
+clean; `go test ./...` passed (136 tests, 6 packages); the targeted run
+(`TestSSHProxyArgs`, `TestValidateSSHProxyToken`, `TestScpEndpoints`,
+`TestSSHProxyOptionArgs`) passed 24 subtests, confirming both new tests,
+the extended username table, and both pre-existing tests (042's and scp's)
+were left correct and unbroken. `git diff --stat
+advisor/042-dedupe-scp-ssh-proxy-flags..HEAD` touches exactly the 6
+in-scope files (`ssh_unix.go`, `ssh_windows.go`, `scp.go`, `ssh_args.go`,
+`ssh_args_test.go`, `ssh_validate_test.go`) and nothing else — no
+`README.md`/`cmd_ec2.go`/`ssh_validate.go` changes, matching the plan's
+scope call (pure hardening fix, no interface change). The diff matches the
+plan's specified fix exactly: `validateSSHProxyToken(user, "user")` added
+at all 3 call sites, and a literal `"--"` argv separator inserted
+immediately before the final positional argument(s) in both `sshProxyArgs`
+and `CopyFile`. Not merged to `main` — merging is the user's decision.
+
+**Plan 043 executed 2026-09-09** in an isolated worktree
+(`.claude/worktrees/agent-ae9b1e4e1e644ce0b`), single commit `65c7111` on
+branch `advisor/043-guard-push-key-non-linux-target`. The worktree's initial
+base was a stale ancestor commit (`c81703b`, predating plan 033's
+main.go-split, where `cmd_ec2.go` didn't exist yet) — the executor
+recognized this would make every file reference in the plan wrong, created
+the plan-specified branch fresh off current `main` (`4b1195d`) instead, and
+proceeded; the drift check against `0802c51` then came back clean with
+every file matching the plan's excerpts verbatim. Reviewer independently
+re-verified in the worktree rather than trusting the executor's report:
+`go build ./...`, `go vet ./...`, and `gofmt -l .` all clean; `go test ./...`
+→ 189 passed across 6 packages; `go test ./internal/aws/... -run
+TestRejectIfWindows -v` → 6 subtests `PASS`. The three done-criteria `grep`s
+confirmed `rejectIfWindows` (ssh_key_push.go:46), `DescribeInstancePlatform`
+(ec2.go:164), and `PushSSHKeyViaSSM`'s new `platform string` parameter
+(ssh_key_push.go:63) all exist exactly as specified, plus the README
+Windows-caveat line. `git diff main --stat` on the worktree touches exactly
+the 5 in-scope files (`README.md`, `cmd_ec2.go`, `internal/aws/ec2.go`,
+`internal/aws/ssh_key_push.go`, `internal/aws/ssh_key_push_test.go`) and
+nothing else — no `ssm.go`/`helpers.go`/`cmd_ssm.go` changes, matching the
+plan's scope boundary. Plan 037 (the dedup-check fix, same function) had not
+yet landed when 043 executed, so no reconciliation between the two was
+needed; the guard sits as the first statement in `PushSSHKeyViaSSM`, ahead
+of where 037's dedup logic would land. Not merged to `main` — merging is
+the user's decision.
+
 Plan 036 executed on 2026-09-03. First dispatch surfaced a false drift: the
 executor's isolated worktree was based on stale `origin/main` (`aa50614`),
 which predates plan 035 — `origin/main` had never been pushed past that
@@ -575,6 +646,62 @@ exist but are empty) — both need a fresh executor dispatch. 030 in
 particular should be re-planned against the now-merged 031 (the installer
 functions it targets were restructured by 031's dedupe), not the original
 plan text's six-function layout. 026 has never been started at all.
+
+**Plan 038 executed 2026-09-09** in an isolated worktree, single commit
+`a39b465` on branch `advisor/038-fix-rdp-false-success-report`. Drift check
+against the plan's `Planned at` commit (`0802c51`) found only `cmd_ec2.go`
+had changed since (an unrelated refactor from later merges), and confirmed
+its `aws.StartRDP` call site was untouched; `rdp_unix.go`/`rdp_windows.go`
+matched the plan's "Current state" excerpts exactly, so execution proceeded
+with no drift. Reviewer independently re-verified in the worktree (not just
+trusting the executor's report): `gofmt -l .` clean, `go build ./...` and
+`GOOS=windows go build ./...` both exit 0, `go vet ./...` clean, `go test
+./...` all pass (127 tests, 6 packages), and the 2 new
+`TestRunRDPTunnel_*` tests pass in well under the 2-second threshold that
+would have signaled a flawed test assumption. `git diff --stat
+HEAD~1..HEAD` in the worktree confirmed the commit touches exactly the 4
+in-scope files (`internal/aws/rdp.go`, `rdp_test.go`, `rdp_unix.go`,
+`rdp_windows.go`) with content matching the plan's specified code verbatim
+— `cmd_ec2.go` and `README.md` were correctly left untouched, consistent
+with the plan's scope (no CLI-surface change). The flat `time.Sleep(2 *
+time.Second)` is gone from both platform files; `runRDPTunnel` is now
+defined once in the new shared `rdp.go` and called once from each platform
+file. The manual verification recipe against a real `aws` CLI (nonexistent
+instance ID / no-aws-in-PATH) was not run, since it requires live AWS
+credentials or PATH manipulation not appropriate to perform unprompted —
+the plan explicitly treats this as a manual, non-automated supplementary
+check, and the automated test suite fully covers the regression per the
+plan's own test plan. Not merged to `main` — merging is the user's
+decision.
+
+**Plan 044 executed 2026-09-09.** First dispatch (automatic worktree
+isolation) stopped correctly on a real drift condition rather than
+improvising: the auto-provisioned worktree was branched from a stale
+`origin/main` (`c81703b`) that predates plan 033's `main.go`-split merge, so
+`cmd_ssm.go` didn't exist there at all — `act ssm run`'s
+`WaitForCommandInvocation` call site was still inline in `main.go` (line
+935), not at `cmd_ssm.go:65-76` as the plan's "Current state" section
+assumes. This is the same class of issue plan 019 hit previously (local
+`main` ahead of `origin/main`). Fixed the same way: manually created a
+worktree branched directly from local `main` (`4b1195d`) at
+`.claude/worktrees/plan-044` on branch `advisor/044-add-ssm-wait-deadline`,
+confirmed all four in-scope files matched the plan's excerpts exactly, then
+re-dispatched a fresh executor into that specific path. The second run
+completed cleanly with no further deviations, committed as `9642a35` "fix:
+bound WaitForCommandInvocation with a client-side deadline". Reviewer
+independently re-verified in the worktree (not just trusting the executor's
+report): `go build ./...`, `go vet ./...`, and `gofmt -l .` all clean; `go
+test ./...` passes 188 tests across 6 packages (up from the 183 baseline);
+`grep -rn "WaitForCommandInvocation("` shows exactly 2 production call sites
+(`cmd_ssm.go:77`, `internal/aws/ssh_key_push.go:89`) plus the 1 definition
+(`internal/aws/ssm.go:107`, now 6 parameters) plus the 1 new test reference;
+`git status`/`git diff --stat 4b1195d..HEAD` show exactly the 4 in-scope
+files touched (`internal/aws/ssm.go`, `internal/aws/ssm_test.go`,
+`cmd_ssm.go`, `internal/aws/ssh_key_push.go`), byte-for-byte matching the
+plan's specified code. `README.md` and `plans/README.md` were correctly left
+untouched by the executor, consistent with the plan's scope (no user-facing
+flag/behavior added) and the reviewer-maintains-the-index override. Not
+merged to `main` — merging is the user's decision.
 
 ## Findings considered and rejected
 
