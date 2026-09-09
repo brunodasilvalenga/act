@@ -51,7 +51,7 @@ and update your row when done.
 | 036 | Add `act ec2 ssh --push-key` — push a local SSH pubkey via EC2 Instance Connect | P2 | S | none | DONE |
 | 037 | Fix `--push-key`'s dedup check (unique marker defeats its own grep, causing unbounded `authorized_keys` growth) | P1 | M | none | TODO |
 | 038 | Stop `act ec2 rdp` reporting a working tunnel when `aws ssm start-session` already failed | P1 | M | none | TODO |
-| 039 | Fix README's stale "EC2 Instance Connect" comment for `--push-key` (now SSM Run Command) | P3 | S | none | TODO |
+| 039 | Fix README's stale "EC2 Instance Connect" comment for `--push-key` (now SSM Run Command) | P3 | S | none | DONE (executed, not merged — branch `advisor/039-fix-readme-stale-push-key-comment`, commit `c0377a0`) |
 | 040 | Validate `--user` (and guard positional argv) in `ec2 ssh`/`ec2 cp`, closing the gap left when `profile`/`region` were validated | P1 | S | none (soft: recommended after 042 — see below) | TODO |
 | 041 | Make `act doctor` warn when the OpenSSH client (`ssh`/`scp`) is missing | P2 | S | none | TODO |
 | 042 | Extract shared `sshProxyOptionArgs` helper for the SSH-proxy `-o` flags duplicated in `ssh_args.go`/`scp.go` | P3 | S | none (soft: recommended before 040 — see below) | TODO |
