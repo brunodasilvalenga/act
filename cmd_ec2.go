@@ -63,13 +63,17 @@ func runSSH(profile, region string, subArgs []string) {
 				os.Exit(1)
 			}
 		}
-		removeCmd, err := aws.PushSSHKeyViaSSM(instanceID, profile, region, sshUser, keyPath)
+		removeCmd, alreadyPresent, err := aws.PushSSHKeyViaSSM(instanceID, profile, region, sshUser, keyPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error pushing SSH public key: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Fprintf(os.Stderr, "Pushed %s to %s@%s via SSM (added to authorized_keys).\n", keyPath, sshUser, instanceID)
-		fmt.Fprintf(os.Stderr, "To remove it later: %s\n", removeCmd)
+		if alreadyPresent {
+			fmt.Fprintf(os.Stderr, "%s is already in %s@%s's authorized_keys; not adding a duplicate.\n", keyPath, sshUser, instanceID)
+		} else {
+			fmt.Fprintf(os.Stderr, "Pushed %s to %s@%s via SSM (added to authorized_keys).\n", keyPath, sshUser, instanceID)
+			fmt.Fprintf(os.Stderr, "To remove it later: %s\n", removeCmd)
+		}
 	}
 
 	err := aws.StartSSHSession(instanceID, profile, region, sshUser)

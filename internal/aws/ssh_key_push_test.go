@@ -3,6 +3,7 @@ package aws
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -73,4 +74,52 @@ func TestShellSingleQuote(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestBuildPushKeyScript(t *testing.T) {
+	const key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyMaterial user@laptop"
+
+	t.Run("dedup check greps for the raw key, not the marker-tagged line", func(t *testing.T) {
+		script := buildPushKeyScript("ec2-user", key, "act-push-key-111")
+		keyQ := shellSingleQuote(key)
+		if !strings.Contains(script, "grep -qF "+keyQ) {
+			t.Errorf("script does not grep for the raw key %q; got:\n%s", keyQ, script)
+		}
+	})
+
+	t.Run("dedup grep target is identical across two different markers for the same key", func(t *testing.T) {
+		// This is the regression this plan fixes: the old code grepped for
+		// the marker-tagged line, so a previous run's line (different
+		// marker, same key) could never be found as "already present".
+		scriptA := buildPushKeyScript("ec2-user", key, "act-push-key-111")
+		scriptB := buildPushKeyScript("ec2-user", key, "act-push-key-222")
+		keyQ := shellSingleQuote(key)
+		grepLine := "grep -qF " + keyQ
+		if !strings.Contains(scriptA, grepLine) || !strings.Contains(scriptB, grepLine) {
+			t.Fatalf("expected both scripts to contain the marker-independent grep line %q", grepLine)
+		}
+	})
+
+	t.Run("does not regress to matching on the full marker-tagged line", func(t *testing.T) {
+		script := buildPushKeyScript("ec2-user", key, "act-push-key-111")
+		keyLineQ := shellSingleQuote(key + " act-push-key act-push-key-111")
+		if strings.Contains(script, "grep -qF "+keyLineQ) || strings.Contains(script, "grep -qxF "+keyLineQ) {
+			t.Errorf("dedup check still matches on the marker-tagged line, not just the key; got:\n%s", script)
+		}
+	})
+
+	t.Run("append branch still tags the new line with the marker for later removal", func(t *testing.T) {
+		script := buildPushKeyScript("ec2-user", key, "act-push-key-111")
+		keyLineQ := shellSingleQuote(key + " act-push-key act-push-key-111")
+		if !strings.Contains(script, "echo "+keyLineQ+" >> ") {
+			t.Errorf("expected the appended line to still carry its marker; got:\n%s", script)
+		}
+	})
+
+	t.Run("prints an already-present marker line so the caller can detect the skip", func(t *testing.T) {
+		script := buildPushKeyScript("ec2-user", key, "act-push-key-111")
+		if !strings.Contains(script, `echo "act-push-key: already present"`) {
+			t.Errorf("expected an already-present status line; got:\n%s", script)
+		}
+	})
 }
