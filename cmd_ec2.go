@@ -36,11 +36,21 @@ func runSSH(profile, region string, subArgs []string) {
 	fs.Parse(subArgs)
 
 	instanceID := *target
+	var platform string
 	if instanceID == "" {
 		loadFunc := func() ([]aws.Instance, error) {
 			return aws.ListRunningInstances(profile, region, tags)
 		}
-		instanceID = pickInstance(loadFunc)
+		selected, err := tui.Run(loadFunc)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		if selected == nil {
+			os.Exit(0)
+		}
+		instanceID = selected.InstanceID
+		platform = selected.Platform
 	}
 
 	sshUser := *user
@@ -54,6 +64,19 @@ func runSSH(profile, region string, subArgs []string) {
 	}
 
 	if *pushKey {
+		if *target != "" {
+			// The instance was given directly rather than chosen from the
+			// picker, so we don't have its Platform yet — look it up now.
+			// This only runs for --push-key + --target together, not the
+			// common picker path above (which already has Platform for
+			// free from ListRunningInstances).
+			p, err := aws.DescribeInstancePlatform(instanceID, profile, region)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error checking target platform: %v\n", err)
+				os.Exit(1)
+			}
+			platform = p
+		}
 		keyPath := *pushKeyPath
 		if keyPath == "" {
 			var err error
@@ -63,7 +86,7 @@ func runSSH(profile, region string, subArgs []string) {
 				os.Exit(1)
 			}
 		}
-		removeCmd, alreadyPresent, err := aws.PushSSHKeyViaSSM(instanceID, profile, region, sshUser, keyPath)
+		removeCmd, alreadyPresent, err := aws.PushSSHKeyViaSSM(instanceID, profile, region, sshUser, keyPath, platform)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error pushing SSH public key: %v\n", err)
 			os.Exit(1)

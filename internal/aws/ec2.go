@@ -155,6 +155,45 @@ func ListWindowsInstances(profile, region string, tags []string) ([]Instance, er
 	return instances, nil
 }
 
+// DescribeInstancePlatform looks up the Platform value for a single
+// instance by ID. It exists for callers that already have an instance ID
+// from elsewhere (e.g. a --target flag) rather than from ListRunningInstances
+// or ListWindowsInstances, which already carry Platform on the Instance
+// they return — use this only when Platform isn't already known, to avoid
+// an extra AWS API call in the common case.
+func DescribeInstancePlatform(instanceID, profile, region string) (string, error) {
+	args := []string{"ec2", "describe-instances",
+		"--instance-ids", instanceID,
+		"--output", "json",
+	}
+	if profile != "" {
+		args = append(args, "--profile", profile)
+	}
+	if region != "" {
+		args = append(args, "--region", region)
+	}
+
+	cmd := exec.Command("aws", args...)
+	out, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			return "", fmt.Errorf("aws cli error: %s", strings.TrimSpace(string(exitErr.Stderr)))
+		}
+		return "", err
+	}
+
+	var result describeOutput
+	if err := json.Unmarshal(out, &result); err != nil {
+		return "", fmt.Errorf("failed to parse aws output: %w", err)
+	}
+	for _, r := range result.Reservations {
+		for _, inst := range r.Instances {
+			return inst.Platform, nil
+		}
+	}
+	return "", fmt.Errorf("instance %s not found", instanceID)
+}
+
 // escapeTagFilterValue escapes characters that are significant in AWS CLI
 // shorthand filter syntax (commas separate multiple filter values) so a
 // literal comma in a tag value is not misinterpreted as a value separator.

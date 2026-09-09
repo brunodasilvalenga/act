@@ -56,6 +56,41 @@ func TestFindSSHPublicKey(t *testing.T) {
 	})
 }
 
+func TestRejectIfWindows(t *testing.T) {
+	tests := []struct {
+		name     string
+		platform string
+		wantErr  bool
+	}{
+		{name: "windows lowercase", platform: "windows", wantErr: true},
+		{name: "windows mixed case", platform: "Windows", wantErr: true},
+		{name: "empty is linux", platform: "", wantErr: false},
+		{name: "linux explicit", platform: "linux", wantErr: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := rejectIfWindows(tt.platform)
+			if tt.wantErr && err == nil {
+				t.Errorf("rejectIfWindows(%q) = nil, want an error", tt.platform)
+			}
+			if !tt.wantErr && err != nil {
+				t.Errorf("rejectIfWindows(%q) = %v, want nil", tt.platform, err)
+			}
+		})
+	}
+}
+
+func TestRejectIfWindowsErrorMentionsRDP(t *testing.T) {
+	err := rejectIfWindows("windows")
+	if err == nil {
+		t.Fatal("expected an error for windows platform")
+	}
+	if !strings.Contains(err.Error(), "ec2 rdp") {
+		t.Errorf("rejectIfWindows error = %q, want it to mention 'ec2 rdp'", err.Error())
+	}
+}
+
 func TestShellSingleQuote(t *testing.T) {
 	tests := []struct {
 		name string

@@ -37,6 +37,19 @@ func shellSingleQuote(s string) string {
 	return "'" + strings.ReplaceAll(s, "'", `'"'"'`) + "'"
 }
 
+// rejectIfWindows returns an error if platform indicates a Windows
+// instance, using the same case-insensitive convention DocumentForPlatform
+// uses in ssm.go. --push-key's shell script is POSIX-specific (getent,
+// chown, .ssh/authorized_keys) and has no Windows equivalent, so
+// PushSSHKeyViaSSM must refuse before sending any SSM command rather than
+// letting AWS-RunShellScript fail confusingly against a Windows instance.
+func rejectIfWindows(platform string) error {
+	if strings.EqualFold(platform, "windows") {
+		return fmt.Errorf("--push-key is not supported for Windows targets (target platform: %s); Windows instances don't use authorized_keys the same way — see 'act ec2 rdp' for Windows access", platform)
+	}
+	return nil
+}
+
 // buildPushKeyScript returns the shell script that appends key to osUser's
 // authorized_keys, tagging the appended line with marker so it can be
 // removed later. The dedup check greps for the raw key text (stable across
@@ -78,8 +91,14 @@ echo "$homedir/.ssh/authorized_keys"`, osUserQ, osUserQ, ownerQ, keyQ, keyLineQ)
 // tagged with a unique marker so it can be found and removed later; the
 // returned removeCmd is the exact "act ssm run" invocation that removes it.
 // If the key is already present (e.g. from a previous run), alreadyPresent
-// is true, removeCmd is "", and no duplicate line is appended.
-func PushSSHKeyViaSSM(instanceID, profile, region, osUser, publicKeyPath string) (removeCmd string, alreadyPresent bool, err error) {
+// is true, removeCmd is "", and no duplicate line is appended. platform is
+// the target's EC2 Platform value (as in Instance.Platform /
+// DocumentForPlatform); Windows targets are rejected immediately since this
+// function's script is POSIX-only.
+func PushSSHKeyViaSSM(instanceID, profile, region, osUser, publicKeyPath, platform string) (removeCmd string, alreadyPresent bool, err error) {
+	if err := rejectIfWindows(platform); err != nil {
+		return "", false, err
+	}
 	keyBytes, err := os.ReadFile(publicKeyPath)
 	if err != nil {
 		return "", false, fmt.Errorf("reading public key: %w", err)
